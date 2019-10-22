@@ -4,7 +4,12 @@ import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.njscky.mapcollect.db.dao.ConfigDao;
+import com.njscky.mapcollect.db.dao.BaseDao;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class DbManager {
 
@@ -16,7 +21,10 @@ public class DbManager {
 
     private String dbPath;
 
+    private Map<Class<? extends BaseDao>, BaseDao> daoMap;
+
     private DbManager() {
+        daoMap = new HashMap<>();
     }
 
     public static DbManager getInstance() {
@@ -42,10 +50,8 @@ public class DbManager {
             if (TextUtils.equals(path, this.dbPath)) {
                 Log.i(TAG, "open: database was open");
                 return true;
-            } else {
-                Log.w(TAG, "open: cannot open, database: " + this.dbPath);
-                return false;
             }
+            close();
         }
 
         database = SQLiteDatabase.openOrCreateDatabase(path, null);
@@ -61,6 +67,7 @@ public class DbManager {
             database.close();
             database = null;
             dbPath = null;
+            daoMap.clear();
         }
     }
 
@@ -73,11 +80,28 @@ public class DbManager {
         return database == null;
     }
 
-    public ConfigDao getConfigDao() {
-        if (database != null) {
-            return new ConfigDao(database);
+    public <T extends BaseDao> T getDao(Class<T> clazz) {
+        if (database == null) {
+            throw new RuntimeException("Cannot get DAO for " + clazz);
         }
-        throw new RuntimeException("Open database first");
+        BaseDao dao = daoMap.get(clazz);
+
+        if (dao == null) {
+            try {
+                Constructor<T> constructor = clazz.getConstructor(SQLiteDatabase.class);
+                dao = constructor.newInstance(database);
+            } catch (NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
+                e.printStackTrace();
+            }
+
+            if (dao != null) {
+                daoMap.put(clazz, dao);
+            }
+
+        }
+
+        return (T) dao;
+
     }
 
 

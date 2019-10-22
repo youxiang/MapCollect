@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 boolean test = DbManager.getInstance().open(dbPath);
                 Log.i(TAG, "onRequestPermissionsResult: " + test);
-                ConfigDao configDao = DbManager.getInstance().getConfigDao();
+                ConfigDao configDao = DbManager.getInstance().getDao(ConfigDao.class);
                 List<Config> configList = configDao.getConfigList();
                 for (Config config : configList) {
                     Log.i(TAG, "onRequestPermissionsResult: " + config);
