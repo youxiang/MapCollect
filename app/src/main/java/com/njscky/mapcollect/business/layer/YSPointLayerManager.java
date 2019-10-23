@@ -48,11 +48,11 @@ public class YSPointLayerManager {
 
         pointLayer = new GraphicsLayer(GraphicsLayer.RenderingMode.STATIC);
         pointLayer.setName(pointLayerName);
-        pointLayer.setMinScale(5000);
+        //pointLayer.setMinScale(5000);
 
         annotationLayer = new GraphicsLayer(GraphicsLayer.RenderingMode.STATIC);
         annotationLayer.setName(annotationLayerName);
-        annotationLayer.setMinScale(5000);
+        //annotationLayer.setMinScale(5000);
 
     }
 
