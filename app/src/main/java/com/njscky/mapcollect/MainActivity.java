@@ -1,19 +1,21 @@
 package com.njscky.mapcollect;
 
 import android.Manifest;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import com.esri.android.map.MapView;
+import com.google.android.material.snackbar.Snackbar;
 import com.njscky.mapcollect.business.basemap.BaseMapManager;
+import com.njscky.mapcollect.util.PermissionUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
+import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -36,7 +38,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         baseMapManager = BaseMapManager.getInstance(this);
-
         ActivityCompat.requestPermissions(MainActivity.this, PERMISSIONS, REQ_PERMISSIONS);
     }
 
@@ -46,14 +47,12 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == REQ_PERMISSIONS) {
             if (isGranted(grantResults)) {
                 baseMapManager.startLoad(mMapView);
-            } else {
-                Toast.makeText(this, "请到设置页面打开权限", Toast.LENGTH_SHORT).show();
             }
         }
     }
 
     private boolean isGranted(int[] grantResults) {
-        return grantResults[0] == PackageManager.PERMISSION_GRANTED;
+        return grantResults[0] == PERMISSION_GRANTED;
     }
 
     @Override
@@ -66,6 +65,14 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         mMapView.unpause();
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PERMISSION_GRANTED) {
+            Snackbar.make(mMapView, "需要设置权限", Snackbar.LENGTH_INDEFINITE)
+                    .setAction("打开设置 ", v -> PermissionUtils.gotoSetting(MainActivity.this))
+                    .show();
+        } else {
+            baseMapManager.startLoad(mMapView);
+        }
     }
 
     @Override

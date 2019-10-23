@@ -21,6 +21,7 @@ public class BaseMapManager {
 
     private BaseMapConfig config;
     private Context context;
+    private boolean isLoaded;
 
     private BaseMapManager(Context context) {
         this.context = context.getApplicationContext();
@@ -39,6 +40,9 @@ public class BaseMapManager {
     }
 
     public void startLoad(MapView mapView) {
+        if (isLoaded) {
+            return;
+        }
         List<String> localBaseMapFiles = getLocalBaseMapFilePathList();
 
         if (localBaseMapFiles == null || localBaseMapFiles.isEmpty()) {
@@ -84,6 +88,7 @@ public class BaseMapManager {
             Envelope env = new Envelope();
             env.setCoords(119642.008560884, 139699.14891334, 130225.363060926, 144519.536158281);
             mapView.setExtent(env);
+            isLoaded = true;
         }
     }
 
@@ -96,6 +101,7 @@ public class BaseMapManager {
         Envelope env = new Envelope();
         env.setCoords(119642.008560884, 139699.14891334, 130225.363060926, 150519.536158281);
         mapView.setExtent(env);
+        isLoaded = true;
     }
 
     public boolean isNetworkBaseMap() {
