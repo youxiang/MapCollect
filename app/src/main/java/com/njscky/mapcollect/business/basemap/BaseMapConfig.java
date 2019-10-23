@@ -7,7 +7,8 @@ import java.io.File;
 
 public class BaseMapConfig {
 
-    private static final String SERVER_URL = "http://58.213.48.108/arcgis/rest/services/%E5%8D%97%E4%BA%AC%E5%9F%BA%E7%A1%80%E5%BA%95%E5%9B%BE2016/MapServer";
+    //    private static final String SERVER_URL = "http://58.213.48.108/arcgis/rest/services/%E5%8D%97%E4%BA%AC%E5%9F%BA%E7%A1%80%E5%BA%95%E5%9B%BE2016/MapServer";
+    private static final String SERVER_URL = "http://58.213.48.104/arcgis/rest/services/NJ08/NJDXT20180830/MapServer";
     private static final String MAPS_DIR_NAME = "offlinemap";
     private final Context context;
 

@@ -1,5 +1,9 @@
 package com.njscky.mapcollect.db.entitiy;
 
+import androidx.annotation.NonNull;
+
+import com.google.gson.Gson;
+
 /**
  * 雨水检查井点
  */
@@ -28,4 +32,10 @@ public class JCJPointYS {
     public float XZB;
     // Y坐标
     public float YZB;
+
+    @NonNull
+    @Override
+    public String toString() {
+        return new Gson().toJson(this);
+    }
 }

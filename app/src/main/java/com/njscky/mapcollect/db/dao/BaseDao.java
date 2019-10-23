@@ -9,4 +9,8 @@ public abstract class BaseDao {
     public BaseDao(SQLiteDatabase db) {
         mDb = db;
     }
+
+    protected int getOffset(int pageIndex, int pageSize) {
+        return pageSize * pageIndex;
+    }
 }
