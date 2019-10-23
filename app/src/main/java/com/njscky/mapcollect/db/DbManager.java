@@ -10,7 +10,9 @@ import com.njscky.mapcollect.db.dao.BaseDao;
 import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class DbManager {
@@ -18,24 +20,26 @@ public class DbManager {
     private static final String TAG = DbManager.class.getSimpleName();
 
     private volatile static DbManager instance;
-
+    DbConfig dbConfig;
     private SQLiteDatabase database;
-
     private String dbPath;
-
     private Map<Class<? extends BaseDao>, BaseDao> daoMap;
 
-    DbConfig dbConfig;
+    private Context context;
 
-    private DbManager() {
+    private DbManager(Context context) {
+        this.context = context.getApplicationContext();
         daoMap = new HashMap<>();
+        if (dbConfig == null) {
+            dbConfig = new DbConfig(context);
+        }
     }
 
-    public static DbManager getInstance() {
+    public static DbManager getInstance(Context context) {
         if (instance == null) {
             synchronized (DbManager.class) {
                 if (instance == null) {
-                    instance = new DbManager();
+                    instance = new DbManager(context);
                 }
             }
         }
@@ -47,12 +51,8 @@ public class DbManager {
      *
      * @return
      */
-    public boolean open(Context context, String name) {
-        Log.i(TAG, "open: " + name);
-        if (dbConfig == null) {
-            dbConfig = new DbConfig(context);
-        }
-        String path = dbConfig.getDbFilesPath() + File.separator + name;
+    public boolean open(String path) {
+        Log.i(TAG, "open: " + path);
         if (!isDatabaseClosed()) {
             if (TextUtils.equals(path, this.dbPath)) {
                 Log.i(TAG, "open: database was open");
@@ -108,6 +108,29 @@ public class DbManager {
         }
 
         return (T) dao;
+
+    }
+
+    public List<File> getDbFiles() {
+        List<File> rst = new ArrayList<>();
+
+        String dbDirPath = dbConfig.getDbFilesPath();
+        File dir = new File(dbDirPath);
+
+        if (!dir.exists() || !dir.isDirectory()) {
+            return rst;
+        }
+        File[] files = dir.listFiles();
+        if (files == null) {
+            return rst;
+        }
+        for (File file : dir.listFiles()) {
+            if (file.isFile() && file.getName().endsWith(".db")) {
+                rst.add(file);
+            }
+        }
+
+        return rst;
 
     }
 

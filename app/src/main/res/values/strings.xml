@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">MapCollect</string>
+    <string name="title_activity_project">工程管理</string>
+    <string name="project">工程</string>
+    <string name="edit">编辑</string>
+    <string name="graph_layer">图层</string>
+    <string name="picture">图片</string>
+    <string name="project_list">工程列表</string>
+    <string name="exit">退出</string>
+    <string name="confirm">确认</string>
+    <string name="dialog_title">提示</string>
+    <string name="open_project_file_fail">工程打开失败</string>
 </resources>

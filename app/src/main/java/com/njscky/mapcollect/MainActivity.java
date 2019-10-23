@@ -1,19 +1,30 @@
 package com.njscky.mapcollect;
 
 import android.Manifest;
+import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.util.Log;
+import android.widget.Button;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
+import com.esri.android.map.GraphicsLayer;
 import com.esri.android.map.MapView;
 import com.google.android.material.snackbar.Snackbar;
 import com.njscky.mapcollect.business.basemap.BaseMapManager;
+import com.njscky.mapcollect.business.layer.LayerCallback;
+import com.njscky.mapcollect.business.layer.LayerManager;
+import com.njscky.mapcollect.business.project.ProjectActivity;
+import com.njscky.mapcollect.db.DbManager;
 import com.njscky.mapcollect.util.PermissionUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
@@ -24,11 +35,15 @@ public class MainActivity extends AppCompatActivity {
     private static final int REQ_PERMISSIONS = 0;
 
     private static final String[] PERMISSIONS = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
+    private static final int REQ_PROJECT = 100;
 
     String dbName = "MapCollect.db";
 
     @BindView(R.id.map)
     MapView mMapView;
+
+    @BindView(R.id.btnGCGL)
+    Button btnProject;
 
     BaseMapManager baseMapManager;
 
@@ -73,6 +88,43 @@ public class MainActivity extends AppCompatActivity {
         } else {
             baseMapManager.startLoad(mMapView);
         }
+    }
+
+    @OnClick(R.id.btnGCGL)
+    void onProject() {
+        ProjectActivity.startForResult(this, REQ_PROJECT);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode != RESULT_OK) {
+            return;
+        }
+
+        switch (requestCode) {
+            case REQ_PROJECT:
+                handleProject(data.getStringExtra("dbFilePath"));
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void handleProject(String dbFilePath) {
+        if (TextUtils.isEmpty(dbFilePath)) {
+            return;
+        }
+        DbManager.getInstance(this).open(dbFilePath);
+
+
+        LayerManager.getInstance(this).loadYSPointLayer(new LayerCallback() {
+            @Override
+            public void onLayerLoaded(GraphicsLayer... layers) {
+                Log.i(TAG, "onLayerLoaded: " + layers);
+                mMapView.addLayers(layers);
+            }
+        });
     }
 
     @Override
