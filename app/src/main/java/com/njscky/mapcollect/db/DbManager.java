@@ -1,11 +1,13 @@
 package com.njscky.mapcollect.db;
 
+import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
 import android.util.Log;
 
 import com.njscky.mapcollect.db.dao.BaseDao;
 
+import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
@@ -22,6 +24,8 @@ public class DbManager {
     private String dbPath;
 
     private Map<Class<? extends BaseDao>, BaseDao> daoMap;
+
+    DbConfig dbConfig;
 
     private DbManager() {
         daoMap = new HashMap<>();
@@ -41,11 +45,14 @@ public class DbManager {
     /**
      * Open database
      *
-     * @param path
      * @return
      */
-    public boolean open(String path) {
-        Log.i(TAG, "open: " + path);
+    public boolean open(Context context, String name) {
+        Log.i(TAG, "open: " + name);
+        if (dbConfig == null) {
+            dbConfig = new DbConfig(context);
+        }
+        String path = dbConfig.getDbFilesPath() + File.separator + name;
         if (!isDatabaseClosed()) {
             if (TextUtils.equals(path, this.dbPath)) {
                 Log.i(TAG, "open: database was open");
