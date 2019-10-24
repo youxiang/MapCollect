@@ -4,10 +4,12 @@ import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 
+import java.util.Arrays;
+
 public class OptionalProperty extends Property {
     public String[] options;
 
-    public int textOptionIndex;
+    public int[] textOptionIndex;
 
     public OptionalProperty(@NonNull String[] options) {
         super();
@@ -16,10 +18,10 @@ public class OptionalProperty extends Property {
     }
 
     public OptionalProperty(String name, String value, @NonNull String[] options) {
-        this(name, value, options, -1);
+        this(name, value, options, null);
     }
 
-    public OptionalProperty(String name, String value, @NonNull String[] options, int textOptionIndex) {
+    public OptionalProperty(String name, String value, @NonNull String[] options, int[] textOptionIndex) {
         super(name, value);
         this.options = options;
         this.textOptionIndex = textOptionIndex;
@@ -32,5 +34,15 @@ public class OptionalProperty extends Property {
             }
         }
         return -1;
+    }
+
+    public boolean containsTextOptionIndex(int index) {
+        if (index < 0 || textOptionIndex == null) {
+            return false;
+        }
+
+        int rst = Arrays.binarySearch(textOptionIndex, index);
+
+        return rst != -1;
     }
 }

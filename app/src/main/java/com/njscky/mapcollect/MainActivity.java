@@ -137,8 +137,8 @@ public class MainActivity extends AppCompatActivity {
                 .setAdapter(
                         new GraphicListAdpater(graphics),
                         (dialog, which) -> {
-                            Log.i(TAG, "choosePoints: " + which);
                             Graphic graphic = graphics.get(which);
+                            Log.i(TAG, "choosePoints: " + graphic.getAttributeValue("JCJBH"));
                             JcjInspectFragment fragment = JcjInspectFragment.newInstance(graphic);
                             getSupportFragmentManager().beginTransaction()
                                     .replace(R.id.fragment_container, fragment, JcjInspectFragment.class.getSimpleName())

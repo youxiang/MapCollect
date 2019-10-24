@@ -93,7 +93,7 @@ public class PointPropertyListAdapter extends RecyclerView.Adapter<RecyclerView.
             value.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                    if (position == item.textOptionIndex) {
+                    if (item.containsTextOptionIndex(position)) {
                         showOther();
                     } else {
                         hideOther();
