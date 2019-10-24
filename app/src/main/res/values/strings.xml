@@ -13,4 +13,5 @@
     <string name="cancel">取消</string>
     <string name="save">保存</string>
     <string name="choose_points">选择检查井</string>
+    <string name="title_jcj_inspect">检查井调查</string>
 </resources>

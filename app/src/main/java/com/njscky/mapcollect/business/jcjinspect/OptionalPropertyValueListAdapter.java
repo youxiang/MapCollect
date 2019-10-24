@@ -42,6 +42,7 @@ public class OptionalPropertyValueListAdapter extends BaseAdapter {
             convertView.setTag(vh);
         } else {
             vh = (ViewHolder) convertView.getTag();
+
         }
         String item = getItem(position);
         vh.textView.setText(item);

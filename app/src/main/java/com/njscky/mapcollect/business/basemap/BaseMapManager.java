@@ -106,5 +106,11 @@ public class BaseMapManager {
         return networkBaseMapLayer != null;
     }
 
+    public void release() {
+        networkBaseMapLayer = null;
+        localBaseMapLayer = null;
+        isLoaded = false;
+    }
+
 
 }

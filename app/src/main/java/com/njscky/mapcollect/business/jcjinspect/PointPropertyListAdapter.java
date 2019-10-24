@@ -3,6 +3,7 @@ package com.njscky.mapcollect.business.jcjinspect;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -76,17 +77,42 @@ public class PointPropertyListAdapter extends RecyclerView.Adapter<RecyclerView.
 
         TextView name;
         AppCompatSpinner value;
+        EditText otherValue;
 
         public OptionalVH(@NonNull View itemView) {
             super(itemView);
             name = itemView.findViewById(R.id.tv_prop_name);
             value = itemView.findViewById(R.id.sp_prop_value);
+            otherValue = itemView.findViewById(R.id.tv_other_value);
         }
 
         public void bind(@NonNull OptionalProperty item) {
             name.setText(item.name);
             value.setSelection(item.getSelection());
             value.setAdapter(new OptionalPropertyValueListAdapter(item.options));
+            value.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    if (item.containsTextOptionIndex(position)) {
+                        showOther();
+                    } else {
+                        hideOther();
+                    }
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+
+                }
+            });
+        }
+
+        private void hideOther() {
+            otherValue.setVisibility(View.GONE);
+        }
+
+        private void showOther() {
+            otherValue.setVisibility(View.VISIBLE);
         }
     }
 
