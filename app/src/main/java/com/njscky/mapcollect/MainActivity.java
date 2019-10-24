@@ -1,11 +1,13 @@
 package com.njscky.mapcollect;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -14,13 +16,21 @@ import androidx.core.app.ActivityCompat;
 
 import com.esri.android.map.GraphicsLayer;
 import com.esri.android.map.MapView;
+import com.esri.android.map.event.OnSingleTapListener;
+import com.esri.core.map.Graphic;
 import com.google.android.material.snackbar.Snackbar;
 import com.njscky.mapcollect.business.basemap.BaseMapManager;
+import com.njscky.mapcollect.business.jcjinspect.GraphicListAdpater;
+import com.njscky.mapcollect.business.jcjinspect.JcjInspectFragment;
 import com.njscky.mapcollect.business.layer.LayerCallback;
-import com.njscky.mapcollect.business.layer.LayerManager;
+import com.njscky.mapcollect.business.layer.YSLineLayerManager;
+import com.njscky.mapcollect.business.layer.YSPointLayerManager;
 import com.njscky.mapcollect.business.project.ProjectActivity;
 import com.njscky.mapcollect.db.DbManager;
 import com.njscky.mapcollect.util.PermissionUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -47,13 +57,75 @@ public class MainActivity extends AppCompatActivity {
 
     BaseMapManager baseMapManager;
 
+    YSPointLayerManager ysPointLayerManager;
+
+    YSLineLayerManager ysLineLayerManager;
+    private AlertDialog choosePointsDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+
         baseMapManager = BaseMapManager.getInstance(this);
+        ysPointLayerManager = new YSPointLayerManager(
+                this,
+                "雨水管点_检查井",
+                "雨水管点_检查井注记"
+        );
+
+        ysLineLayerManager = new YSLineLayerManager(
+                this,
+                "雨水管线_检查井",
+                "雨水管线_检查井注记"
+        );
         ActivityCompat.requestPermissions(MainActivity.this, PERMISSIONS, REQ_PERMISSIONS);
+
+
+        mMapView.setOnSingleTapListener(new OnSingleTapListener() {
+            @Override
+            public void onSingleTap(float x, float y) {
+                GraphicsLayer layer = (GraphicsLayer) ysPointLayerManager.getLayers()[0];
+
+                int[] graphicIds = layer.getGraphicIDs(x, y, 10);
+
+                if (graphicIds == null || graphicIds.length == 0) {
+                    Toast.makeText(MainActivity.this, "此处无检查井", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                List<Graphic> graphics = new ArrayList<>(graphicIds.length);
+
+                for (int graphicId : graphicIds) {
+                    Graphic graphic = layer.getGraphic(graphicId);
+                    Log.i(TAG, "initMapView: " + graphic.getGeometry());
+                    graphics.add(graphic);
+                }
+
+                choosePoints(graphics);
+            }
+        });
+
+
+    }
+
+    private void choosePoints(List<Graphic> graphics) {
+        choosePointsDialog = new AlertDialog.Builder(this)
+                .setTitle(R.string.choose_points)
+                .setAdapter(
+                        new GraphicListAdpater(graphics),
+                        (dialog, which) -> {
+                            Log.i(TAG, "choosePoints: " + which);
+                            JcjInspectFragment fragment = JcjInspectFragment.newInstance(graphics.get(which));
+                            getSupportFragmentManager().beginTransaction()
+                                    .replace(R.id.fragment_container, fragment, JcjInspectFragment.class.getSimpleName())
+                                    .commit();
+                        }
+                )
+                .create();
+
+        choosePointsDialog.show();
     }
 
     @Override
@@ -87,6 +159,11 @@ public class MainActivity extends AppCompatActivity {
                     .show();
         } else {
             baseMapManager.startLoad(mMapView);
+
+            // Add layers
+            mMapView.addLayers(ysPointLayerManager.getLayers());
+
+            mMapView.addLayers(ysLineLayerManager.getLayers());
         }
     }
 
@@ -115,16 +192,30 @@ public class MainActivity extends AppCompatActivity {
         if (TextUtils.isEmpty(dbFilePath)) {
             return;
         }
-        DbManager.getInstance(this).open(dbFilePath);
+        DbManager dbManager = DbManager.getInstance(this);
+        dbManager.open(dbFilePath);
 
-
-        LayerManager.getInstance(this).loadYSPointLayer(new LayerCallback() {
+        ysPointLayerManager.loadLayers(new LayerCallback() {
             @Override
-            public void onLayerLoaded(GraphicsLayer... layers) {
-                Log.i(TAG, "onLayerLoaded: " + layers);
-                mMapView.addLayers(layers);
+            public void onLayerLoaded() {
+            }
+
+            @Override
+            public void onLayerLoading() {
+                Log.i(TAG, "onLayerLoading: ");
             }
         });
+        ysLineLayerManager.loadLayers(new LayerCallback() {
+            @Override
+            public void onLayerLoaded() {
+            }
+
+            @Override
+            public void onLayerLoading() {
+
+            }
+        });
+
     }
 
     @Override

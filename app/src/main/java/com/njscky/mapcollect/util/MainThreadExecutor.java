@@ -7,9 +7,11 @@ import java.util.concurrent.Executor;
 
 public class MainThreadExecutor implements Executor {
 
+    public static final MainThreadExecutor INSTANCE = new MainThreadExecutor();
+
     private Handler handler;
 
-    public MainThreadExecutor() {
+    private MainThreadExecutor() {
         handler = new Handler(Looper.getMainLooper());
     }
 

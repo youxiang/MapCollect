@@ -86,7 +86,6 @@ public class BaseMapManager {
             mapView.addLayer(networkBaseMapLayer);
 
             Envelope env = new Envelope();
-            env.setCoords(319642.008560884, 339699.14891334, 330225.363060926, 344519.536158281);
             mapView.setExtent(env);
             isLoaded = true;
         }
@@ -99,7 +98,6 @@ public class BaseMapManager {
         mapView.addLayer(localBaseMapLayer);
 
         Envelope env = new Envelope();
-        env.setCoords(319642.008560884, 339699.14891334, 330225.363060926, 350519.536158281);
         mapView.setExtent(env);
         isLoaded = true;
     }
