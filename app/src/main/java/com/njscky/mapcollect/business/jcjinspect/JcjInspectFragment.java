@@ -15,6 +15,8 @@ import androidx.viewpager.widget.ViewPager;
 import com.esri.core.map.Graphic;
 import com.google.android.material.tabs.TabLayout;
 import com.njscky.mapcollect.R;
+import com.njscky.mapcollect.business.layer.LayerHelper;
+import com.njscky.mapcollect.business.layer.YSPointLayerManager;
 import com.njscky.mapcollect.db.DbManager;
 import com.njscky.mapcollect.db.dao.JCJLineYSDao;
 import com.njscky.mapcollect.db.dao.JCJPointYSDao;
@@ -47,6 +49,8 @@ public class JcjInspectFragment extends Fragment {
     private JCJLineYSDao lineYSDao;
     private PointPropertyListAdapter pointPropertyListAdapter;
 
+    private YSPointLayerManager ysPointLayerManager;
+
     public static JcjInspectFragment newInstance(Graphic graphic) {
 
         Bundle args = new Bundle();
@@ -62,6 +66,9 @@ public class JcjInspectFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_jcj_inspect, container, false);
         unbiner = ButterKnife.bind(this, view);
+
+        ysPointLayerManager = LayerHelper.getInstance(getContext()).getYsPointLayerManager();
+
         return view;
     }
 
@@ -69,15 +76,31 @@ public class JcjInspectFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         graphic = (Graphic) getArguments().getSerializable("graphic");
+
         Map<String, Object> attributes = graphic.getAttributes();
         if (attributes != null) {
             JCJBH = (String) attributes.get("JCJBH");
         }
 
+        highlightGraphic();
+
+
         pointYSDao = DbManager.getInstance(getContext()).getDao(JCJPointYSDao.class);
         lineYSDao = DbManager.getInstance(getContext()).getDao(JCJLineYSDao.class);
 
         loadInfo();
+    }
+
+    private void highlightGraphic() {
+        if (graphic != null) {
+            ysPointLayerManager.highLightGraphic(graphic);
+        }
+    }
+
+    private void unHighlightGraphic() {
+        if (graphic != null) {
+            ysPointLayerManager.unHighlightGraphic();
+        }
     }
 
     private void loadInfo() {
@@ -99,7 +122,7 @@ public class JcjInspectFragment extends Fragment {
             public void run() {
                 List<Property> pointProperties = getPointProperties(pointYS);
                 pointPropertyListAdapter = new PointPropertyListAdapter();
-                rvPropertyList.setLayoutManager(new GridLayoutManager(getContext(), 2));
+                rvPropertyList.setLayoutManager(new GridLayoutManager(getContext(), 1));
                 rvPropertyList.setNestedScrollingEnabled(false);
                 rvPropertyList.setAdapter(pointPropertyListAdapter);
                 pointPropertyListAdapter.setProperties(pointProperties);
@@ -116,10 +139,10 @@ public class JcjInspectFragment extends Fragment {
     private List<Property> getPointProperties(JCJPointYS pipePoint) {
         List<Property> rst = new ArrayList<>();
         rst.add(new Property("检查井编号", pipePoint.JCJBH));
-        rst.add(new OptionalProperty("井盖材质", pipePoint.JGCZ, new String[]{"", "铸铁", "水泥", "复合"}));
+        rst.add(new OptionalProperty("井盖材质", pipePoint.JGCZ, new String[]{"", "铸铁", "塑料", "矼", "其他"}, 4));
         rst.add(new OptionalProperty("井盖情况", pipePoint.JGQK, new String[]{"", "正常", "破损", "错盖"}));
+        rst.add(new OptionalProperty("井室材质", pipePoint.JSCZ, new String[]{"", "砖混", "塑料", "矼", "其他"}, 4));
         rst.add(new OptionalProperty("井室情况", pipePoint.JSQK, new String[]{"", "正常", "破损", "渗漏"}));
-        rst.add(new OptionalProperty("井室材质", pipePoint.JSCZ, new String[]{"", "砖砌", "模块", "钢筋砼"}));
         rst.add(new Property("井室尺寸", pipePoint.JSCC, true));
         rst.add(new OptionalProperty("附属物类型", pipePoint.FSWLX, new String[]{"", "雨篦", "排放", "交叉井", "截流井", "节点井"}));
         return rst;
@@ -130,6 +153,18 @@ public class JcjInspectFragment extends Fragment {
         super.onDestroyView();
         if (unbiner != null) {
             unbiner.unbind();
+        }
+
+        unHighlightGraphic();
+    }
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if (hidden) {
+            unHighlightGraphic();
+        } else {
+            highlightGraphic();
         }
     }
 }

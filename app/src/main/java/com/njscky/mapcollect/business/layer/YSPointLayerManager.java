@@ -9,7 +9,9 @@ import com.esri.android.map.Layer;
 import com.esri.core.geometry.Point;
 import com.esri.core.map.Graphic;
 import com.esri.core.symbol.SimpleMarkerSymbol;
+import com.esri.core.symbol.Symbol;
 import com.esri.core.symbol.TextSymbol;
+import com.njscky.mapcollect.R;
 import com.njscky.mapcollect.db.DbManager;
 import com.njscky.mapcollect.db.dao.JCJPointYSDao;
 import com.njscky.mapcollect.db.entitiy.JCJPointYS;
@@ -38,6 +40,8 @@ public class YSPointLayerManager implements ILayerManager {
 
     private int pointColor;
     private int pointSize;
+
+    private Graphic highlightedGraphic;
 
 
     public YSPointLayerManager(Context context, String pointLayerName, String annotationLayerName) {
@@ -142,6 +146,32 @@ public class YSPointLayerManager implements ILayerManager {
                     callback.onLayerLoading();
                 }
             });
+        }
+    }
+
+    private Graphic getHighlightGraphic(Graphic graphic) {
+        Symbol symbol = graphic.getSymbol();
+        if (symbol instanceof SimpleMarkerSymbol) {
+            SimpleMarkerSymbol simpleMarkerSymbol = (SimpleMarkerSymbol) symbol;
+            simpleMarkerSymbol.setColor(context.getResources().getColor(R.color.colorPrimary));
+            simpleMarkerSymbol.setSize(simpleMarkerSymbol.getSize() * 1.3f);
+            simpleMarkerSymbol.setStyle(SimpleMarkerSymbol.STYLE.CIRCLE);
+        }
+
+        Graphic rst = new Graphic(graphic.getGeometry(), symbol);
+
+        return rst;
+    }
+
+    public void highLightGraphic(Graphic graphic) {
+        pointLayer.updateGraphic((int) graphic.getId(), getHighlightGraphic(graphic));
+        highlightedGraphic = graphic;
+    }
+
+    public void unHighlightGraphic() {
+        if (highlightedGraphic != null) {
+            pointLayer.updateGraphic((int) highlightedGraphic.getId(), highlightedGraphic);
+            highlightedGraphic = null;
         }
     }
 }

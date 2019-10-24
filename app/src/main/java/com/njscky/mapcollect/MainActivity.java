@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -18,11 +19,13 @@ import com.esri.android.map.GraphicsLayer;
 import com.esri.android.map.MapView;
 import com.esri.android.map.event.OnSingleTapListener;
 import com.esri.core.map.Graphic;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.snackbar.Snackbar;
 import com.njscky.mapcollect.business.basemap.BaseMapManager;
 import com.njscky.mapcollect.business.jcjinspect.GraphicListAdpater;
 import com.njscky.mapcollect.business.jcjinspect.JcjInspectFragment;
 import com.njscky.mapcollect.business.layer.LayerCallback;
+import com.njscky.mapcollect.business.layer.LayerHelper;
 import com.njscky.mapcollect.business.layer.YSLineLayerManager;
 import com.njscky.mapcollect.business.layer.YSPointLayerManager;
 import com.njscky.mapcollect.business.project.ProjectActivity;
@@ -52,6 +55,9 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.map)
     MapView mMapView;
 
+    @BindView(R.id.bottom_sheet)
+    View mBottomSheetView;
+
     @BindView(R.id.btnGCGL)
     Button btnProject;
 
@@ -60,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
     YSPointLayerManager ysPointLayerManager;
 
     YSLineLayerManager ysLineLayerManager;
+    BottomSheetBehavior bottomSheetBehavior;
     private AlertDialog choosePointsDialog;
 
     @Override
@@ -69,23 +76,24 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         baseMapManager = BaseMapManager.getInstance(this);
-        ysPointLayerManager = new YSPointLayerManager(
-                this,
-                "雨水管点_检查井",
-                "雨水管点_检查井注记"
-        );
+        ysPointLayerManager = LayerHelper.getInstance(this).getYsPointLayerManager();
+        ysLineLayerManager = LayerHelper.getInstance(this).getYsLineLayerManager();
 
-        ysLineLayerManager = new YSLineLayerManager(
-                this,
-                "雨水管线_检查井",
-                "雨水管线_检查井注记"
-        );
         ActivityCompat.requestPermissions(MainActivity.this, PERMISSIONS, REQ_PERMISSIONS);
 
 
         mMapView.setOnSingleTapListener(new OnSingleTapListener() {
             @Override
             public void onSingleTap(float x, float y) {
+                if (bottomSheetBehavior != null) {
+                    bottomSheetBehavior.setHideable(true);
+                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+                }
+                ysPointLayerManager.unHighlightGraphic();
+
+//                Point p = mMapView.toMapPoint(x, y);
+//                mMapView.centerAt(p, true);
+
                 GraphicsLayer layer = (GraphicsLayer) ysPointLayerManager.getLayers()[0];
 
                 int[] graphicIds = layer.getGraphicIDs(x, y, 10);
@@ -103,24 +111,41 @@ public class MainActivity extends AppCompatActivity {
                     graphics.add(graphic);
                 }
 
-                choosePoints(graphics);
+                choosePoints(layer, graphics);
+            }
+        });
+
+        bottomSheetBehavior = BottomSheetBehavior.from(mBottomSheetView);
+        bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View view, int i) {
+
+            }
+
+            @Override
+            public void onSlide(@NonNull View view, float v) {
+
             }
         });
 
 
     }
 
-    private void choosePoints(List<Graphic> graphics) {
+    private void choosePoints(GraphicsLayer layer, List<Graphic> graphics) {
         choosePointsDialog = new AlertDialog.Builder(this)
                 .setTitle(R.string.choose_points)
                 .setAdapter(
                         new GraphicListAdpater(graphics),
                         (dialog, which) -> {
                             Log.i(TAG, "choosePoints: " + which);
-                            JcjInspectFragment fragment = JcjInspectFragment.newInstance(graphics.get(which));
+                            Graphic graphic = graphics.get(which);
+                            JcjInspectFragment fragment = JcjInspectFragment.newInstance(graphic);
                             getSupportFragmentManager().beginTransaction()
                                     .replace(R.id.fragment_container, fragment, JcjInspectFragment.class.getSimpleName())
                                     .commit();
+
+                            bottomSheetBehavior.setHideable(false);
+                            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
                         }
                 )
                 .create();

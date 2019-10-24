@@ -7,14 +7,22 @@ import androidx.annotation.NonNull;
 public class OptionalProperty extends Property {
     public String[] options;
 
+    public int textOptionIndex;
+
     public OptionalProperty(@NonNull String[] options) {
         super();
         this.options = options;
+
     }
 
     public OptionalProperty(String name, String value, @NonNull String[] options) {
+        this(name, value, options, -1);
+    }
+
+    public OptionalProperty(String name, String value, @NonNull String[] options, int textOptionIndex) {
         super(name, value);
         this.options = options;
+        this.textOptionIndex = textOptionIndex;
     }
 
     public int getSelection() {
