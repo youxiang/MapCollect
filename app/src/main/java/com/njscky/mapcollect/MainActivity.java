@@ -13,11 +13,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import com.esri.android.map.GraphicsLayer;
+import com.esri.android.map.Layer;
 import com.esri.android.map.MapView;
 import com.google.android.material.snackbar.Snackbar;
 import com.njscky.mapcollect.business.basemap.BaseMapManager;
 import com.njscky.mapcollect.business.layer.LayerCallback;
-import com.njscky.mapcollect.business.layer.LayerManager;
+import com.njscky.mapcollect.business.layer.YSPointLayerManager;
 import com.njscky.mapcollect.business.project.ProjectActivity;
 import com.njscky.mapcollect.db.DbManager;
 import com.njscky.mapcollect.util.PermissionUtils;
@@ -47,13 +48,22 @@ public class MainActivity extends AppCompatActivity {
 
     BaseMapManager baseMapManager;
 
+    YSPointLayerManager ysPointLayerManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         baseMapManager = BaseMapManager.getInstance(this);
+        ysPointLayerManager = new YSPointLayerManager(
+                this,
+                "雨水管点_检查井",
+                "雨水管点_检查井注记"
+        );
         ActivityCompat.requestPermissions(MainActivity.this, PERMISSIONS, REQ_PERMISSIONS);
+
+
     }
 
     @Override
@@ -87,6 +97,9 @@ public class MainActivity extends AppCompatActivity {
                     .show();
         } else {
             baseMapManager.startLoad(mMapView);
+
+            // Add layers
+            mMapView.addLayers(ysPointLayerManager.getLayers());
         }
     }
 
@@ -115,16 +128,26 @@ public class MainActivity extends AppCompatActivity {
         if (TextUtils.isEmpty(dbFilePath)) {
             return;
         }
-        DbManager.getInstance(this).open(dbFilePath);
+        DbManager dbManager = DbManager.getInstance(this);
+        dbManager.open(dbFilePath);
 
-
-        LayerManager.getInstance(this).loadYSPointLayer(new LayerCallback() {
+        ysPointLayerManager.loadLayers(new LayerCallback() {
             @Override
-            public void onLayerLoaded(GraphicsLayer... layers) {
-                Log.i(TAG, "onLayerLoaded: " + layers);
-                mMapView.addLayers(layers);
+            public void onLayerLoaded() {
+                Log.i(TAG, "onLayerLoaded: ");
+
+                for (Layer layer : ysPointLayerManager.getLayers()) {
+                    Log.i(TAG, "onLayerLoaded: " + ((GraphicsLayer
+                            ) layer).getNumberOfGraphics());
+                }
+            }
+
+            @Override
+            public void onLayerLoading() {
+                Log.i(TAG, "onLayerLoading: ");
             }
         });
+
     }
 
     @Override
