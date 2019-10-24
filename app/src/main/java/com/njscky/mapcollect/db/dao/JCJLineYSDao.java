@@ -22,7 +22,7 @@ public class JCJLineYSDao extends BaseDao {
 
         Cursor _cursor = null;
         try {
-            _cursor = mDb.rawQuery("select count(*) from YS_POINT_JCJ", null);
+            _cursor = mDb.rawQuery("select count(*) from YS_LINE_JCJ", null);
             if (_cursor.moveToFirst()) {
                 total = _cursor.getLong(0);
             }
@@ -35,7 +35,7 @@ public class JCJLineYSDao extends BaseDao {
                 return rst;
             }
 
-            _cursor = mDb.rawQuery("select * from YS_POINT_JCJ limit " + pageSize + " offset " + getOffset(pageIndex, pageSize), null);
+            _cursor = mDb.rawQuery("select * from YS_LINE_JCJ limit " + pageSize + " offset " + getOffset(pageIndex, pageSize), null);
 
             final int _cursorIndexOfJCJBH = CursorUtil.getColumnIndexOrThrow(_cursor, "JCJBH");
             final int _cursorIndexOfLJBH = CursorUtil.getColumnIndexOrThrow(_cursor, "LJBH");

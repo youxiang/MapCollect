@@ -12,12 +12,11 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
-import com.esri.android.map.GraphicsLayer;
-import com.esri.android.map.Layer;
 import com.esri.android.map.MapView;
 import com.google.android.material.snackbar.Snackbar;
 import com.njscky.mapcollect.business.basemap.BaseMapManager;
 import com.njscky.mapcollect.business.layer.LayerCallback;
+import com.njscky.mapcollect.business.layer.YSLineLayerManager;
 import com.njscky.mapcollect.business.layer.YSPointLayerManager;
 import com.njscky.mapcollect.business.project.ProjectActivity;
 import com.njscky.mapcollect.db.DbManager;
@@ -50,6 +49,8 @@ public class MainActivity extends AppCompatActivity {
 
     YSPointLayerManager ysPointLayerManager;
 
+    YSLineLayerManager ysLineLayerManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,6 +61,12 @@ public class MainActivity extends AppCompatActivity {
                 this,
                 "雨水管点_检查井",
                 "雨水管点_检查井注记"
+        );
+
+        ysLineLayerManager = new YSLineLayerManager(
+                this,
+                "雨水管线_检查井",
+                "雨水管线_检查井注记"
         );
         ActivityCompat.requestPermissions(MainActivity.this, PERMISSIONS, REQ_PERMISSIONS);
 
@@ -100,6 +107,8 @@ public class MainActivity extends AppCompatActivity {
 
             // Add layers
             mMapView.addLayers(ysPointLayerManager.getLayers());
+
+            mMapView.addLayers(ysLineLayerManager.getLayers());
         }
     }
 
@@ -134,17 +143,21 @@ public class MainActivity extends AppCompatActivity {
         ysPointLayerManager.loadLayers(new LayerCallback() {
             @Override
             public void onLayerLoaded() {
-                Log.i(TAG, "onLayerLoaded: ");
-
-                for (Layer layer : ysPointLayerManager.getLayers()) {
-                    Log.i(TAG, "onLayerLoaded: " + ((GraphicsLayer
-                            ) layer).getNumberOfGraphics());
-                }
             }
 
             @Override
             public void onLayerLoading() {
                 Log.i(TAG, "onLayerLoading: ");
+            }
+        });
+        ysLineLayerManager.loadLayers(new LayerCallback() {
+            @Override
+            public void onLayerLoaded() {
+            }
+
+            @Override
+            public void onLayerLoading() {
+
             }
         });
 
