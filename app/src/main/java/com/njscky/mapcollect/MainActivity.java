@@ -246,5 +246,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        baseMapManager.release();
+        DbManager.getInstance(this).close();
     }
 }
