@@ -1,108 +1,135 @@
 package com.njscky.mapcollect.business.jcjinspect;
 
-import android.app.Dialog;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.graphics.Point;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager.widget.ViewPager;
 
-import com.google.android.material.bottomsheet.BottomSheetBehavior;
-import com.google.android.material.bottomsheet.BottomSheetDialog;
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+import com.esri.core.map.Graphic;
+import com.google.android.material.tabs.TabLayout;
 import com.njscky.mapcollect.R;
+import com.njscky.mapcollect.db.DbManager;
+import com.njscky.mapcollect.db.dao.JCJLineYSDao;
+import com.njscky.mapcollect.db.dao.JCJPointYSDao;
+import com.njscky.mapcollect.db.entitiy.JCJLineYS;
+import com.njscky.mapcollect.db.entitiy.JCJPointYS;
+import com.njscky.mapcollect.util.AppExecutors;
 
-public class JcjInspectFragment extends BottomSheetDialogFragment {
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
-    private int topOffset = 0;
-    private BottomSheetBehavior<FrameLayout> behavior;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
 
-    public static JcjInspectFragment newInstance() {
+public class JcjInspectFragment extends Fragment {
+
+    @BindView(R.id.rv_property_list)
+    RecyclerView rvPropertyList;
+    @BindView(R.id.tabLayout)
+    TabLayout tabLayout;
+    @BindView(R.id.viewPager)
+    ViewPager viewPager;
+    private Unbinder unbiner;
+
+    private Graphic graphic;
+    private String JCJBH;
+
+    private JCJPointYSDao pointYSDao;
+    private JCJLineYSDao lineYSDao;
+    private PointPropertyListAdapter pointPropertyListAdapter;
+
+    public static JcjInspectFragment newInstance(Graphic graphic) {
 
         Bundle args = new Bundle();
+        args.putSerializable("graphic", graphic);
 
         JcjInspectFragment fragment = new JcjInspectFragment();
         fragment.setArguments(args);
         return fragment;
     }
 
-    @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
-        BottomSheetDialog dialog = (BottomSheetDialog) super.onCreateDialog(savedInstanceState);
-
-        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
-            @Override
-            public void onShow(DialogInterface dialog) {
-                BottomSheetDialog d = (BottomSheetDialog) dialog;
-
-                FrameLayout bottomSheet = (FrameLayout) d.findViewById(R.id.design_bottom_sheet);
-//                BottomSheetBehavior.from(bottomSheet).setState(BottomSheetBehavior.STATE_EXPANDED);
-//                BottomSheetBehavior.from(bottomSheet).setPeekHeight(300);
-
-                if (bottomSheet != null) {
-                    CoordinatorLayout.LayoutParams layoutParams = (CoordinatorLayout.LayoutParams) bottomSheet.getLayoutParams();
-                    layoutParams.height = getHeight();
-                    behavior = BottomSheetBehavior.from(bottomSheet);
-                    // 初始为展开状态
-                    behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-                }
-            }
-        });
-
-        // Do something with your dialog like setContentView() or whatever
-        return dialog;
-    }
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_jcj_inspect, container, true);
+        View view = inflater.inflate(R.layout.fragment_jcj_inspect, container, false);
+        unbiner = ButterKnife.bind(this, view);
         return view;
     }
 
-    private int getHeight() {
-        if (getContext() != null) {
-            WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
-            Point point = new Point();
-            if (wm != null) {
-                wm.getDefaultDisplay().getSize(point);
-                return point.y - getTopOffset();
-            }
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        graphic = (Graphic) getArguments().getSerializable("graphic");
+        Map<String, Object> attributes = graphic.getAttributes();
+        if (attributes != null) {
+            JCJBH = (String) attributes.get("JCJBH");
         }
-        return 0;
+
+        pointYSDao = DbManager.getInstance(getContext()).getDao(JCJPointYSDao.class);
+        lineYSDao = DbManager.getInstance(getContext()).getDao(JCJLineYSDao.class);
+
+        loadInfo();
     }
 
-    public int getTopOffset() {
-        return topOffset;
+    private void loadInfo() {
+        AppExecutors.DB.execute(new Runnable() {
+            @Override
+            public void run() {
+                JCJPointYS pointYS = pointYSDao.queryPointByBH(JCJBH);
+
+                List<JCJLineYS> lineYSList = lineYSDao.queryLinesByBH(JCJBH);
+
+                showInfo(pointYS, lineYSList);
+            }
+        });
     }
 
-    public void setTopOffset(int topOffset) {
-        this.topOffset = topOffset;
+    private void showInfo(JCJPointYS pointYS, List<JCJLineYS> lineYSList) {
+        AppExecutors.MAIN.execute(new Runnable() {
+            @Override
+            public void run() {
+                List<Property> pointProperties = getPointProperties(pointYS);
+                pointPropertyListAdapter = new PointPropertyListAdapter();
+                rvPropertyList.setLayoutManager(new GridLayoutManager(getContext(), 2));
+                rvPropertyList.setNestedScrollingEnabled(false);
+                rvPropertyList.setAdapter(pointPropertyListAdapter);
+                pointPropertyListAdapter.setProperties(pointProperties);
+
+//                if (fragments == null) {
+//                    fragments = new ArrayList<>();
+//                } else {
+//                    fragments.clear();
+//                }
+            }
+        });
+    }
+
+    private List<Property> getPointProperties(JCJPointYS pipePoint) {
+        List<Property> rst = new ArrayList<>();
+        rst.add(new Property("检查井编号", pipePoint.JCJBH));
+        rst.add(new OptionalProperty("井盖材质", pipePoint.JGCZ, new String[]{"", "铸铁", "水泥", "复合"}));
+        rst.add(new OptionalProperty("井盖情况", pipePoint.JGQK, new String[]{"", "正常", "破损", "错盖"}));
+        rst.add(new OptionalProperty("井室情况", pipePoint.JSQK, new String[]{"", "正常", "破损", "渗漏"}));
+        rst.add(new OptionalProperty("井室材质", pipePoint.JSCZ, new String[]{"", "砖砌", "模块", "钢筋砼"}));
+        rst.add(new Property("井室尺寸", pipePoint.JSCC, true));
+        rst.add(new OptionalProperty("附属物类型", pipePoint.FSWLX, new String[]{"", "雨篦", "排放", "交叉井", "截流井", "节点井"}));
+        return rst;
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        BottomSheetDialog d = (BottomSheetDialog) getDialog();
-
-        FrameLayout bottomSheet = d.findViewById(R.id.design_bottom_sheet);
-
-        if (bottomSheet != null) {
-            CoordinatorLayout.LayoutParams layoutParams = (CoordinatorLayout.LayoutParams) bottomSheet.getLayoutParams();
-            layoutParams.height = getHeight();
-            behavior = BottomSheetBehavior.from(bottomSheet);
-            behavior.setPeekHeight(getHeight() / 3);
-            behavior.setHideable(false);
-            // 初始为展开状态
-            behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (unbiner != null) {
+            unbiner.unbind();
         }
     }
 }

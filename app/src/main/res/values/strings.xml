@@ -10,4 +10,7 @@
     <string name="confirm">确认</string>
     <string name="dialog_title">提示</string>
     <string name="open_project_file_fail">工程打开失败</string>
+    <string name="cancel">取消</string>
+    <string name="save">保存</string>
+    <string name="choose_points">选择检查井</string>
 </resources>
