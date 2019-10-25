@@ -14,4 +14,15 @@
     <string name="save">保存</string>
     <string name="choose_points">选择检查井</string>
     <string name="title_jcj_inspect">检查井调查</string>
+    <string name="title_add_photo">照片上传</string>
+    <string name="photo_type">照片类型</string>
+    <string name="jcjbh">检查井编号</string>
+    <string-array name="photo_type_arr">
+        <item>清淤前</item>
+        <item>清淤后</item>
+        <item>井周边</item>
+        <item>混接</item>
+        <item>截流设施</item>
+        <item>监测设施</item>
+    </string-array>
 </resources>

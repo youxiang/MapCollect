@@ -1,6 +1,7 @@
 package com.njscky.mapcollect.business.jcjinspect;
 
 import android.text.TextUtils;
+import android.util.SparseArray;
 
 import androidx.annotation.NonNull;
 
@@ -10,6 +11,8 @@ public class OptionalProperty extends Property {
     public String[] options;
 
     public int[] textOptionIndex;
+
+    public SparseArray<String> optionIndexWithValue;
 
     public OptionalProperty(@NonNull String[] options) {
         super();
