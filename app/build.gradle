@@ -54,9 +54,16 @@ dependencies {
     // arcgis
     implementation 'com.esri.arcgis.android:arcgis-android:10.2.9'
 
+    // ButterKnife
     def butterKnifeVersion = "10.1.0"
     implementation "com.jakewharton:butterknife:$butterKnifeVersion"
     annotationProcessor "com.jakewharton:butterknife-compiler:$butterKnifeVersion"
+
+    // glide
+    def glide = "4.8.0"
+    implementation "com.github.bumptech.glide:glide:$glide"
+    implementation "com.github.bumptech.glide:okhttp3-integration:$glide"
+    annotationProcessor "com.github.bumptech.glide:compiler:$glide"
 
 
     testImplementation 'junit:junit:4.12'

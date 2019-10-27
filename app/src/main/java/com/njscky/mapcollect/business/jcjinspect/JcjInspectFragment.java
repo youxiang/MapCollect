@@ -18,6 +18,7 @@ import com.google.android.material.tabs.TabLayout;
 import com.njscky.mapcollect.R;
 import com.njscky.mapcollect.business.layer.LayerHelper;
 import com.njscky.mapcollect.business.layer.YSPointLayerManager;
+import com.njscky.mapcollect.business.photo.AddPhotoActivity;
 import com.njscky.mapcollect.db.DbManager;
 import com.njscky.mapcollect.db.dao.JCJLineYSDao;
 import com.njscky.mapcollect.db.dao.JCJPointYSDao;
@@ -127,6 +128,17 @@ public class JcjInspectFragment extends Fragment {
             public void run() {
                 List<Property> pointProperties = getPointProperties(pointYS);
                 pointPropertyListAdapter = new PointPropertyListAdapter();
+                pointPropertyListAdapter.setOnItemClickListener(new PointPropertyListAdapter.OnItemClickListener() {
+                    @Override
+                    public void onAddPhoto() {
+                        AddPhotoActivity.start(getActivity(), pointYS.JCJBH);
+                    }
+
+                    @Override
+                    public void onViewPhoto() {
+
+                    }
+                });
                 rvPropertyList.setLayoutManager(new GridLayoutManager(getContext(), 1));
                 rvPropertyList.setNestedScrollingEnabled(false);
                 rvPropertyList.setAdapter(pointPropertyListAdapter);
@@ -170,6 +182,7 @@ public class JcjInspectFragment extends Fragment {
     private List<Property> getPointProperties(JCJPointYS pipePoint) {
         List<Property> rst = new ArrayList<>();
         rst.add(new Property("检查井编号", pipePoint.JCJBH));
+        rst.add(new PhotoProperty());
         rst.add(new OptionalProperty("井盖材质", pipePoint.JGCZ, new String[]{"", "铸铁", "塑料", "矼", "其他"}, new int[]{4}));
         rst.add(new OptionalProperty("井盖情况", pipePoint.JGQK, new String[]{"", "正常", "破损", "错盖"}));
         rst.add(new OptionalProperty("井室材质", pipePoint.JSCZ, new String[]{"", "砖混", "塑料", "矼", "其他"}, new int[]{4}));

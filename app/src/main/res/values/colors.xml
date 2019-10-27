@@ -7,4 +7,5 @@
     <color name="colorPrimaryTransparent">#4C008577</color>
     <color name="list_item_db_selected">#DDDDDD</color>
     <color name="transparent">#0000</color>
+    <color name="blue">#0000ff</color>
 </resources>

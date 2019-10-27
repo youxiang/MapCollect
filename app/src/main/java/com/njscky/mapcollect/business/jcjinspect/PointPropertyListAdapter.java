@@ -5,6 +5,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -18,13 +19,20 @@ import java.util.List;
 public class PointPropertyListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int NORMAL = 0;
     private static final int OPTIONAL = 1;
+    private static final int PHOTO = 2;
 
     private List<Property> properties;
+
+    private OnItemClickListener onItemClickListener;
+
 
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         switch (viewType) {
+            case PHOTO:
+                View photoView = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_property_photo, parent, false);
+                return new PhotoVH(photoView);
             case OPTIONAL:
                 View optionalView = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_property_optional, parent, false);
                 return new OptionalVH(optionalView);
@@ -59,6 +67,8 @@ public class PointPropertyListAdapter extends RecyclerView.Adapter<RecyclerView.
         Property property = getItem(position);
         if (property instanceof OptionalProperty) {
             return OPTIONAL;
+        } else if (property instanceof PhotoProperty) {
+            return PHOTO;
         }
         return NORMAL;
     }
@@ -71,6 +81,40 @@ public class PointPropertyListAdapter extends RecyclerView.Adapter<RecyclerView.
     public void setProperties(List<Property> properties) {
         this.properties = properties;
         notifyDataSetChanged();
+    }
+
+    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
+        this.onItemClickListener = onItemClickListener;
+    }
+
+    public interface OnItemClickListener {
+        void onAddPhoto();
+
+        void onViewPhoto();
+    }
+
+    class PhotoVH extends RecyclerView.ViewHolder {
+
+        ImageButton addPhoto;
+        ImageButton viewPhoto;
+
+        public PhotoVH(@NonNull View itemView) {
+            super(itemView);
+            addPhoto = itemView.findViewById(R.id.add_photo);
+            viewPhoto = itemView.findViewById(R.id.view_photo);
+
+            addPhoto.setOnClickListener(v -> {
+                if (onItemClickListener != null) {
+                    onItemClickListener.onAddPhoto();
+                }
+            });
+
+            viewPhoto.setOnClickListener(v -> {
+                if (onItemClickListener != null) {
+                    onItemClickListener.onViewPhoto();
+                }
+            });
+        }
     }
 
     class OptionalVH extends RecyclerView.ViewHolder {
