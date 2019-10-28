@@ -136,10 +136,11 @@ public class JcjInspectFragment extends Fragment {
 
                     @Override
                     public void onViewPhoto() {
-
+//                        DisplayPhotoActivity.start(getActivity(), );
                     }
                 });
-                rvPropertyList.setLayoutManager(new GridLayoutManager(getContext(), 1));
+                GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 1);
+                rvPropertyList.setLayoutManager(layoutManager);
                 rvPropertyList.setNestedScrollingEnabled(false);
                 rvPropertyList.setAdapter(pointPropertyListAdapter);
                 pointPropertyListAdapter.setProperties(pointProperties);
@@ -181,8 +182,7 @@ public class JcjInspectFragment extends Fragment {
 
     private List<Property> getPointProperties(JCJPointYS pipePoint) {
         List<Property> rst = new ArrayList<>();
-        rst.add(new Property("检查井编号", pipePoint.JCJBH));
-        rst.add(new PhotoProperty());
+        rst.add(new PhotoProperty("检查井编号", pipePoint.JCJBH));
         rst.add(new OptionalProperty("井盖材质", pipePoint.JGCZ, new String[]{"", "铸铁", "塑料", "矼", "其他"}, new int[]{4}));
         rst.add(new OptionalProperty("井盖情况", pipePoint.JGQK, new String[]{"", "正常", "破损", "错盖"}));
         rst.add(new OptionalProperty("井室材质", pipePoint.JSCZ, new String[]{"", "砖混", "塑料", "矼", "其他"}, new int[]{4}));

@@ -2,6 +2,7 @@ package com.njscky.mapcollect.business.layer;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.util.Log;
 
 import com.esri.android.map.GraphicsLayer;
 import com.esri.android.map.Layer;
@@ -22,6 +23,8 @@ import java.util.Map;
 import java.util.concurrent.Executor;
 
 public class YSLineLayerManager implements ILayerManager {
+
+    private static final String TAG = "YSLineLayerManager";
 
     private static final int PAGE_SIZE = 100;
 
@@ -173,6 +176,7 @@ public class YSLineLayerManager implements ILayerManager {
     }
 
     private void notifyLayerLoaded(LayerCallback callback) {
+        Log.i(TAG, "notifyLayerLoaded: ");
         if (callback != null) {
             postExecutor.execute(new Runnable() {
                 @Override

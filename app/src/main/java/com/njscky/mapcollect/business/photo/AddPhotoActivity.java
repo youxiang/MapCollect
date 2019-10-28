@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -32,8 +33,10 @@ import com.njscky.mapcollect.db.DbManager;
 import com.njscky.mapcollect.db.dao.PhotoJCJDao;
 import com.njscky.mapcollect.db.entitiy.PhotoJCJ;
 import com.njscky.mapcollect.util.AppExecutors;
+import com.njscky.mapcollect.util.AppUtils;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -97,7 +100,7 @@ public class AddPhotoActivity extends AppCompatActivity {
 
             @Override
             public void onItemClick(int position) {
-
+                DisplayPhotoActivity.start(AddPhotoActivity.this, (ArrayList<PhotoJCJ>) photoListAdapter.getData(), position);
             }
         });
 
@@ -146,10 +149,16 @@ public class AddPhotoActivity extends AppCompatActivity {
             case REQ_TAKE_PHOTO:
                 if (photoFile != null) {
                     updatePhotoList();
+                    sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(photoFile)));
                 }
                 break;
             case REQ_PICK_PHOTO:
                 if (data != null) {
+                    String photoPath = AppUtils.getRealPathFromUri(this, data.getData());
+                    if (!TextUtils.isEmpty(photoPath)) {
+                        photoFile = new File(photoPath);
+                        updatePhotoList();
+                    }
                 }
 
                 break;

@@ -75,6 +75,10 @@ public class PhotoListAdapter extends RecyclerView.Adapter<PhotoListAdapter.VH> 
         notifyDataSetChanged();
     }
 
+    public List<PhotoJCJ> getData() {
+        return photos;
+    }
+
     public interface OnItemClickListener {
         void onAddPhoto();
 

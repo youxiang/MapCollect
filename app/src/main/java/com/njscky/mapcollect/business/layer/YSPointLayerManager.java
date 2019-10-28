@@ -108,7 +108,6 @@ public class YSPointLayerManager implements ILayerManager {
                     }
 
                     for (JCJPointYS pointYS : points) {
-                        Log.i(TAG, "run: " + pointYS);
                         // FIXME swap XZB and YZB
                         Point point = new Point(pointYS.YZB, pointYS.XZB);
                         pointLayer.addGraphic(getPointGraphic(pointYS, point));
@@ -128,6 +127,7 @@ public class YSPointLayerManager implements ILayerManager {
     }
 
     private void notifyLayerLoaded(LayerCallback callback) {
+        Log.i(TAG, "notifyLayerLoaded: ");
         if (callback != null) {
             postExecutor.execute(new Runnable() {
                 @Override
