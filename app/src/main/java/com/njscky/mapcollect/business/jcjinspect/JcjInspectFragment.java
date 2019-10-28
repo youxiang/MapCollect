@@ -20,10 +20,10 @@ import com.njscky.mapcollect.business.layer.LayerHelper;
 import com.njscky.mapcollect.business.layer.YSPointLayerManager;
 import com.njscky.mapcollect.business.photo.AddPhotoActivity;
 import com.njscky.mapcollect.db.DbManager;
-import com.njscky.mapcollect.db.dao.JCJLineYSDao;
-import com.njscky.mapcollect.db.dao.JCJPointYSDao;
 import com.njscky.mapcollect.db.entitiy.JCJLineYS;
+import com.njscky.mapcollect.db.entitiy.JCJLineYSDao;
 import com.njscky.mapcollect.db.entitiy.JCJPointYS;
+import com.njscky.mapcollect.db.entitiy.JCJPointYSDao;
 import com.njscky.mapcollect.util.AppExecutors;
 
 import java.util.ArrayList;
@@ -34,6 +34,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
+/**
+ * 检查井调查
+ */
 public class JcjInspectFragment extends Fragment {
 
     @BindView(R.id.rv_property_list)
@@ -91,8 +94,8 @@ public class JcjInspectFragment extends Fragment {
         highlightGraphic();
 
 
-        pointYSDao = DbManager.getInstance(getContext()).getDao(JCJPointYSDao.class);
-        lineYSDao = DbManager.getInstance(getContext()).getDao(JCJLineYSDao.class);
+        pointYSDao = DbManager.getInstance(getContext()).getDaoSession().getJCJPointYSDao();
+        lineYSDao = DbManager.getInstance(getContext()).getDaoSession().getJCJLineYSDao();
 
         loadInfo();
     }
@@ -113,9 +116,9 @@ public class JcjInspectFragment extends Fragment {
         AppExecutors.DB.execute(new Runnable() {
             @Override
             public void run() {
-                JCJPointYS pointYS = pointYSDao.queryPointByBH(JCJBH);
+                JCJPointYS pointYS = pointYSDao.queryBuilder().where(JCJPointYSDao.Properties.JCJBH.eq(JCJBH)).unique();
 
-                List<JCJLineYS> lineYSList = lineYSDao.queryLinesByBH(JCJBH);
+                List<JCJLineYS> lineYSList = lineYSDao.queryBuilder().where(JCJLineYSDao.Properties.JCJBH.eq(JCJBH)).list();
 
                 showInfo(pointYS, lineYSList);
             }
@@ -136,10 +139,11 @@ public class JcjInspectFragment extends Fragment {
 
                     @Override
                     public void onViewPhoto() {
-
+//                        DisplayPhotoActivity.start(getActivity(), );
                     }
                 });
-                rvPropertyList.setLayoutManager(new GridLayoutManager(getContext(), 1));
+                GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 1);
+                rvPropertyList.setLayoutManager(layoutManager);
                 rvPropertyList.setNestedScrollingEnabled(false);
                 rvPropertyList.setAdapter(pointPropertyListAdapter);
                 pointPropertyListAdapter.setProperties(pointProperties);
@@ -181,8 +185,7 @@ public class JcjInspectFragment extends Fragment {
 
     private List<Property> getPointProperties(JCJPointYS pipePoint) {
         List<Property> rst = new ArrayList<>();
-        rst.add(new Property("检查井编号", pipePoint.JCJBH));
-        rst.add(new PhotoProperty());
+        rst.add(new PhotoProperty("检查井编号", pipePoint.JCJBH));
         rst.add(new OptionalProperty("井盖材质", pipePoint.JGCZ, new String[]{"", "铸铁", "塑料", "矼", "其他"}, new int[]{4}));
         rst.add(new OptionalProperty("井盖情况", pipePoint.JGQK, new String[]{"", "正常", "破损", "错盖"}));
         rst.add(new OptionalProperty("井室材质", pipePoint.JSCZ, new String[]{"", "砖混", "塑料", "矼", "其他"}, new int[]{4}));

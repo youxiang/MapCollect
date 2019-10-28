@@ -19,6 +19,9 @@ import com.njscky.mapcollect.db.entitiy.JCJPointYS;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 展示连接点属性
+ */
 public class ConnectPointFragment extends Fragment {
     private static final String TAG = ConnectPointFragment.class.getSimpleName();
     RecyclerView recyclerView;
@@ -66,7 +69,7 @@ public class ConnectPointFragment extends Fragment {
 
 
         if (line != null) {
-            properties.add(new Property("连接点号", line.JCJBH));
+            properties.add(new Property("连接点号", line.LJBH));
             properties.add(new Property("埋深", "", true));
             properties.add(new Property("管径", line.GJ, true));
             properties.add(new Property("管材", line.CZ, true));

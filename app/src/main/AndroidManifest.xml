@@ -49,6 +49,8 @@
 
         <activity android:name=".business.photo.AddPhotoActivity" />
 
+        <activity android:name=".business.photo.DisplayPhotoActivity" />
+
         <provider
             android:name=".util.MapCollectFileProvider"
             android:authorities="com.njscky.mapcollect.fileprovider"

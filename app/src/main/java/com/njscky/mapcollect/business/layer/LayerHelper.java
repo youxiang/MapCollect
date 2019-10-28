@@ -6,12 +6,14 @@ public class LayerHelper {
 
     private static LayerHelper instance;
 
+    private Context context;
+
     private YSPointLayerManager ysPointLayerManager;
 
     private YSLineLayerManager ysLineLayerManager;
 
     private LayerHelper(Context context) {
-        init(context);
+        this.context = context.getApplicationContext();
     }
 
     public static LayerHelper getInstance(Context context) {
@@ -40,12 +42,23 @@ public class LayerHelper {
         );
     }
 
+    public void release() {
+        ysPointLayerManager = null;
+        ysLineLayerManager = null;
+    }
+
 
     public YSPointLayerManager getYsPointLayerManager() {
+        if (ysPointLayerManager == null) {
+            init(context);
+        }
         return ysPointLayerManager;
     }
 
     public YSLineLayerManager getYsLineLayerManager() {
+        if (ysPointLayerManager == null) {
+            init(context);
+        }
         return ysLineLayerManager;
     }
 }

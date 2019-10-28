@@ -7,6 +7,7 @@ import com.esri.android.runtime.ArcGISRuntime;
 
 public class MapCollectApp extends Application {
 
+    private static final String TAG = "MapCollectApp";
     private static MapCollectApp app;
 
     public static MapCollectApp getApp() {
@@ -18,5 +19,6 @@ public class MapCollectApp extends Application {
         super.onCreate();
         app = this;
         ArcGISRuntime.setClientId("yhMRjFXTz6F38XD9");
+
     }
 }

@@ -3,9 +3,13 @@ package com.njscky.mapcollect.db.entitiy;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import org.greenrobot.greendao.annotation.Entity;
+import org.greenrobot.greendao.annotation.Generated;
+
 /**
  * 雨水检查井连线
  */
+@Entity(nameInDb = "YS_LINE_JCJ")
 public class JCJLineYS implements Parcelable {
     // 检查井编号
     public String JCJBH;
@@ -71,6 +75,29 @@ public class JCJLineYS implements Parcelable {
         this.ZDYZB = in.readFloat();
     }
 
+    @Generated(hash = 1026182000)
+    public JCJLineYS(
+            String JCJBH, String LJBH, float QDMS, String GJ, String CZ, String SFXG,
+            String SFDTYZ, String SFHJ, String HJLX, String LX, String BZ, float QDXZB, float QDYZB,
+            float ZDXZB, float ZDYZB
+    ) {
+        this.JCJBH = JCJBH;
+        this.LJBH = LJBH;
+        this.QDMS = QDMS;
+        this.GJ = GJ;
+        this.CZ = CZ;
+        this.SFXG = SFXG;
+        this.SFDTYZ = SFDTYZ;
+        this.SFHJ = SFHJ;
+        this.HJLX = HJLX;
+        this.LX = LX;
+        this.BZ = BZ;
+        this.QDXZB = QDXZB;
+        this.QDYZB = QDYZB;
+        this.ZDXZB = ZDXZB;
+        this.ZDYZB = ZDYZB;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -93,5 +120,125 @@ public class JCJLineYS implements Parcelable {
         dest.writeFloat(this.QDYZB);
         dest.writeFloat(this.ZDXZB);
         dest.writeFloat(this.ZDYZB);
+    }
+
+    public String getJCJBH() {
+        return this.JCJBH;
+    }
+
+    public void setJCJBH(String JCJBH) {
+        this.JCJBH = JCJBH;
+    }
+
+    public String getLJBH() {
+        return this.LJBH;
+    }
+
+    public void setLJBH(String LJBH) {
+        this.LJBH = LJBH;
+    }
+
+    public float getQDMS() {
+        return this.QDMS;
+    }
+
+    public void setQDMS(float QDMS) {
+        this.QDMS = QDMS;
+    }
+
+    public String getGJ() {
+        return this.GJ;
+    }
+
+    public void setGJ(String GJ) {
+        this.GJ = GJ;
+    }
+
+    public String getCZ() {
+        return this.CZ;
+    }
+
+    public void setCZ(String CZ) {
+        this.CZ = CZ;
+    }
+
+    public String getSFXG() {
+        return this.SFXG;
+    }
+
+    public void setSFXG(String SFXG) {
+        this.SFXG = SFXG;
+    }
+
+    public String getSFDTYZ() {
+        return this.SFDTYZ;
+    }
+
+    public void setSFDTYZ(String SFDTYZ) {
+        this.SFDTYZ = SFDTYZ;
+    }
+
+    public String getSFHJ() {
+        return this.SFHJ;
+    }
+
+    public void setSFHJ(String SFHJ) {
+        this.SFHJ = SFHJ;
+    }
+
+    public String getHJLX() {
+        return this.HJLX;
+    }
+
+    public void setHJLX(String HJLX) {
+        this.HJLX = HJLX;
+    }
+
+    public String getLX() {
+        return this.LX;
+    }
+
+    public void setLX(String LX) {
+        this.LX = LX;
+    }
+
+    public String getBZ() {
+        return this.BZ;
+    }
+
+    public void setBZ(String BZ) {
+        this.BZ = BZ;
+    }
+
+    public float getQDXZB() {
+        return this.QDXZB;
+    }
+
+    public void setQDXZB(float QDXZB) {
+        this.QDXZB = QDXZB;
+    }
+
+    public float getQDYZB() {
+        return this.QDYZB;
+    }
+
+    public void setQDYZB(float QDYZB) {
+        this.QDYZB = QDYZB;
+    }
+
+    public float getZDXZB() {
+        return this.ZDXZB;
+    }
+
+    public void setZDXZB(float ZDXZB) {
+        this.ZDXZB = ZDXZB;
+    }
+
+    public float getZDYZB() {
+        return this.ZDYZB;
+    }
+
+    public void setZDYZB(float ZDYZB) {
+        this.ZDYZB = ZDYZB;
     }
 }

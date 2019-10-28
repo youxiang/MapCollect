@@ -40,6 +40,8 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
+import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED;
+import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_HIDDEN;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -81,13 +83,12 @@ public class MainActivity extends AppCompatActivity {
 
         ActivityCompat.requestPermissions(MainActivity.this, PERMISSIONS, REQ_PERMISSIONS);
 
-
         mMapView.setOnSingleTapListener(new OnSingleTapListener() {
             @Override
             public void onSingleTap(float x, float y) {
                 if (bottomSheetBehavior != null) {
                     bottomSheetBehavior.setHideable(true);
-                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+                    bottomSheetBehavior.setState(STATE_HIDDEN);
                 }
                 ysPointLayerManager.unHighlightGraphic();
 
@@ -118,8 +119,15 @@ public class MainActivity extends AppCompatActivity {
         bottomSheetBehavior = BottomSheetBehavior.from(mBottomSheetView);
         bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
-            public void onStateChanged(@NonNull View view, int i) {
-
+            public void onStateChanged(@NonNull View view, int state) {
+                View decorView = getWindow().getDecorView();
+                if (state == STATE_EXPANDED) {
+                    getWindow().setStatusBarColor(getResources().getColor(R.color.colorPrimary));
+                    decorView.setSystemUiVisibility(decorView.getSystemUiVisibility() & ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+                } else {
+                    getWindow().setStatusBarColor(getResources().getColor(R.color.colorPrimaryTransparent));
+                    decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+                }
             }
 
             @Override
@@ -247,6 +255,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         baseMapManager.release();
+        LayerHelper.getInstance(this).release();
         DbManager.getInstance(this).close();
     }
 }

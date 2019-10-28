@@ -2,6 +2,7 @@ package com.njscky.mapcollect.business.layer;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.util.Log;
 
 import com.esri.android.map.GraphicsLayer;
 import com.esri.android.map.Layer;
@@ -12,8 +13,8 @@ import com.esri.core.map.Graphic;
 import com.esri.core.symbol.SimpleLineSymbol;
 import com.esri.core.symbol.TextSymbol;
 import com.njscky.mapcollect.db.DbManager;
-import com.njscky.mapcollect.db.dao.JCJLineYSDao;
 import com.njscky.mapcollect.db.entitiy.JCJLineYS;
+import com.njscky.mapcollect.db.entitiy.JCJLineYSDao;
 import com.njscky.mapcollect.util.AppExecutors;
 
 import java.util.HashMap;
@@ -22,6 +23,8 @@ import java.util.Map;
 import java.util.concurrent.Executor;
 
 public class YSLineLayerManager implements ILayerManager {
+
+    private static final String TAG = "YSLineLayerManager";
 
     private static final int PAGE_SIZE = 100;
 
@@ -78,11 +81,12 @@ public class YSLineLayerManager implements ILayerManager {
 
                 clearGraphicsFromLayers();
 
-                JCJLineYSDao lineDao = DbManager.getInstance(context).getDao(JCJLineYSDao.class);
+                JCJLineYSDao lineDao = DbManager.getInstance(context).getDaoSession().getJCJLineYSDao();
                 int pageIndex = 0;
                 List<JCJLineYS> jcjLineYSList;
                 for (; ; pageIndex++) {
-                    jcjLineYSList = lineDao.queryLines(pageIndex, PAGE_SIZE);
+
+                    jcjLineYSList = lineDao.queryBuilder().offset(pageIndex * PAGE_SIZE).limit(PAGE_SIZE).list();
                     if (jcjLineYSList.isEmpty()) {
                         break;
                     }
@@ -173,6 +177,7 @@ public class YSLineLayerManager implements ILayerManager {
     }
 
     private void notifyLayerLoaded(LayerCallback callback) {
+        Log.i(TAG, "notifyLayerLoaded: ");
         if (callback != null) {
             postExecutor.execute(new Runnable() {
                 @Override

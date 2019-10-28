@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -29,11 +30,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.njscky.mapcollect.R;
 import com.njscky.mapcollect.db.DbManager;
-import com.njscky.mapcollect.db.dao.PhotoJCJDao;
 import com.njscky.mapcollect.db.entitiy.PhotoJCJ;
+import com.njscky.mapcollect.db.entitiy.PhotoJCJDao;
 import com.njscky.mapcollect.util.AppExecutors;
+import com.njscky.mapcollect.util.AppUtils;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -42,6 +45,9 @@ import butterknife.OnClick;
 
 import static android.view.Gravity.BOTTOM;
 
+/**
+ * 选择照片
+ */
 public class AddPhotoActivity extends AppCompatActivity {
 
     private static final int REQ_TAKE_PHOTO = 100;
@@ -82,7 +88,7 @@ public class AddPhotoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_add_photo);
         ButterKnife.bind(this);
 
-        photoJCJDao = DbManager.getInstance(this).getDao(PhotoJCJDao.class);
+        photoJCJDao = DbManager.getInstance(this).getDaoSession().getPhotoJCJDao();
         JCJBH = getIntent().getStringExtra("JCJBH");
         photoTypes = getResources().getStringArray(R.array.photo_type_arr);
 
@@ -97,7 +103,7 @@ public class AddPhotoActivity extends AppCompatActivity {
 
             @Override
             public void onItemClick(int position) {
-
+                DisplayPhotoActivity.start(AddPhotoActivity.this, (ArrayList<PhotoJCJ>) photoListAdapter.getData(), position);
             }
         });
 
@@ -146,10 +152,16 @@ public class AddPhotoActivity extends AppCompatActivity {
             case REQ_TAKE_PHOTO:
                 if (photoFile != null) {
                     updatePhotoList();
+                    sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(photoFile)));
                 }
                 break;
             case REQ_PICK_PHOTO:
                 if (data != null) {
+                    String photoPath = AppUtils.getRealPathFromUri(this, data.getData());
+                    if (!TextUtils.isEmpty(photoPath)) {
+                        photoFile = new File(photoPath);
+                        updatePhotoList();
+                    }
                 }
 
                 break;
@@ -207,7 +219,7 @@ public class AddPhotoActivity extends AppCompatActivity {
 
     private void loadData(String photoType) {
         AppExecutors.DB.execute(() -> {
-            List<PhotoJCJ> photoList = photoJCJDao.getPhoto(JCJBH, photoType);
+            List<PhotoJCJ> photoList = photoJCJDao.queryBuilder().list();
 
             AppExecutors.MAIN.execute(() -> {
                 photoListAdapter.setPhotos(photoList);

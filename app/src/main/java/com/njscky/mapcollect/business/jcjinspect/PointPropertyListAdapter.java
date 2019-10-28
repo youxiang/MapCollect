@@ -93,7 +93,7 @@ public class PointPropertyListAdapter extends RecyclerView.Adapter<RecyclerView.
         void onViewPhoto();
     }
 
-    class PhotoVH extends RecyclerView.ViewHolder {
+    class PhotoVH extends CommonVH {
 
         ImageButton addPhoto;
         ImageButton viewPhoto;
