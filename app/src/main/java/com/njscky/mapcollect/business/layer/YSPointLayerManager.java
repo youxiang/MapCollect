@@ -52,8 +52,8 @@ public class YSPointLayerManager implements ILayerManager {
         this.context = context.getApplicationContext();
         this.postExecutor = postExecutor;
         this.dbExecutor = dbExecutor;
-        pointColor = Color.rgb(76, 0, 0);
-        pointSize = 12;
+        pointColor = Color.rgb(255, 0, 0);
+        pointSize = 10;
 
         mLayers = new Layer[2];
 
@@ -69,7 +69,7 @@ public class YSPointLayerManager implements ILayerManager {
     }
 
     private Graphic getPointGraphic(JCJPointYS pointYS, Point point) {
-        SimpleMarkerSymbol markerSymbol = new SimpleMarkerSymbol(pointColor, pointSize, SimpleMarkerSymbol.STYLE.TRIANGLE);
+        SimpleMarkerSymbol markerSymbol = new SimpleMarkerSymbol(pointColor, pointSize, SimpleMarkerSymbol.STYLE.CIRCLE);
         Map<String, Object> attributes = new HashMap<String, Object>();
         attributes.put("JCJBH", pointYS.JCJBH);
         return new Graphic(point, markerSymbol, attributes);
@@ -110,7 +110,9 @@ public class YSPointLayerManager implements ILayerManager {
                         // FIXME swap XZB and YZB
                         Point point = new Point(pointYS.YZB, pointYS.XZB);
                         pointLayer.addGraphic(getPointGraphic(pointYS, point));
+                        annotationLayer.setMinScale(5000);
                         annotationLayer.addGraphic(getPointAnnotationGraphic(pointYS, point));
+                        annotationLayer.setMinScale(5000);
                     }
                 }
 

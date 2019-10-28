@@ -75,7 +75,6 @@ public class JcjInspectFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_jcj_inspect, container, false);
         unbiner = ButterKnife.bind(this, view);
-
         ysPointLayerManager = LayerHelper.getInstance(getContext()).getYsPointLayerManager();
 
         return view;

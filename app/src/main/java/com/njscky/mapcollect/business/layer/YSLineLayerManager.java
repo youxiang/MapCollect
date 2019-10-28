@@ -40,7 +40,7 @@ public class YSLineLayerManager implements ILayerManager {
     private GraphicsLayer annotationLayer;
 
     private int colorSymbol = Color.rgb(76, 0, 0);
-    private int widthLineSymbol = 2;
+    private int widthLineSymbol = 1;
 
     public YSLineLayerManager(Context context, String lineLayerName, String annotationLayerName) {
         this(context, lineLayerName, annotationLayerName, AppExecutors.MAIN, AppExecutors.DB);

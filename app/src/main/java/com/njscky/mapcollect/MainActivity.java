@@ -22,6 +22,7 @@ import com.esri.core.map.Graphic;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.snackbar.Snackbar;
 import com.njscky.mapcollect.business.basemap.BaseMapManager;
+import com.njscky.mapcollect.business.gxlayer.GxlayerManager;
 import com.njscky.mapcollect.business.jcjinspect.GraphicListAdpater;
 import com.njscky.mapcollect.business.jcjinspect.JcjInspectFragment;
 import com.njscky.mapcollect.business.layer.LayerCallback;
@@ -64,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
     Button btnProject;
 
     BaseMapManager baseMapManager;
+    GxlayerManager gxlayerManager;
 
     YSPointLayerManager ysPointLayerManager;
 
@@ -78,6 +80,7 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         baseMapManager = BaseMapManager.getInstance(this);
+        gxlayerManager = GxlayerManager.getInstance(this);
         ysPointLayerManager = LayerHelper.getInstance(this).getYsPointLayerManager();
         ysLineLayerManager = LayerHelper.getInstance(this).getYsLineLayerManager();
 
@@ -193,10 +196,15 @@ public class MainActivity extends AppCompatActivity {
         } else {
             baseMapManager.startLoad(mMapView);
 
+            //Add ArcGISDynamicMapServiceLayer by fjj
+            gxlayerManager.startLoad(mMapView);
+
+
             // Add layers
             mMapView.addLayers(ysPointLayerManager.getLayers());
 
             mMapView.addLayers(ysLineLayerManager.getLayers());
+
         }
     }
 
