@@ -19,6 +19,9 @@ import com.njscky.mapcollect.db.entitiy.JCJPointYS;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 展示连接点属性
+ */
 public class ConnectPointFragment extends Fragment {
     private static final String TAG = ConnectPointFragment.class.getSimpleName();
     RecyclerView recyclerView;

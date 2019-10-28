@@ -18,6 +18,9 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+/**
+ * 查看照片
+ */
 public class DisplayPhotoActivity extends AppCompatActivity {
 
     @BindView(R.id.vp_photos)

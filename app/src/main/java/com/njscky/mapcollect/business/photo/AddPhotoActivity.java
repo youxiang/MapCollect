@@ -45,6 +45,9 @@ import butterknife.OnClick;
 
 import static android.view.Gravity.BOTTOM;
 
+/**
+ * 选择照片
+ */
 public class AddPhotoActivity extends AppCompatActivity {
 
     private static final int REQ_TAKE_PHOTO = 100;

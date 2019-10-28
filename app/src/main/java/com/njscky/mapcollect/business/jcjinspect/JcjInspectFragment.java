@@ -34,6 +34,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
+/**
+ * 检查井调查
+ */
 public class JcjInspectFragment extends Fragment {
 
     @BindView(R.id.rv_property_list)
