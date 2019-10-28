@@ -20,10 +20,10 @@ import com.njscky.mapcollect.business.layer.LayerHelper;
 import com.njscky.mapcollect.business.layer.YSPointLayerManager;
 import com.njscky.mapcollect.business.photo.AddPhotoActivity;
 import com.njscky.mapcollect.db.DbManager;
-import com.njscky.mapcollect.db.dao.JCJLineYSDao;
-import com.njscky.mapcollect.db.dao.JCJPointYSDao;
 import com.njscky.mapcollect.db.entitiy.JCJLineYS;
+import com.njscky.mapcollect.db.entitiy.JCJLineYSDao;
 import com.njscky.mapcollect.db.entitiy.JCJPointYS;
+import com.njscky.mapcollect.db.entitiy.JCJPointYSDao;
 import com.njscky.mapcollect.util.AppExecutors;
 
 import java.util.ArrayList;
@@ -94,8 +94,8 @@ public class JcjInspectFragment extends Fragment {
         highlightGraphic();
 
 
-        pointYSDao = DbManager.getInstance(getContext()).getDao(JCJPointYSDao.class);
-        lineYSDao = DbManager.getInstance(getContext()).getDao(JCJLineYSDao.class);
+        pointYSDao = DbManager.getInstance(getContext()).getDaoSession().getJCJPointYSDao();
+        lineYSDao = DbManager.getInstance(getContext()).getDaoSession().getJCJLineYSDao();
 
         loadInfo();
     }
@@ -116,9 +116,9 @@ public class JcjInspectFragment extends Fragment {
         AppExecutors.DB.execute(new Runnable() {
             @Override
             public void run() {
-                JCJPointYS pointYS = pointYSDao.queryPointByBH(JCJBH);
+                JCJPointYS pointYS = pointYSDao.queryBuilder().where(JCJPointYSDao.Properties.JCJBH.eq(JCJBH)).unique();
 
-                List<JCJLineYS> lineYSList = lineYSDao.queryLinesByBH(JCJBH);
+                List<JCJLineYS> lineYSList = lineYSDao.queryBuilder().where(JCJLineYSDao.Properties.JCJBH.eq(JCJBH)).list();
 
                 showInfo(pointYS, lineYSList);
             }

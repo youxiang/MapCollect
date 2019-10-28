@@ -30,8 +30,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.njscky.mapcollect.R;
 import com.njscky.mapcollect.db.DbManager;
-import com.njscky.mapcollect.db.dao.PhotoJCJDao;
 import com.njscky.mapcollect.db.entitiy.PhotoJCJ;
+import com.njscky.mapcollect.db.entitiy.PhotoJCJDao;
 import com.njscky.mapcollect.util.AppExecutors;
 import com.njscky.mapcollect.util.AppUtils;
 
@@ -88,7 +88,7 @@ public class AddPhotoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_add_photo);
         ButterKnife.bind(this);
 
-        photoJCJDao = DbManager.getInstance(this).getDao(PhotoJCJDao.class);
+        photoJCJDao = DbManager.getInstance(this).getDaoSession().getPhotoJCJDao();
         JCJBH = getIntent().getStringExtra("JCJBH");
         photoTypes = getResources().getStringArray(R.array.photo_type_arr);
 
@@ -219,7 +219,7 @@ public class AddPhotoActivity extends AppCompatActivity {
 
     private void loadData(String photoType) {
         AppExecutors.DB.execute(() -> {
-            List<PhotoJCJ> photoList = photoJCJDao.getPhoto(JCJBH, photoType);
+            List<PhotoJCJ> photoList = photoJCJDao.queryBuilder().list();
 
             AppExecutors.MAIN.execute(() -> {
                 photoListAdapter.setPhotos(photoList);

@@ -69,7 +69,7 @@ public class ConnectPointFragment extends Fragment {
 
 
         if (line != null) {
-            properties.add(new Property("连接点号", line.JCJBH));
+            properties.add(new Property("连接点号", line.LJBH));
             properties.add(new Property("埋深", "", true));
             properties.add(new Property("管径", line.GJ, true));
             properties.add(new Property("管材", line.CZ, true));

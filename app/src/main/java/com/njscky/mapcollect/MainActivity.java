@@ -81,7 +81,6 @@ public class MainActivity extends AppCompatActivity {
 
         ActivityCompat.requestPermissions(MainActivity.this, PERMISSIONS, REQ_PERMISSIONS);
 
-
         mMapView.setOnSingleTapListener(new OnSingleTapListener() {
             @Override
             public void onSingleTap(float x, float y) {

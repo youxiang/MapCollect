@@ -13,8 +13,8 @@ import com.esri.core.symbol.Symbol;
 import com.esri.core.symbol.TextSymbol;
 import com.njscky.mapcollect.R;
 import com.njscky.mapcollect.db.DbManager;
-import com.njscky.mapcollect.db.dao.JCJPointYSDao;
 import com.njscky.mapcollect.db.entitiy.JCJPointYS;
+import com.njscky.mapcollect.db.entitiy.JCJPointYSDao;
 import com.njscky.mapcollect.util.AppExecutors;
 
 import java.util.HashMap;
@@ -97,12 +97,11 @@ public class YSPointLayerManager implements ILayerManager {
                 notifyLayerLoading(callback);
 
                 clearGraphicsFromLayers();
-
-                JCJPointYSDao pointDao = DbManager.getInstance(context).getDao(JCJPointYSDao.class);
+                JCJPointYSDao pointDao = DbManager.getInstance(context).getDaoSession().getJCJPointYSDao();
                 int pageIndex = 0;
                 List<JCJPointYS> points;
                 for (; ; pageIndex++) {
-                    points = pointDao.queryPoints(pageIndex, PAGE_SIZE);
+                    points = pointDao.queryBuilder().offset(pageIndex * PAGE_SIZE).limit(PAGE_SIZE).list();
                     if (points.isEmpty()) {
                         break;
                     }

@@ -5,31 +5,30 @@ import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.njscky.mapcollect.db.dao.BaseDao;
+import com.njscky.mapcollect.db.entitiy.DaoMaster;
+import com.njscky.mapcollect.db.entitiy.DaoSession;
 
 import java.io.File;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class DbManager {
 
     private static final String TAG = DbManager.class.getSimpleName();
 
     private volatile static DbManager instance;
-    DbConfig dbConfig;
-    private SQLiteDatabase database;
-    private String dbPath;
-    private Map<Class<? extends BaseDao>, BaseDao> daoMap;
 
+    DbConfig dbConfig;
+
+    private SQLiteDatabase database;
+
+    private DaoMaster daoMaster;
+    private DaoSession daoSession;
+    private String dbPath;
     private Context context;
 
     private DbManager(Context context) {
         this.context = context.getApplicationContext();
-        daoMap = new HashMap<>();
         if (dbConfig == null) {
             dbConfig = new DbConfig(context);
         }
@@ -44,6 +43,10 @@ public class DbManager {
             }
         }
         return instance;
+    }
+
+    public DaoSession getDaoSession() {
+        return daoSession;
     }
 
     /**
@@ -62,6 +65,9 @@ public class DbManager {
         }
 
         database = SQLiteDatabase.openOrCreateDatabase(path, null);
+        daoMaster = new DaoMaster(database);
+        daoSession = daoMaster.newSession();
+
         this.dbPath = path;
         return true;
     }
@@ -74,7 +80,8 @@ public class DbManager {
             database.close();
             database = null;
             dbPath = null;
-            daoMap.clear();
+            daoMaster = null;
+            daoSession = null;
         }
     }
 
@@ -85,30 +92,6 @@ public class DbManager {
      */
     public boolean isDatabaseClosed() {
         return database == null;
-    }
-
-    public <T extends BaseDao> T getDao(Class<T> clazz) {
-        if (database == null) {
-            throw new RuntimeException("Cannot get DAO for " + clazz);
-        }
-        BaseDao dao = daoMap.get(clazz);
-
-        if (dao == null) {
-            try {
-                Constructor<T> constructor = clazz.getConstructor(SQLiteDatabase.class);
-                dao = constructor.newInstance(database);
-            } catch (NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
-                e.printStackTrace();
-            }
-
-            if (dao != null) {
-                daoMap.put(clazz, dao);
-            }
-
-        }
-
-        return (T) dao;
-
     }
 
     public List<File> getDbFiles() {
