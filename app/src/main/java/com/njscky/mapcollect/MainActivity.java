@@ -247,6 +247,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         baseMapManager.release();
+        LayerHelper.getInstance(this).release();
         DbManager.getInstance(this).close();
     }
 }
