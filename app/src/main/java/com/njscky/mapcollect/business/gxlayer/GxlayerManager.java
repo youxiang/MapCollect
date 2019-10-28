@@ -15,6 +15,7 @@ public class GxlayerManager {
 
     private boolean isLoaded;
 
+    //管线背景图
     private GxlayerManager(Context context) {
         this.context = context.getApplicationContext();
     }
