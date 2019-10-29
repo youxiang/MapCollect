@@ -11,6 +11,8 @@ public class ChineseSupportTextSymbol extends TextSymbol {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             setFontFamily(MapCollectApp.getApp().getFontFile().getAbsolutePath());
+        } else {
+            setFontFamily("DroidSansFallback.ttf");
         }
     }
 
