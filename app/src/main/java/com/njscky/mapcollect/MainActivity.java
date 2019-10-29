@@ -135,9 +135,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initMap() {
-//        baseMapManager.startLoad(mMapView);
-        //Add ArcGISDynamicMapServiceLayer by fjj
-//        gxlayerManager.startLoad(mMapView);
 
         layerManager.loadLayers(new LayerManager.LayerListener() {
             @Override
@@ -171,18 +168,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // Add layers
-//        for (Layer layer : ysPointLayerManager.getLayers()) {
-//            if (mMapView.getLayerByID(layer.getID()) == null) {
-//                mMapView.addLayer(layer);
-//            }
-//        }
-//
-//        for (Layer layer : ysLineLayerManager.getLayers()) {
-//            if (mMapView.getLayerByID(layer.getID()) == null) {
-//                mMapView.addLayer(layer);
-//            }
-//        }
     }
 
     private void choosePoints(GraphicsLayer layer, List<Graphic> graphics) {
@@ -248,6 +233,21 @@ public class MainActivity extends AppCompatActivity {
     @OnClick(R.id.btnGCGL)
     void onProject() {
         ProjectActivity.startForResult(this, REQ_PROJECT);
+    }
+
+    @OnClick(R.id.btnSJBJ)
+    void onEdit() {
+        // TODO 编辑
+    }
+
+    @OnClick(R.id.btnTCKZ)
+    void onLayer() {
+        // TODO 图层
+    }
+
+    @OnClick(R.id.btnXJ)
+    void onPhoto() {
+        // TODO 图片
     }
 
     @Override
