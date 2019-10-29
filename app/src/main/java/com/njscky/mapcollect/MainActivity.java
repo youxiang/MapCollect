@@ -22,8 +22,6 @@ import com.esri.android.map.event.OnSingleTapListener;
 import com.esri.core.map.Graphic;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.snackbar.Snackbar;
-import com.njscky.mapcollect.business.basemap.BaseMapManager;
-import com.njscky.mapcollect.business.gxlayer.GxlayerManager;
 import com.njscky.mapcollect.business.jcjinspect.GraphicListAdpater;
 import com.njscky.mapcollect.business.jcjinspect.JcjInspectFragment;
 import com.njscky.mapcollect.business.layer.LayerCallback;
@@ -66,9 +64,6 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.btnGCGL)
     Button btnProject;
 
-    BaseMapManager baseMapManager;
-    GxlayerManager gxlayerManager;
-
     YSPointLayerManager ysPointLayerManager;
 
     YSLineLayerManager ysLineLayerManager;
@@ -81,9 +76,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-
-        baseMapManager = BaseMapManager.getInstance(this);
-        gxlayerManager = GxlayerManager.getInstance(this);
         ysPointLayerManager = LayerHelper.getInstance(this).getYsPointLayerManager();
         ysLineLayerManager = LayerHelper.getInstance(this).getYsLineLayerManager();
         layerManager = MapCollectApp.getApp().getLayerManager();
