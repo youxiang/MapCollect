@@ -1,5 +1,6 @@
 package com.njscky.mapcollect.business.layer;
 
+import android.graphics.Color;
 import android.os.Environment;
 
 import androidx.annotation.NonNull;
@@ -35,4 +36,31 @@ public class DefaultLayerConfig implements LayerConfig {
         layerParameter.localDir = null;
         return layerParameter;
     }
+
+    @NonNull
+    @Override
+    public GraphicLayerParameter pointParameter() {
+        GraphicLayerParameter parameter = new GraphicLayerParameter();
+        parameter.name = "雨水管点_检查井";
+        parameter.annotationName = "雨水管点_检查井注记";
+        parameter.symbolColor = Color.rgb(255, 0, 0);
+        parameter.symbolSize = 12;
+        parameter.annotationLayerSymbolColor = Color.rgb(255, 0, 0);
+        parameter.annotationLayerSymbolSize = 12;
+        return parameter;
+    }
+
+    @NonNull
+    @Override
+    public GraphicLayerParameter lineParameter() {
+        GraphicLayerParameter parameter = new GraphicLayerParameter();
+        parameter.name = "雨水管线_检查井";
+        parameter.annotationName = "雨水管线_检查井注记";
+        parameter.symbolColor = Color.rgb(76, 0, 0);
+        parameter.symbolSize = 1;
+        parameter.annotationLayerSymbolColor = Color.rgb(76, 0, 0);
+        parameter.annotationLayerSymbolSize = 12;
+        return parameter;
+    }
+
 }

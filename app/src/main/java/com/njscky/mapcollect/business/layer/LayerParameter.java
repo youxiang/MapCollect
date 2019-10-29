@@ -10,9 +10,4 @@ public class LayerParameter {
     public LayerParameter() {
     }
 
-    public LayerParameter(String name, File localDir, String serverUrl) {
-        this.name = name;
-        this.localDir = localDir;
-        this.serverUrl = serverUrl;
-    }
 }

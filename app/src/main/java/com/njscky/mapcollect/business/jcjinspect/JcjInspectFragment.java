@@ -15,9 +15,9 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.esri.core.map.Graphic;
 import com.google.android.material.tabs.TabLayout;
+import com.njscky.mapcollect.MapCollectApp;
 import com.njscky.mapcollect.R;
-import com.njscky.mapcollect.business.layer.LayerHelper;
-import com.njscky.mapcollect.business.layer.YSPointLayerManager;
+import com.njscky.mapcollect.business.layer.LayerManager;
 import com.njscky.mapcollect.business.photo.AddPhotoActivity;
 import com.njscky.mapcollect.db.DbManager;
 import com.njscky.mapcollect.db.entitiy.JCJLineYS;
@@ -60,7 +60,7 @@ public class JcjInspectFragment extends Fragment {
     private JCJLineYSDao lineYSDao;
     private PointPropertyListAdapter pointPropertyListAdapter;
 
-    private YSPointLayerManager ysPointLayerManager;
+    private LayerManager layerManager;
 
     public static JcjInspectFragment newInstance(Graphic graphic) {
 
@@ -77,8 +77,6 @@ public class JcjInspectFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_jcj_inspect, container, false);
         unbiner = ButterKnife.bind(this, view);
-        ysPointLayerManager = LayerHelper.getInstance(getContext()).getYsPointLayerManager();
-
         return view;
     }
 
@@ -91,6 +89,7 @@ public class JcjInspectFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         graphic = (Graphic) getArguments().getSerializable("graphic");
+        layerManager = MapCollectApp.getApp().getLayerManager();
 
         Map<String, Object> attributes = graphic.getAttributes();
         if (attributes != null) {
@@ -108,13 +107,13 @@ public class JcjInspectFragment extends Fragment {
 
     private void highlightGraphic() {
         if (graphic != null) {
-            ysPointLayerManager.highLightGraphic(graphic);
+            layerManager.highLightGraphic(graphic);
         }
     }
 
     private void unHighlightGraphic() {
         if (graphic != null) {
-            ysPointLayerManager.unHighlightGraphic();
+            layerManager.unHighlightGraphic();
         }
     }
 

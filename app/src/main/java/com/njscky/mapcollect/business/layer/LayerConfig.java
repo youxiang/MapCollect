@@ -20,5 +20,21 @@ public interface LayerConfig {
     @NonNull
     LayerParameter gxParameter();
 
+    /**
+     * 检查井点参数
+     *
+     * @return
+     */
+    @NonNull
+    GraphicLayerParameter pointParameter();
+
+    /**
+     * 检查井线参数
+     *
+     * @return
+     */
+    @NonNull
+    GraphicLayerParameter lineParameter();
+
 
 }

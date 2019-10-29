@@ -24,11 +24,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.snackbar.Snackbar;
 import com.njscky.mapcollect.business.jcjinspect.GraphicListAdpater;
 import com.njscky.mapcollect.business.jcjinspect.JcjInspectFragment;
-import com.njscky.mapcollect.business.layer.LayerCallback;
-import com.njscky.mapcollect.business.layer.LayerHelper;
 import com.njscky.mapcollect.business.layer.LayerManager;
-import com.njscky.mapcollect.business.layer.YSLineLayerManager;
-import com.njscky.mapcollect.business.layer.YSPointLayerManager;
 import com.njscky.mapcollect.business.project.ProjectActivity;
 import com.njscky.mapcollect.db.DbManager;
 import com.njscky.mapcollect.util.PermissionUtils;
@@ -64,20 +60,16 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.btnGCGL)
     Button btnProject;
 
-    YSPointLayerManager ysPointLayerManager;
-
-    YSLineLayerManager ysLineLayerManager;
     BottomSheetBehavior bottomSheetBehavior;
     private AlertDialog choosePointsDialog;
 
     private LayerManager layerManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        ysPointLayerManager = LayerHelper.getInstance(this).getYsPointLayerManager();
-        ysLineLayerManager = LayerHelper.getInstance(this).getYsLineLayerManager();
         layerManager = MapCollectApp.getApp().getLayerManager();
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PERMISSION_GRANTED) {
@@ -93,12 +85,12 @@ public class MainActivity extends AppCompatActivity {
                     bottomSheetBehavior.setHideable(true);
                     bottomSheetBehavior.setState(STATE_HIDDEN);
                 }
-                ysPointLayerManager.unHighlightGraphic();
+                layerManager.unHighlightGraphic();
 
 //                Point p = mMapView.toMapPoint(x, y);
 //                mMapView.centerAt(p, true);
 
-                GraphicsLayer layer = (GraphicsLayer) ysPointLayerManager.getLayers()[0];
+                GraphicsLayer layer = (GraphicsLayer) layerManager.getYSPointLayer();
 
                 int[] graphicIds = layer.getGraphicIDs(x, y, 10);
 
@@ -147,7 +139,7 @@ public class MainActivity extends AppCompatActivity {
         //Add ArcGISDynamicMapServiceLayer by fjj
 //        gxlayerManager.startLoad(mMapView);
 
-        layerManager.load(new LayerManager.LayerListener() {
+        layerManager.loadLayers(new LayerManager.LayerListener() {
             @Override
             public void onBaseLayerLoaded(Layer baseMapLayer) {
                 mMapView.addLayer(baseMapLayer);
@@ -157,20 +149,40 @@ public class MainActivity extends AppCompatActivity {
             public void onGXLayerLoaded(Layer gxLayer) {
                 mMapView.addLayer(gxLayer);
             }
+
+            @Override
+            public void onJCJPointLayerCreate(GraphicsLayer ysjcjPointLayer) {
+                mMapView.addLayer(ysjcjPointLayer);
+            }
+
+            @Override
+            public void onJCJPointAnnotationLayerCreate(GraphicsLayer ysjcjPointAnnotationLayer) {
+                mMapView.addLayer(ysjcjPointAnnotationLayer);
+            }
+
+            @Override
+            public void onJCJLineLayerCreate(GraphicsLayer ysjcjLineLayer) {
+                mMapView.addLayer(ysjcjLineLayer);
+            }
+
+            @Override
+            public void onJCJLineAnnotationLayerCreate(GraphicsLayer ysjcjLineAnnotationLayer) {
+                mMapView.addLayer(ysjcjLineAnnotationLayer);
+            }
         });
 
         // Add layers
-        for (Layer layer : ysPointLayerManager.getLayers()) {
-            if (mMapView.getLayerByID(layer.getID()) == null) {
-                mMapView.addLayer(layer);
-            }
-        }
-
-        for (Layer layer : ysLineLayerManager.getLayers()) {
-            if (mMapView.getLayerByID(layer.getID()) == null) {
-                mMapView.addLayer(layer);
-            }
-        }
+//        for (Layer layer : ysPointLayerManager.getLayers()) {
+//            if (mMapView.getLayerByID(layer.getID()) == null) {
+//                mMapView.addLayer(layer);
+//            }
+//        }
+//
+//        for (Layer layer : ysLineLayerManager.getLayers()) {
+//            if (mMapView.getLayerByID(layer.getID()) == null) {
+//                mMapView.addLayer(layer);
+//            }
+//        }
     }
 
     private void choosePoints(GraphicsLayer layer, List<Graphic> graphics) {
@@ -261,28 +273,40 @@ public class MainActivity extends AppCompatActivity {
         DbManager dbManager = DbManager.getInstance(this);
         dbManager.open(dbFilePath);
 
-        ysPointLayerManager.loadLayers(new LayerCallback() {
+        layerManager.loadData(new LayerManager.LayerDataListener() {
             @Override
-            public void onLayerLoaded() {
-                Log.i(TAG, "onLayerLoaded: ");
+            public void onStart() {
+                Log.i(TAG, "loadData#onStart: ");
             }
 
             @Override
-            public void onLayerLoading() {
-                Log.i(TAG, "onLayerLoading: ");
+            public void onFinish() {
+                Log.i(TAG, "loadData#onFinish: ");
             }
         });
-        ysLineLayerManager.loadLayers(new LayerCallback() {
-            @Override
-            public void onLayerLoaded() {
-                Log.i(TAG, "onLayerLoaded: ");
-            }
 
-            @Override
-            public void onLayerLoading() {
-                Log.i(TAG, "onLayerLoading: ");
-            }
-        });
+//        ysPointLayerManager.loadLayers(new LayerCallback() {
+//            @Override
+//            public void onLayerLoaded() {
+//                Log.i(TAG, "onLayerLoaded: ");
+//            }
+//
+//            @Override
+//            public void onLayerLoading() {
+//                Log.i(TAG, "onLayerLoading: ");
+//            }
+//        });
+//        ysLineLayerManager.loadLayers(new LayerCallback() {
+//            @Override
+//            public void onLayerLoaded() {
+//                Log.i(TAG, "onLayerLoaded: ");
+//            }
+//
+//            @Override
+//            public void onLayerLoading() {
+//                Log.i(TAG, "onLayerLoading: ");
+//            }
+//        });
 
     }
 
@@ -293,7 +317,7 @@ public class MainActivity extends AppCompatActivity {
 //        baseMapManager.release();
 //        gxlayerManager.release();
         layerManager.release();
-        LayerHelper.getInstance(this).release();
+//        LayerHelper.getInstance(this).release();
         DbManager.getInstance(this).close();
     }
 }
