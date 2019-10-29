@@ -17,6 +17,8 @@
     <string name="title_add_photo">照片上传</string>
     <string name="photo_type">照片类型</string>
     <string name="jcjbh">检查井编号</string>
+    <string name="title_activity_display_photo">查看照片</string>
+    <string name="action_delete">删除</string>
     <string-array name="photo_type_arr">
         <item>清淤前</item>
         <item>清淤后</item>

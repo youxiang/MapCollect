@@ -39,6 +39,8 @@ import butterknife.Unbinder;
  */
 public class JcjInspectFragment extends Fragment {
 
+    private static final String TAG = "JcjInspectFragment";
+
     @BindView(R.id.rv_property_list)
     RecyclerView rvPropertyList;
     @BindView(R.id.tabLayout)
@@ -83,6 +85,11 @@ public class JcjInspectFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
         graphic = (Graphic) getArguments().getSerializable("graphic");
 
         Map<String, Object> attributes = graphic.getAttributes();
@@ -115,7 +122,7 @@ public class JcjInspectFragment extends Fragment {
         AppExecutors.DB.execute(new Runnable() {
             @Override
             public void run() {
-                JCJPointYS pointYS = pointYSDao.queryBuilder().where(JCJPointYSDao.Properties.JCJBH.eq(JCJBH)).unique();
+                JCJPointYS pointYS = pointYSDao.queryBuilder().where(JCJPointYSDao.Properties.JCJBH.eq(JCJBH)).list().get(0);
 
                 List<JCJLineYS> lineYSList = lineYSDao.queryBuilder().where(JCJLineYSDao.Properties.JCJBH.eq(JCJBH)).list();
 

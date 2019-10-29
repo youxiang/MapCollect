@@ -16,6 +16,7 @@ import com.njscky.mapcollect.db.DbManager;
 import com.njscky.mapcollect.db.entitiy.JCJLineYS;
 import com.njscky.mapcollect.db.entitiy.JCJLineYSDao;
 import com.njscky.mapcollect.util.AppExecutors;
+import com.njscky.mapcollect.util.ChineseSupportTextSymbol;
 
 import java.util.HashMap;
 import java.util.List;
@@ -41,6 +42,7 @@ public class YSLineLayerManager implements ILayerManager {
 
     private int colorSymbol = Color.rgb(76, 0, 0);
     private int widthLineSymbol = 1;
+    private int textSizeSymbol = 12;
 
     public YSLineLayerManager(Context context, String lineLayerName, String annotationLayerName) {
         this(context, lineLayerName, annotationLayerName, AppExecutors.MAIN, AppExecutors.DB);
@@ -113,7 +115,7 @@ public class YSLineLayerManager implements ILayerManager {
                             Graphic polylineGraphic = new Graphic(polyline, lineSymbol, attributes);
                             lineLayer.addGraphic(polylineGraphic);
 
-                            TextSymbol textSymbol = createTextSymbolInLineCenter(jcjLineYS.GJ + " " + jcjLineYS.CZ, colorSymbol, widthLineSymbol, startPoint, endPoint);
+                            TextSymbol textSymbol = createTextSymbolInLineCenter(jcjLineYS.GJ + " " + jcjLineYS.CZ, colorSymbol, textSizeSymbol, startPoint, endPoint);
                             Graphic textSymbolGraphic = new Graphic(new Point((startPoint.getX() + endPoint.getX()) / 2, (startPoint.getY() + endPoint.getY()) / 2), textSymbol);
                             annotationLayer.addGraphic(textSymbolGraphic);
 
@@ -162,8 +164,7 @@ public class YSLineLayerManager implements ILayerManager {
             fAngle = (float) (Math.toDegrees(angle));
         }
 
-        TextSymbol textSymbol = new TextSymbol(widthLineSymbol, txt, colorSymbol);
-        textSymbol.setFontFamily("DroidSansFallback.ttf");
+        TextSymbol textSymbol = new ChineseSupportTextSymbol(widthLineSymbol, txt, colorSymbol);
         textSymbol.setOffsetX(5);
         textSymbol.setOffsetY(5);
         textSymbol.setAngle(fAngle);

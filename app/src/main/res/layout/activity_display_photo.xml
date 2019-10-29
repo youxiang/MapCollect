@@ -5,6 +5,11 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        style="@style/AppTheme.Toolbar"
+        app:title="@string/title_activity_display_photo" />
+
     <androidx.viewpager.widget.ViewPager
         android:id="@+id/vp_photos"
         android:layout_width="match_parent"

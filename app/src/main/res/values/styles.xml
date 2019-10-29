@@ -37,4 +37,12 @@
         <item name="android:textSize">16dp</item>
     </style>
 
+    <style name="AppTheme.Toolbar">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">?attr/actionBarSize</item>
+        <item name="android:background">?colorPrimary</item>
+        <item name="titleTextColor">@color/white</item>
+        <item name="subtitleTextColor">@color/white</item>
+    </style>
+
 </resources>

@@ -16,6 +16,7 @@ import com.njscky.mapcollect.db.DbManager;
 import com.njscky.mapcollect.db.entitiy.JCJPointYS;
 import com.njscky.mapcollect.db.entitiy.JCJPointYSDao;
 import com.njscky.mapcollect.util.AppExecutors;
+import com.njscky.mapcollect.util.ChineseSupportTextSymbol;
 
 import java.util.HashMap;
 import java.util.List;
@@ -76,8 +77,7 @@ public class YSPointLayerManager implements ILayerManager {
     }
 
     private Graphic getPointAnnotationGraphic(JCJPointYS pointYS, Point point) {
-        TextSymbol textSymbol = new TextSymbol(pointSize, pointYS.JCJBH, pointColor);
-        textSymbol.setFontFamily("DroidSansFallback.ttf");
+        TextSymbol textSymbol = new ChineseSupportTextSymbol(pointSize, pointYS.JCJBH, pointColor);
         textSymbol.setOffsetX(5);
         textSymbol.setOffsetY(5);
         return new Graphic(point, textSymbol);

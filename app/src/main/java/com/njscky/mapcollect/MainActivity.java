@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import com.esri.android.map.GraphicsLayer;
+import com.esri.android.map.Layer;
 import com.esri.android.map.MapView;
 import com.esri.android.map.event.OnSingleTapListener;
 import com.esri.core.map.Graphic;
@@ -27,6 +28,7 @@ import com.njscky.mapcollect.business.jcjinspect.GraphicListAdpater;
 import com.njscky.mapcollect.business.jcjinspect.JcjInspectFragment;
 import com.njscky.mapcollect.business.layer.LayerCallback;
 import com.njscky.mapcollect.business.layer.LayerHelper;
+import com.njscky.mapcollect.business.layer.LayerManager;
 import com.njscky.mapcollect.business.layer.YSLineLayerManager;
 import com.njscky.mapcollect.business.layer.YSPointLayerManager;
 import com.njscky.mapcollect.business.project.ProjectActivity;
@@ -73,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
     BottomSheetBehavior bottomSheetBehavior;
     private AlertDialog choosePointsDialog;
 
+    private LayerManager layerManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,8 +86,13 @@ public class MainActivity extends AppCompatActivity {
         gxlayerManager = GxlayerManager.getInstance(this);
         ysPointLayerManager = LayerHelper.getInstance(this).getYsPointLayerManager();
         ysLineLayerManager = LayerHelper.getInstance(this).getYsLineLayerManager();
+        layerManager = MapCollectApp.getApp().getLayerManager();
 
-        ActivityCompat.requestPermissions(MainActivity.this, PERMISSIONS, REQ_PERMISSIONS);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(MainActivity.this, PERMISSIONS, REQ_PERMISSIONS);
+        } else {
+
+        }
 
         mMapView.setOnSingleTapListener(new OnSingleTapListener() {
             @Override
@@ -142,6 +150,37 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private void initMap() {
+//        baseMapManager.startLoad(mMapView);
+        //Add ArcGISDynamicMapServiceLayer by fjj
+//        gxlayerManager.startLoad(mMapView);
+
+        layerManager.load(new LayerManager.LayerListener() {
+            @Override
+            public void onBaseLayerLoaded(Layer baseMapLayer) {
+                mMapView.addLayer(baseMapLayer);
+            }
+
+            @Override
+            public void onGXLayerLoaded(Layer gxLayer) {
+                mMapView.addLayer(gxLayer);
+            }
+        });
+
+        // Add layers
+        for (Layer layer : ysPointLayerManager.getLayers()) {
+            if (mMapView.getLayerByID(layer.getID()) == null) {
+                mMapView.addLayer(layer);
+            }
+        }
+
+        for (Layer layer : ysLineLayerManager.getLayers()) {
+            if (mMapView.getLayerByID(layer.getID()) == null) {
+                mMapView.addLayer(layer);
+            }
+        }
+    }
+
     private void choosePoints(GraphicsLayer layer, List<Graphic> graphics) {
         choosePointsDialog = new AlertDialog.Builder(this)
                 .setTitle(R.string.choose_points)
@@ -169,7 +208,11 @@ public class MainActivity extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == REQ_PERMISSIONS) {
             if (isGranted(grantResults)) {
-                baseMapManager.startLoad(mMapView);
+                initMap();
+            } else {
+                Snackbar.make(mMapView, "需要设置权限", Snackbar.LENGTH_INDEFINITE)
+                        .setAction("打开设置 ", v -> PermissionUtils.gotoSetting(MainActivity.this))
+                        .show();
             }
         }
     }
@@ -194,17 +237,7 @@ public class MainActivity extends AppCompatActivity {
                     .setAction("打开设置 ", v -> PermissionUtils.gotoSetting(MainActivity.this))
                     .show();
         } else {
-            baseMapManager.startLoad(mMapView);
-
-            //Add ArcGISDynamicMapServiceLayer by fjj
-            gxlayerManager.startLoad(mMapView);
-
-
-            // Add layers
-            mMapView.addLayers(ysPointLayerManager.getLayers());
-
-            mMapView.addLayers(ysLineLayerManager.getLayers());
-
+            initMap();
         }
     }
 
@@ -239,6 +272,7 @@ public class MainActivity extends AppCompatActivity {
         ysPointLayerManager.loadLayers(new LayerCallback() {
             @Override
             public void onLayerLoaded() {
+                Log.i(TAG, "onLayerLoaded: ");
             }
 
             @Override
@@ -249,11 +283,12 @@ public class MainActivity extends AppCompatActivity {
         ysLineLayerManager.loadLayers(new LayerCallback() {
             @Override
             public void onLayerLoaded() {
+                Log.i(TAG, "onLayerLoaded: ");
             }
 
             @Override
             public void onLayerLoading() {
-
+                Log.i(TAG, "onLayerLoading: ");
             }
         });
 
@@ -262,7 +297,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        baseMapManager.release();
+        Log.i(TAG, "onDestroy: ");
+//        baseMapManager.release();
+//        gxlayerManager.release();
+        layerManager.release();
         LayerHelper.getInstance(this).release();
         DbManager.getInstance(this).close();
     }

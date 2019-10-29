@@ -5,7 +5,7 @@ import java.util.concurrent.Executors;
 
 public class AppExecutors {
 
-    public static final Executor DB = Executors.newSingleThreadExecutor();
+    public static final Executor DB = Executors.newCachedThreadPool();
 
     public static final Executor NETWORK = Executors.newCachedThreadPool();
 
