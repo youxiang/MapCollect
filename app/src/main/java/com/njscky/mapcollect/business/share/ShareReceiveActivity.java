@@ -83,7 +83,9 @@ public class ShareReceiveActivity extends AppCompatActivity {
             public void onImportSuccess(String outputDbFilePath) {
                 Log.i(TAG, "onImportSuccess: " + outputDbFilePath);
                 if (loadingDialog != null && loadingDialog.isShowing()) {
-                    loadingDialog.dismiss();
+                    helper.title.setText("导入成功");
+                    helper.progressBar.setVisibility(View.GONE);
+                    loadingDialog.setCancelable(true);
                 }
                 Toast.makeText(ShareReceiveActivity.this, "导入数据库成功", Toast.LENGTH_SHORT).show();
             }
@@ -92,7 +94,9 @@ public class ShareReceiveActivity extends AppCompatActivity {
             public void onImportError(Exception e) {
                 Log.i(TAG, "onImportError: " + e);
                 if (loadingDialog != null && loadingDialog.isShowing()) {
-                    loadingDialog.dismiss();
+                    helper.title.setText("导入错误");
+                    loadingDialog.setCancelable(true);
+                    helper.progressBar.setVisibility(View.GONE);
                 }
                 Toast.makeText(ShareReceiveActivity.this, "导入数据库错误", Toast.LENGTH_SHORT).show();
             }
@@ -103,19 +107,22 @@ public class ShareReceiveActivity extends AppCompatActivity {
                 if (loadingDialog == null) {
                     showLoadingDialog();
                 }
+                loadingDialog.setCancelable(false);
+                helper.title.setText("正在导入...");
+                helper.progressBar.setVisibility(View.VISIBLE);
                 helper.progressBar.setProgress((int) (imported * 100 / total));
-                helper.progressBar.setMax(100);
 
             }
         });
     }
 
     public void showLoadingDialog() {
-        loadingDialog = new AlertDialog.Builder(this).setCancelable(false).create();
         View view = LayoutInflater.from(this).inflate(R.layout.layout_loading, null);
-        loadingDialog.setContentView(view);
+        loadingDialog = new AlertDialog.Builder(this)
+                .setView(view).setCancelable(false).create();
         helper = new LoadingDialogHelper();
         ButterKnife.bind(helper, view);
+        helper.progressBar.setMax(100);
         loadingDialog.show();
     }
 
