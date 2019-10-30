@@ -19,6 +19,6 @@ public class DbConfig {
             dir = Environment.getExternalStorageDirectory();
         }
 
-        return dir == null ? null : dir.getPath() + File.separator + context.getPackageName();
+        return dir == null ? null : dir.getPath() + File.separator + context.getPackageName() + File.separator + "database";
     }
 }

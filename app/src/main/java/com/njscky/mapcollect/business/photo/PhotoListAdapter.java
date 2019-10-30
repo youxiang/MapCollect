@@ -1,5 +1,6 @@
 package com.njscky.mapcollect.business.photo;
 
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -67,12 +68,32 @@ public class PhotoListAdapter extends RecyclerView.Adapter<PhotoListAdapter.VH> 
         this.onItemClickListener = onItemClickListener;
     }
 
-    public void addPhoto(PhotoJCJ photo) {
+    /**
+     * @param photo
+     * @return true: add successfully. false:add fail, already exists
+     */
+    public boolean addPhoto(PhotoJCJ photo) {
+        if (alreadyAdded(photo)) {
+            return false;
+        }
         if (photos == null) {
             photos = new ArrayList<>();
         }
         photos.add(photo);
         notifyDataSetChanged();
+        return true;
+    }
+
+    private boolean alreadyAdded(PhotoJCJ photo) {
+        if (photos == null || photos.isEmpty()) {
+            return false;
+        }
+        for (PhotoJCJ photoAdded : photos) {
+            if (TextUtils.equals(photo.ZPLJ, photoAdded.ZPLJ)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public List<PhotoJCJ> getData() {

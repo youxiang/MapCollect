@@ -7,8 +7,14 @@ import android.util.Log;
 
 import com.njscky.mapcollect.db.entitiy.DaoMaster;
 import com.njscky.mapcollect.db.entitiy.DaoSession;
+import com.njscky.mapcollect.util.AppExecutors;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +38,13 @@ public class DbManager {
         if (dbConfig == null) {
             dbConfig = new DbConfig(context);
         }
+
+        String dbFilesPath = dbConfig.getDbFilesPath();
+        File dbDir = new File(dbFilesPath);
+        if (!dbDir.exists()) {
+            dbDir.mkdirs();
+        }
+
     }
 
     public static DbManager getInstance(Context context) {
@@ -43,6 +56,10 @@ public class DbManager {
             }
         }
         return instance;
+    }
+
+    public String getDbFilesPath() {
+        return dbConfig.getDbFilesPath();
     }
 
     public DaoSession getDaoSession() {
@@ -118,4 +135,79 @@ public class DbManager {
     }
 
 
+    public void importDb(String path, ImportDbCallback callback) {
+        AppExecutors.DB.execute(() -> {
+            File dbDir = new File(dbConfig.getDbFilesPath());
+            File inputDbFile = new File(path);
+            File outputDbFile = new File(dbDir, inputDbFile.getName());
+
+            long total = inputDbFile.length();
+
+            OutputStream os = null;
+            InputStream is = null;
+            long imported = 0L;
+
+            try {
+                if (!outputDbFile.exists()) {
+                    outputDbFile.createNewFile();
+                }
+                os = new FileOutputStream(outputDbFile);
+                is = new FileInputStream(inputDbFile);
+                int length = -1;
+                byte[] buffer = new byte[1024 * 8];
+                while ((length = is.read(buffer)) != -1) {
+                    os.write(buffer, 0, length);
+                    imported += length;
+
+                    if (callback != null) {
+                        long finalImported = imported;
+                        AppExecutors.MAIN.execute(() -> {
+                            callback.onImporting(finalImported, total);
+                        });
+                    }
+                }
+
+                if (callback != null) {
+                    AppExecutors.MAIN.execute(() -> {
+                        callback.onImportSuccess(outputDbFile.getAbsolutePath());
+                    });
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+
+                if (callback != null) {
+                    AppExecutors.MAIN.execute(() -> {
+                        callback.onImportError(e);
+                    });
+                }
+            } finally {
+                try {
+                    if (is != null) {
+                        is.close();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                try {
+
+                    if (os != null) {
+                        os.close();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+
+        });
+    }
+
+    public interface ImportDbCallback {
+        void onImportSuccess(String outputDbFilePath);
+
+        void onImportError(Exception e);
+
+        void onImporting(long imported, long total);
+    }
 }

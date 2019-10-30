@@ -34,7 +34,6 @@ public class PhotoPagerAdapter extends PagerAdapter {
         View view = LayoutInflater.from(container.getContext()).inflate(R.layout.layout__page_item_photo, null);
         container.addView(view);
         ImageView photo = view.findViewById(R.id.iv_photo);
-        photo.setImageResource(R.drawable.ic_view_photo);
         GlideApp.with(photo).load(photoJCJ.ZPLJ).into(photo);
         return view;
     }

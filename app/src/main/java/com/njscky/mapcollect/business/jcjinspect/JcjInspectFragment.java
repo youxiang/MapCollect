@@ -196,7 +196,8 @@ public class JcjInspectFragment extends Fragment {
         rst.add(new OptionalProperty("井室材质", pipePoint.JSCZ, new String[]{"", "砖混", "塑料", "矼", "其他"}, new int[]{4}));
         rst.add(new OptionalProperty("井室情况", pipePoint.JSQK, new String[]{"", "正常", "破损", "渗漏"}));
         rst.add(new Property("井室尺寸", pipePoint.JSCC, true));
-        rst.add(new OptionalProperty("附属物类型", pipePoint.FSWLX, new String[]{"", "雨篦", "排放", "交叉井", "截流井", "节点井"}));
+        rst.add(new OptionalProperty("附属物类型", pipePoint.FSWLX, new String[]{"", "雨篦", "排放口"}));
+//        rst.add(new OptionalProperty("井类型", pipePoint.JLX, new String[]{"", "交叉井", "截流井", "节点井","传井"}, new int[]{4}));
         return rst;
     }
 

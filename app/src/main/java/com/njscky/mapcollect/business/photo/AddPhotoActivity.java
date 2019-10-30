@@ -19,6 +19,7 @@ import android.widget.EditText;
 import android.widget.PopupWindow;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -38,6 +39,9 @@ import com.njscky.mapcollect.util.AppUtils;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -63,14 +67,12 @@ public class AddPhotoActivity extends AppCompatActivity {
     RecyclerView rvPhotoList;
     @BindView(R.id.btn_confirm)
     Button btnConfirm;
-
     @BindView(R.id.btn_cancel)
     Button btnCancel;
     PhotoJCJDao photoJCJDao;
     ArrayAdapter typeAdapter;
     private String JCJBH;
     private String[] photoTypes;
-
     private PhotoListAdapter photoListAdapter;
     private PopupWindow bottomPopup;
     private PopupWindowBindHelper popupWindowBindHelper = new PopupWindowBindHelper();
@@ -173,12 +175,14 @@ public class AddPhotoActivity extends AppCompatActivity {
         photo.JCJBH = JCJBH;
         photo.ZPLX = (String) spPhotoType.getSelectedItem();
         photo.ZPLJ = photoFile.getAbsolutePath();
-        photoListAdapter.addPhoto(photo);
+        if (!photoListAdapter.addPhoto(photo)) {
+            Toast.makeText(this, "列表中已存在该照片", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void takePhoto() {
-        File photoDir = getPhotoDir();
-        String fileName = JCJBH + "_" + System.currentTimeMillis() + ".jpeg";
+        File photoDir = getPhotoDir((String) spPhotoType.getSelectedItem());
+        String fileName = generateFileName(JCJBH, photoDir);
         photoFile = new File(photoDir, fileName);
 
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -188,8 +192,27 @@ public class AddPhotoActivity extends AppCompatActivity {
         startActivityForResult(intent, REQ_TAKE_PHOTO);
     }
 
-    private File getPhotoDir() {
-        File photoDir = new File(Environment.getExternalStorageDirectory() + File.separator + getPackageName() + File.separator + "photos");
+    private String generateFileName(String JCJBH, File photoDir) {
+        File[] existFiles = photoDir.listFiles();
+        int serialNumber = 0;
+        Pattern namePattern = Pattern.compile(JCJBH + "_(\\d+)\\.jpg");
+        for (File file : existFiles) {
+            String fileName = file.getName();
+            Matcher matcher = namePattern.matcher(fileName);
+            if (matcher.find()) {
+                String numberStr = matcher.group(1);
+                int parsedNumber = AppUtils.parseInteger(numberStr);
+                if (parsedNumber > serialNumber) {
+                    serialNumber = parsedNumber;
+                }
+            }
+        }
+        return String.format(Locale.getDefault(), "%s_%d.jpg", JCJBH, serialNumber + 1);
+    }
+
+    private File getPhotoDir(String photoType) {
+        String photoDirPath = Environment.getExternalStorageDirectory() + File.separator + getPackageName() + File.separator + "photos" + File.separator + photoType;
+        File photoDir = new File(photoDirPath);
         if (!photoDir.exists()) {
             photoDir.mkdirs();
         }

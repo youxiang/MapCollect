@@ -20,11 +20,15 @@
     <string name="title_activity_display_photo">查看照片</string>
     <string name="action_delete">删除</string>
     <string-array name="photo_type_arr">
-        <item>清淤前</item>
-        <item>清淤后</item>
-        <item>井周边</item>
+        <item>清疏前</item>
+        <item>清疏后</item>
+        <item>井周边环境</item>
+        <item>围挡</item>
+        <item>封堵</item>
         <item>混接</item>
         <item>截流设施</item>
         <item>监测设施</item>
+        <item>节点井</item>
+
     </string-array>
 </resources>
