@@ -164,13 +164,12 @@ public class JCJPointYS implements Parcelable {
         this.YZB = YZB;
     }
 
-    @Generated(hash = 1712836689)
+    @Generated(hash = 1210290622)
     public JCJPointYS(
-            String BSM, String JCJBH, String JGCZ, String JGQK, String JSQK,
-            String JSCZ, String JSCC, String FSWLX, String SZDL, String SFXG, String BZ,
-            float XZB, float YZB, String JLX, String CJQK
+            String JCJBH, String JGCZ, String JGQK, String JSQK, String JSCZ,
+            String JSCC, String FSWLX, String SZDL, String SFXG, String BZ, float XZB,
+            float YZB, String BSM, String JLX, String CJQK
     ) {
-        this.BSM = BSM;
         this.JCJBH = JCJBH;
         this.JGCZ = JGCZ;
         this.JGQK = JGQK;
@@ -183,6 +182,7 @@ public class JCJPointYS implements Parcelable {
         this.BZ = BZ;
         this.XZB = XZB;
         this.YZB = YZB;
+        this.BSM = BSM;
         this.JLX = JLX;
         this.CJQK = CJQK;
     }

@@ -11,6 +11,7 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -77,7 +78,7 @@ public class JcjInspectFragment extends Fragment {
     @BindView(R.id.viewPager)
     ViewPager viewPager;
 
-    private List<Fragment> fragments;
+    private List<ConnectPointFragment> fragments;
 
     private Unbinder unbiner;
 
@@ -161,15 +162,10 @@ public class JcjInspectFragment extends Fragment {
     }
 
     private void loadInfo() {
-        AppExecutors.DB.execute(new Runnable() {
-            @Override
-            public void run() {
-                pointYS = pointYSDao.queryBuilder().where(JCJPointYSDao.Properties.JCJBH.eq(JCJBH)).list().get(0);
-
-                lineYSList = lineYSDao.queryBuilder().where(JCJLineYSDao.Properties.JCJBH.eq(JCJBH)).list();
-
-                updateInfo();
-            }
+        AppExecutors.DB.execute(() -> {
+            pointYS = pointYSDao.queryBuilder().where(JCJPointYSDao.Properties.JCJBH.eq(JCJBH)).list().get(0);
+            lineYSList = lineYSDao.queryBuilder().where(JCJLineYSDao.Properties.JCJBH.eq(JCJBH)).list();
+            updateInfo();
         });
     }
 
@@ -346,19 +342,6 @@ public class JcjInspectFragment extends Fragment {
         return list.length - 1;
     }
 
-    private List<Property> getPointProperties(JCJPointYS pipePoint) {
-        List<Property> rst = new ArrayList<>();
-        rst.add(new PhotoProperty("检查井编号", pipePoint.JCJBH));
-        rst.add(new OptionalProperty("井盖材质", pipePoint.JGCZ, new String[]{"", "铸铁", "塑料", "砼", "其他"}, new int[]{4}));
-        rst.add(new OptionalProperty("井盖情况", pipePoint.JGQK, new String[]{"", "正常", "破损", "错盖"}));
-        rst.add(new OptionalProperty("井室材质", pipePoint.JSCZ, new String[]{"", "砖砼混", "塑料", "矼", "其他"}, new int[]{4}));
-        rst.add(new OptionalProperty("井室情况", pipePoint.JSQK, new String[]{"", "正常", "破损", "渗漏"}));
-        rst.add(new Property("井室尺寸", pipePoint.JSCC, true));
-        rst.add(new OptionalProperty("附属物类型", pipePoint.FSWLX, new String[]{"", "雨篦", "排放口"}));
-//        rst.add(new OptionalProperty("井类型", pipePoint.JLX, new String[]{"", "交叉井", "截流井", "节点井","传井"}, new int[]{4}));
-        return rst;
-    }
-
     @Override
     public void onDestroyView() {
         super.onDestroyView();
@@ -386,7 +369,6 @@ public class JcjInspectFragment extends Fragment {
 
     @OnClick(R.id.btn_cancel)
     void onCancel() {
-        //TODO
         hideJcjInspectLayout();
     }
 
@@ -400,7 +382,44 @@ public class JcjInspectFragment extends Fragment {
 
     @OnClick(R.id.btn_save)
     void onSave() {
-        //TODO
+        pointYS.JCJBH = etJCJBH.getText().toString();
+        pointYS.JGCZ = (String) spJGCZ.getSelectedItem();
+        pointYS.JGQK = (String) spJGQK.getSelectedItem();
+        pointYS.JSCZ = (String) spJSCZ.getSelectedItem();
+        pointYS.JSQK = (String) spJSQK.getSelectedItem();
+        pointYS.JSCC = etJSCC.getText().toString();
+        pointYS.FSWLX = (String) spFSWLX.getSelectedItem();
+        pointYS.JLX = (String) spJLX.getSelectedItem();
+
+        for (int i = 0; i < lineYSList.size(); i++) {
+            ConnectPointFragment fragment = fragments.get(i);
+
+            JCJLineYS lineYS = lineYSList.get(i);
+
+            fragment.updateLineValue(lineYS);
+        }
+
+        AppExecutors.DB.execute(() -> {
+            boolean result = false;
+            try {
+                result = DbManager.getInstance(getContext()).getDaoSession().callInTx(() -> {
+                    pointYSDao.update(pointYS);
+                    lineYSDao.updateInTx(lineYSList);
+                    return true;
+                });
+
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                boolean finalResult = result;
+                AppExecutors.MAIN.execute(() -> {
+                    hideJcjInspectLayout();
+                    Toast.makeText(getContext(), finalResult ? "保存成功" : "保存失败", Toast.LENGTH_SHORT).show();
+                });
+            }
+
+        });
     }
 
     public void setBehaviorInstance(BottomSheetBehavior bottomSheetBehavior) {

@@ -17,6 +17,7 @@ import androidx.fragment.app.Fragment;
 import com.njscky.mapcollect.R;
 import com.njscky.mapcollect.db.entitiy.JCJLineYS;
 import com.njscky.mapcollect.db.entitiy.JCJPointYS;
+import com.njscky.mapcollect.util.AppUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -54,7 +55,7 @@ public class ConnectPointFragment extends Fragment {
     private String[] arrSFHJ;
     private String[] arrHJLX;
 
-    public static Fragment newInstance(JCJLineYS line, JCJPointYS point) {
+    public static ConnectPointFragment newInstance(JCJLineYS line, JCJPointYS point) {
         ConnectPointFragment fragment = new ConnectPointFragment();
         Bundle args = new Bundle();
         args.putParcelable("line", line);
@@ -123,6 +124,17 @@ public class ConnectPointFragment extends Fragment {
             etHJLX.setText(line.HJLX);
         }
         etBZ.setText(line.BZ);
+    }
+
+    void updateLineValue(JCJLineYS lineYS) {
+        lineYS.LJBH = etLJDH.getText().toString();
+        lineYS.QDMS = AppUtils.parseFloat(etMS.getText().toString());
+        lineYS.GJ = etGJ.getText().toString();
+        lineYS.CZ = etGC.getText().toString();
+        lineYS.SFDTYZ = (String) spSFDTYZ.getSelectedItem();
+        lineYS.SFHJ = (String) spSFHJ.getSelectedItem();
+        lineYS.HJLX = (String) spHJLX.getSelectedItem();
+        lineYS.BZ = etBZ.getText().toString();
     }
 
     @Override

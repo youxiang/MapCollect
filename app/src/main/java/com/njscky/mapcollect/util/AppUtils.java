@@ -134,6 +134,14 @@ public class AppUtils {
         }
     }
 
+    public static float parseFloat(String numberStr) {
+        try {
+            return Float.parseFloat(numberStr);
+        } catch (Exception e) {
+            return 0;
+        }
+    }
+
     public static String getFileProviderUriToPath(Context context, Uri uri) {
         try {
             List<PackageInfo> packs = context.getPackageManager().getInstalledPackages(PackageManager.GET_PROVIDERS);
@@ -179,4 +187,6 @@ public class AppUtils {
         }
         return null;
     }
+
+
 }
