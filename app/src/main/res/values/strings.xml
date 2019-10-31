@@ -36,15 +36,16 @@
     <string name="hjlx">混接类型</string>
     <string name="bz">备注</string>
     <string-array name="photo_type_arr">
-        <item>清疏前</item>
-        <item>清疏后</item>
-        <item>井周边环境</item>
-        <item>围挡</item>
-        <item>封堵</item>
-        <item>混接</item>
-        <item>截流设施</item>
-        <item>监测设施</item>
-        <item>节点井</item>
-
+        <item>清疏前#QQ</item>
+        <item>清疏后#QH</item>
+        <item>井周边环境#ZB</item>
+        <item>围挡#WD</item>
+        <item>封堵#FD</item>
+        <item>混接#HJ</item>
+        <item>截流设施#JL</item>
+        <item>监测设施#JC</item>
+        <item>节点井#JD</item>
+        <item>排口#PK</item>
     </string-array>
+
 </resources>

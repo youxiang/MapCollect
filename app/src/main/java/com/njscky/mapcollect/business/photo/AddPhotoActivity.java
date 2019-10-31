@@ -10,10 +10,10 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.PopupWindow;
@@ -35,13 +35,12 @@ import com.njscky.mapcollect.db.entitiy.PhotoJCJ;
 import com.njscky.mapcollect.db.entitiy.PhotoJCJDao;
 import com.njscky.mapcollect.util.AppExecutors;
 import com.njscky.mapcollect.util.AppUtils;
+import com.njscky.mapcollect.util.SpUtils;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -57,6 +56,7 @@ public class AddPhotoActivity extends AppCompatActivity {
     private static final int REQ_TAKE_PHOTO = 100;
     private static final int REQ_PICK_PHOTO = 101;
     private static final int REQ_TAKE_PHOTO_PERMISSION = 1;
+    private static final String TAG = "AddPhotoActivity";
     @BindView(R.id.jcj_bh)
     TextView tvJCJBH;
     @BindView(R.id.et_remark)
@@ -70,9 +70,9 @@ public class AddPhotoActivity extends AppCompatActivity {
     @BindView(R.id.btn_cancel)
     Button btnCancel;
     PhotoJCJDao photoJCJDao;
-    ArrayAdapter typeAdapter;
+    PhotoTypeAdapter typeAdapter;
     private String JCJBH;
-    private String[] photoTypes;
+    private PhotoTypeItem[] photoTypeItems;
     private PhotoListAdapter photoListAdapter;
     private PopupWindow bottomPopup;
     private PopupWindowBindHelper popupWindowBindHelper = new PopupWindowBindHelper();
@@ -92,7 +92,11 @@ public class AddPhotoActivity extends AppCompatActivity {
 
         photoJCJDao = DbManager.getInstance(this).getDaoSession().getPhotoJCJDao();
         JCJBH = getIntent().getStringExtra("JCJBH");
-        photoTypes = getResources().getStringArray(R.array.photo_type_arr);
+        String[] photoTypes = getResources().getStringArray(R.array.photo_type_arr);
+        photoTypeItems = new PhotoTypeItem[photoTypes.length];
+        for (int i = 0; i < photoTypes.length; i++) {
+            photoTypeItems[i] = new PhotoTypeItem(photoTypes[i]);
+        }
 
         tvJCJBH.setText(JCJBH);
 
@@ -115,8 +119,7 @@ public class AddPhotoActivity extends AppCompatActivity {
         spPhotoType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String item = (String) typeAdapter.getItem(position);
-
+                PhotoTypeItem item = typeAdapter.getItem(position);
                 loadData(item);
             }
 
@@ -126,7 +129,8 @@ public class AddPhotoActivity extends AppCompatActivity {
             }
         });
 
-        typeAdapter = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, photoTypes);
+
+        typeAdapter = new PhotoTypeAdapter(this, android.R.layout.simple_spinner_dropdown_item, photoTypeItems);
         spPhotoType.setAdapter(typeAdapter);
         spPhotoType.setSelection(0, true);
 
@@ -173,7 +177,8 @@ public class AddPhotoActivity extends AppCompatActivity {
     private void updatePhotoList() {
         PhotoJCJ photo = new PhotoJCJ();
         photo.JCJBH = JCJBH;
-        photo.ZPLX = (String) spPhotoType.getSelectedItem();
+        PhotoTypeItem photoTypeItem = (PhotoTypeItem) spPhotoType.getSelectedItem();
+        photo.ZPLX = photoTypeItem.typeName;
         photo.ZPLJ = photoFile.getAbsolutePath();
         if (!photoListAdapter.addPhoto(photo)) {
             Toast.makeText(this, "列表中已存在该照片", Toast.LENGTH_SHORT).show();
@@ -181,8 +186,9 @@ public class AddPhotoActivity extends AppCompatActivity {
     }
 
     private void takePhoto() {
-        File photoDir = getPhotoDir((String) spPhotoType.getSelectedItem());
-        String fileName = generateFileName(JCJBH, photoDir);
+        PhotoTypeItem photoType = (PhotoTypeItem) spPhotoType.getSelectedItem();
+        File photoDir = getPhotoDir(photoType);
+        String fileName = generateFileName(JCJBH, photoType);
         photoFile = new File(photoDir, fileName);
 
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -192,26 +198,15 @@ public class AddPhotoActivity extends AppCompatActivity {
         startActivityForResult(intent, REQ_TAKE_PHOTO);
     }
 
-    private String generateFileName(String JCJBH, File photoDir) {
-        File[] existFiles = photoDir.listFiles();
-        int serialNumber = 0;
-        Pattern namePattern = Pattern.compile(JCJBH + "_(\\d+)\\.jpg");
-        for (File file : existFiles) {
-            String fileName = file.getName();
-            Matcher matcher = namePattern.matcher(fileName);
-            if (matcher.find()) {
-                String numberStr = matcher.group(1);
-                int parsedNumber = AppUtils.parseInteger(numberStr);
-                if (parsedNumber > serialNumber) {
-                    serialNumber = parsedNumber;
-                }
-            }
-        }
-        return String.format(Locale.getDefault(), "%s_%d.jpg", JCJBH, serialNumber + 1);
+    private String generateFileName(String JCJBH, PhotoTypeItem photoType) {
+        long serialNumber = SpUtils.getInstance(this).getSerialNumber(photoType.typeShortName);
+        String name = String.format(Locale.getDefault(), "%s%s%d.jpg", JCJBH, photoType.typeShortName, serialNumber);
+        Log.i(TAG, "generateFileName: " + name);
+        return name;
     }
 
-    private File getPhotoDir(String photoType) {
-        String photoDirPath = Environment.getExternalStorageDirectory() + File.separator + getPackageName() + File.separator + "photos" + File.separator + photoType;
+    private File getPhotoDir(PhotoTypeItem photoType) {
+        String photoDirPath = Environment.getExternalStorageDirectory() + File.separator + getPackageName() + File.separator + "photos" + File.separator + photoType.typeName;
         File photoDir = new File(photoDirPath);
         if (!photoDir.exists()) {
             photoDir.mkdirs();
@@ -240,9 +235,11 @@ public class AddPhotoActivity extends AppCompatActivity {
         bottomPopup.setContentView(view);
     }
 
-    private void loadData(String photoType) {
+    private void loadData(PhotoTypeItem photoType) {
         AppExecutors.DB.execute(() -> {
-            List<PhotoJCJ> photoList = photoJCJDao.queryBuilder().list();
+            List<PhotoJCJ> photoList = photoJCJDao.queryBuilder()
+                    .where(PhotoJCJDao.Properties.JCJBH.eq(JCJBH), PhotoJCJDao.Properties.ZPLX.eq(photoType.typeName))
+                    .list();
 
             AppExecutors.MAIN.execute(() -> {
                 photoListAdapter.setPhotos(photoList);
@@ -269,6 +266,21 @@ public class AddPhotoActivity extends AppCompatActivity {
         intent.setAction(Intent.ACTION_PICK);
         intent.setType("image/*");
         startActivityForResult(intent, REQ_PICK_PHOTO);
+    }
+
+    @OnClick(R.id.btn_confirm)
+    void onConfirm() {
+        List<PhotoJCJ> photoList = photoListAdapter.getData();
+
+        AppExecutors.DB.execute(() -> {
+            photoJCJDao.insertOrReplaceInTx(photoList);
+        });
+        finish();
+    }
+
+    @OnClick(R.id.btn_cancel)
+    void onCancel() {
+        finish();
     }
 
     class PopupWindowBindHelper {
