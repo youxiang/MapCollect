@@ -290,9 +290,9 @@ public class JcjInspectFragment extends Fragment {
             int jlxIndex = getSelectIndex(arrJLX, pointYS.JLX);
             spJLX.setSelection(jlxIndex);
 
-            if (jlxIndex == arrJLX.length - 1) {
-                etJLX.setText(pointYS.CJQK);
-            }
+//            if (jlxIndex == arrJLX.length - 1) {
+//                etJLX.setText(pointYS.CJQK);
+//            }
 
 
             if (fragments == null) {

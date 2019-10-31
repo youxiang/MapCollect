@@ -5,6 +5,8 @@ import android.os.Parcelable;
 
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Generated;
+import org.greenrobot.greendao.annotation.Id;
+import org.greenrobot.greendao.annotation.Property;
 
 @Entity(nameInDb = "ZP_JCJ")
 public class PhotoJCJ implements Parcelable {
@@ -20,6 +22,9 @@ public class PhotoJCJ implements Parcelable {
             return new PhotoJCJ[size];
         }
     };
+    @Id
+    @Property(nameInDb = "ID")
+    public Long ID;
     // 检查井编号
     public String JCJBH;
     // 照片编号
@@ -42,8 +47,9 @@ public class PhotoJCJ implements Parcelable {
         this.BZ = in.readString();
     }
 
-    @Generated(hash = 2015541024)
-    public PhotoJCJ(String JCJBH, String ZPBH, String ZPLX, String ZPLJ, String BZ) {
+    @Generated(hash = 1992977732)
+    public PhotoJCJ(Long ID, String JCJBH, String ZPBH, String ZPLX, String ZPLJ, String BZ) {
+        this.ID = ID;
         this.JCJBH = JCJBH;
         this.ZPBH = ZPBH;
         this.ZPLX = ZPLX;
@@ -103,5 +109,13 @@ public class PhotoJCJ implements Parcelable {
 
     public void setBZ(String BZ) {
         this.BZ = BZ;
+    }
+
+    public Long getID() {
+        return this.ID;
+    }
+
+    public void setID(Long ID) {
+        this.ID = ID;
     }
 }

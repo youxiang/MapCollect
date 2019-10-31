@@ -2,12 +2,17 @@ package com.njscky.mapcollect.db.entitiy;
 
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Generated;
+import org.greenrobot.greendao.annotation.Id;
+import org.greenrobot.greendao.annotation.Property;
 
 /**
  * 符号表
  */
 @Entity(nameInDb = "SYMBOL")
 public class Symbol {
+    @Id
+    @Property(nameInDb = "ID")
+    public Long ID;
     // 图片类型
     public String IMGTYPE;
     // 块名
@@ -15,8 +20,9 @@ public class Symbol {
     // 图片名称
     public String PICNAME;
 
-    @Generated(hash = 497244416)
-    public Symbol(String IMGTYPE, String ENTNAME, String PICNAME) {
+    @Generated(hash = 599279664)
+    public Symbol(Long ID, String IMGTYPE, String ENTNAME, String PICNAME) {
+        this.ID = ID;
         this.IMGTYPE = IMGTYPE;
         this.ENTNAME = ENTNAME;
         this.PICNAME = PICNAME;
@@ -48,5 +54,13 @@ public class Symbol {
 
     public void setPICNAME(String PICNAME) {
         this.PICNAME = PICNAME;
+    }
+
+    public Long getID() {
+        return this.ID;
+    }
+
+    public void setID(Long ID) {
+        this.ID = ID;
     }
 }

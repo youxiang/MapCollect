@@ -6,6 +6,8 @@ import com.google.gson.Gson;
 
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Generated;
+import org.greenrobot.greendao.annotation.Id;
+import org.greenrobot.greendao.annotation.Property;
 
 @Entity(nameInDb = "CONFIG")
 public class Config {
@@ -13,6 +15,8 @@ public class Config {
     public String GXTYPE;
 
     // 编号
+    @Id
+    @Property(nameInDb = "ID")
     public long ID;
 
     // 管线图层英文名

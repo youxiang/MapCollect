@@ -2,12 +2,18 @@ package com.njscky.mapcollect.db.entitiy;
 
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Generated;
+import org.greenrobot.greendao.annotation.Id;
+import org.greenrobot.greendao.annotation.Property;
 
 /**
  * 综合注记
  */
 @Entity(nameInDb = "ANNOZH")
 public class AnnoZH {
+
+    @Id
+    @Property(nameInDb = "ID")
+    public Long ID;
 
     // 物探点号
     public String WTDH;
@@ -36,11 +42,10 @@ public class AnnoZH {
     // 公共非公共标识
     public String GGFGG;
 
-    @Generated(hash = 1313735764)
-    public AnnoZH(
-            String WTDH, String GLDM, float XZB, float YZB, float XZJ,
-            String ZJNR, String BZ, String DSDXBS, String GGFGG
-    ) {
+    @Generated(hash = 233272714)
+    public AnnoZH(Long ID, String WTDH, String GLDM, float XZB, float YZB,
+            float XZJ, String ZJNR, String BZ, String DSDXBS, String GGFGG) {
+        this.ID = ID;
         this.WTDH = WTDH;
         this.GLDM = GLDM;
         this.XZB = XZB;
@@ -126,6 +131,14 @@ public class AnnoZH {
 
     public void setGGFGG(String GGFGG) {
         this.GGFGG = GGFGG;
+    }
+
+    public Long getID() {
+        return this.ID;
+    }
+
+    public void setID(Long ID) {
+        this.ID = ID;
     }
 
 }
