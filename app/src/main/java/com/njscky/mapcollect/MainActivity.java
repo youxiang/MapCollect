@@ -251,7 +251,7 @@ public class MainActivity extends AppCompatActivity {
 
     @OnClick(R.id.btnXJ)
     void onPhoto() {
-        // TODO 图片
+        // TODO 背景管线查询
     }
 
     @Override

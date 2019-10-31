@@ -38,6 +38,6 @@
         android:id="@+id/btnXJ"
         style="@style/BottomMenuButton"
         android:drawableLeft="@drawable/xj"
-        android:text="@string/picture" />
+        android:text="@string/query" />
 
 </LinearLayout>

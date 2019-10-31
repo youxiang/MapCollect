@@ -180,13 +180,10 @@ public class JCJLineYS implements Parcelable {
         this.ZDYZB = ZDYZB;
     }
 
-    @Generated(hash = 886645630)
-    public JCJLineYS(
-            String BSM, String JCJBH, String LJBH, float QDMS, String GJ, String CZ,
-            String SFXG, String SFDTYZ, String SFHJ, String HJLX, String LX, String BZ, float QDXZB,
-            float QDYZB, float ZDXZB, float ZDYZB
-    ) {
-        this.BSM = BSM;
+    @Generated(hash = 309872250)
+    public JCJLineYS(String JCJBH, String LJBH, float QDMS, String GJ, String CZ, String SFXG,
+                     String SFDTYZ, String SFHJ, String HJLX, String LX, String BZ, float QDXZB, float QDYZB,
+                     float ZDXZB, float ZDYZB, String BSM) {
         this.JCJBH = JCJBH;
         this.LJBH = LJBH;
         this.QDMS = QDMS;
@@ -202,6 +199,7 @@ public class JCJLineYS implements Parcelable {
         this.QDYZB = QDYZB;
         this.ZDXZB = ZDXZB;
         this.ZDYZB = ZDYZB;
+        this.BSM = BSM;
     }
 
     protected JCJLineYS(Parcel in) {

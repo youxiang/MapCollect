@@ -195,7 +195,7 @@ public class LayerManager {
         AppExecutors.DB.execute(() -> {
 
             loadPointData();
-            loadLineData();
+            //loadLineData();
 
             if (listener != null) {
                 AppExecutors.MAIN.execute(listener::onFinish);

@@ -2,9 +2,9 @@
     <string name="app_name">MapCollect</string>
     <string name="title_activity_project">工程管理</string>
     <string name="project">工程</string>
-    <string name="edit">编辑</string>
+    <string name="edit">调查</string>
     <string name="graph_layer">图层</string>
-    <string name="picture">图片</string>
+    <string name="query">查询</string>
     <string name="project_list">工程列表</string>
     <string name="exit">退出</string>
     <string name="confirm">确认</string>
@@ -14,6 +14,7 @@
     <string name="save">保存</string>
     <string name="choose_points">选择检查井</string>
     <string name="title_jcj_inspect">检查井调查</string>
+    <string name="title_query_result">查询结果</string>
     <string name="title_add_photo">照片上传</string>
     <string name="photo_type">照片类型</string>
     <string name="jcjbh">检查井编号</string>
