@@ -10,15 +10,14 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-
 import com.njscky.mapcollect.R;
 import com.njscky.mapcollect.db.entitiy.JCJLineYS;
 import com.njscky.mapcollect.db.entitiy.JCJPointYS;
 import com.njscky.mapcollect.util.AppUtils;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
@@ -119,10 +118,8 @@ public class ConnectPointFragment extends Fragment {
         });
         int hjlxIndex = getSelectIndex(arrHJLX, line.HJLX);
         spHJLX.setSelection(hjlxIndex);
+        etHJLX.setText(line.HJLX_extra);
 
-        if (hjlxIndex == arrHJLX.length - 1 || hjlxIndex == arrHJLX.length - 2) {
-            etHJLX.setText(line.HJLX);
-        }
         etBZ.setText(line.BZ);
     }
 
@@ -134,6 +131,9 @@ public class ConnectPointFragment extends Fragment {
         lineYS.SFDTYZ = (String) spSFDTYZ.getSelectedItem();
         lineYS.SFHJ = (String) spSFHJ.getSelectedItem();
         lineYS.HJLX = (String) spHJLX.getSelectedItem();
+        if (TextUtils.equals(lineYS.HJLX, "其他") || TextUtils.equals(lineYS.HJLX, "片区")) {
+            lineYS.HJLX_extra = etHJLX.getText().toString();
+        }
         lineYS.BZ = etBZ.getText().toString();
     }
 

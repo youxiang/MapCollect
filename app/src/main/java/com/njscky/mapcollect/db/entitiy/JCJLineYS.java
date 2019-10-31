@@ -34,6 +34,8 @@ public class JCJLineYS implements Parcelable {
     public String SFHJ;
     // 混接类型
     public String HJLX;
+
+    public String HJLX_extra;
     // 类型
     public String LX;
     // 备注
@@ -171,9 +173,61 @@ public class JCJLineYS implements Parcelable {
     }
 
 
+    @Generated(hash = 1848944537)
+    public JCJLineYS(Long ID, String JCJBH, String LJBH, float QDMS, String GJ,
+                     String CZ, String SFXG, String SFDTYZ, String SFHJ, String HJLX,
+                     String HJLX_extra, String LX, String BZ, float QDXZB, float QDYZB,
+                     float ZDXZB, float ZDYZB) {
+        this.ID = ID;
+        this.JCJBH = JCJBH;
+        this.LJBH = LJBH;
+        this.QDMS = QDMS;
+        this.GJ = GJ;
+        this.CZ = CZ;
+        this.SFXG = SFXG;
+        this.SFDTYZ = SFDTYZ;
+        this.SFHJ = SFHJ;
+        this.HJLX = HJLX;
+        this.HJLX_extra = HJLX_extra;
+        this.LX = LX;
+        this.BZ = BZ;
+        this.QDXZB = QDXZB;
+        this.QDYZB = QDYZB;
+        this.ZDXZB = ZDXZB;
+        this.ZDYZB = ZDYZB;
+    }
+
+    protected JCJLineYS(Parcel in) {
+        this.ID = (Long) in.readValue(Long.class.getClassLoader());
+        this.JCJBH = in.readString();
+        this.LJBH = in.readString();
+        this.QDMS = in.readFloat();
+        this.GJ = in.readString();
+        this.CZ = in.readString();
+        this.SFXG = in.readString();
+        this.SFDTYZ = in.readString();
+        this.SFHJ = in.readString();
+        this.HJLX = in.readString();
+        this.HJLX_extra = in.readString();
+        this.LX = in.readString();
+        this.BZ = in.readString();
+        this.QDXZB = in.readFloat();
+        this.QDYZB = in.readFloat();
+        this.ZDXZB = in.readFloat();
+        this.ZDYZB = in.readFloat();
+    }
+
+    public Long getID() {
+        return this.ID;
+    }
+
     @Override
     public int describeContents() {
         return 0;
+    }
+
+    public void setID(Long ID) {
+        this.ID = ID;
     }
 
     @Override
@@ -188,6 +242,7 @@ public class JCJLineYS implements Parcelable {
         dest.writeString(this.SFDTYZ);
         dest.writeString(this.SFHJ);
         dest.writeString(this.HJLX);
+        dest.writeString(this.HJLX_extra);
         dest.writeString(this.LX);
         dest.writeString(this.BZ);
         dest.writeFloat(this.QDXZB);
@@ -196,54 +251,12 @@ public class JCJLineYS implements Parcelable {
         dest.writeFloat(this.ZDYZB);
     }
 
-    public Long getID() {
-        return this.ID;
+    public String getHJLX_extra() {
+        return this.HJLX_extra;
     }
 
-    public void setID(Long ID) {
-        this.ID = ID;
-    }
-
-    protected JCJLineYS(Parcel in) {
-        this.ID = (Long) in.readValue(Long.class.getClassLoader());
-        this.JCJBH = in.readString();
-        this.LJBH = in.readString();
-        this.QDMS = in.readFloat();
-        this.GJ = in.readString();
-        this.CZ = in.readString();
-        this.SFXG = in.readString();
-        this.SFDTYZ = in.readString();
-        this.SFHJ = in.readString();
-        this.HJLX = in.readString();
-        this.LX = in.readString();
-        this.BZ = in.readString();
-        this.QDXZB = in.readFloat();
-        this.QDYZB = in.readFloat();
-        this.ZDXZB = in.readFloat();
-        this.ZDYZB = in.readFloat();
-    }
-
-    @Generated(hash = 723436233)
-    public JCJLineYS(Long ID, String JCJBH, String LJBH, float QDMS, String GJ,
-            String CZ, String SFXG, String SFDTYZ, String SFHJ, String HJLX,
-            String LX, String BZ, float QDXZB, float QDYZB, float ZDXZB,
-            float ZDYZB) {
-        this.ID = ID;
-        this.JCJBH = JCJBH;
-        this.LJBH = LJBH;
-        this.QDMS = QDMS;
-        this.GJ = GJ;
-        this.CZ = CZ;
-        this.SFXG = SFXG;
-        this.SFDTYZ = SFDTYZ;
-        this.SFHJ = SFHJ;
-        this.HJLX = HJLX;
-        this.LX = LX;
-        this.BZ = BZ;
-        this.QDXZB = QDXZB;
-        this.QDYZB = QDYZB;
-        this.ZDXZB = ZDXZB;
-        this.ZDYZB = ZDYZB;
+    public void setHJLX_extra(String HJLX_extra) {
+        this.HJLX_extra = HJLX_extra;
     }
 
     public static final Creator<JCJLineYS> CREATOR = new Creator<JCJLineYS>() {

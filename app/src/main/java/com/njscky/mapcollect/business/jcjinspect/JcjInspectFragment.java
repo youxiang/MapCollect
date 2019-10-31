@@ -13,12 +13,6 @@ import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentPagerAdapter;
-import androidx.viewpager.widget.ViewPager;
-
 import com.esri.core.map.Graphic;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.tabs.TabLayout;
@@ -37,6 +31,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.viewpager.widget.ViewPager;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -202,9 +201,7 @@ public class JcjInspectFragment extends Fragment {
 
             int jgczIndex = getSelectIndex(arrJGCZ, pointYS.JGCZ);
             spJGCZ.setSelection(jgczIndex);
-            if (jgczIndex == arrJGCZ.length - 1) {
-                etJGCZ.setText(pointYS.JGCZ);
-            }
+            etJGCZ.setText(pointYS.JGCZ_extra);
 
             spJGQK.setAdapter(new ArrayAdapter<>
                     (
@@ -240,9 +237,7 @@ public class JcjInspectFragment extends Fragment {
 
             int jsczIndex = getSelectIndex(arrJSCZ, pointYS.JSCZ);
             spJSCZ.setSelection(jsczIndex);
-            if (jsczIndex == arrJSCZ.length - 1) {
-                etJGCZ.setText(pointYS.JSCZ);
-            }
+            etJSCZ.setText(pointYS.JSCZ_extra);
 
             spJSQK.setAdapter(new ArrayAdapter<>
                     (
@@ -275,7 +270,7 @@ public class JcjInspectFragment extends Fragment {
             spJLX.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                    if (TextUtils.equals((String) spJLX.getSelectedItem(), "其他")) {
+                    if (TextUtils.equals((String) spJLX.getSelectedItem(), "穿井")) {
                         etJLX.setVisibility(View.VISIBLE);
                     } else {
                         etJLX.setVisibility(View.GONE);
@@ -289,11 +284,7 @@ public class JcjInspectFragment extends Fragment {
 
             int jlxIndex = getSelectIndex(arrJLX, pointYS.JLX);
             spJLX.setSelection(jlxIndex);
-
-//            if (jlxIndex == arrJLX.length - 1) {
-//                etJLX.setText(pointYS.CJQK);
-//            }
-
+            etJLX.setText(pointYS.JLX_extra);
 
             if (fragments == null) {
                 fragments = new ArrayList<>();
@@ -384,12 +375,21 @@ public class JcjInspectFragment extends Fragment {
     void onSave() {
         pointYS.JCJBH = etJCJBH.getText().toString();
         pointYS.JGCZ = (String) spJGCZ.getSelectedItem();
+        if (TextUtils.equals(pointYS.JGCZ, "其他")) {
+            pointYS.JGCZ_extra = etJGCZ.getText().toString();
+        }
         pointYS.JGQK = (String) spJGQK.getSelectedItem();
         pointYS.JSCZ = (String) spJSCZ.getSelectedItem();
+        if (TextUtils.equals(pointYS.JSCZ, "其他")) {
+            pointYS.JSCZ_extra = etJSCZ.getText().toString();
+        }
         pointYS.JSQK = (String) spJSQK.getSelectedItem();
         pointYS.JSCC = etJSCC.getText().toString();
         pointYS.FSWLX = (String) spFSWLX.getSelectedItem();
         pointYS.JLX = (String) spJLX.getSelectedItem();
+        if (TextUtils.equals(pointYS.JLX, "穿井")) {
+            pointYS.JLX_extra = etJLX.getText().toString();
+        }
 
         for (int i = 0; i < lineYSList.size(); i++) {
             ConnectPointFragment fragment = fragments.get(i);

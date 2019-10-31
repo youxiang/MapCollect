@@ -3,14 +3,14 @@ package com.njscky.mapcollect.db.entitiy;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import androidx.annotation.NonNull;
-
 import com.google.gson.Gson;
 
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.Property;
+
+import androidx.annotation.NonNull;
 
 /**
  * 雨水检查井点
@@ -24,12 +24,16 @@ public class JCJPointYS implements Parcelable {
     public String JCJBH;
     // 井盖材质
     public String JGCZ;
+
+    public String JGCZ_extra;
     // 井盖情况
     public String JGQK;
     // 井室情况
     public String JSQK;
     // 井室材质
     public String JSCZ;
+
+    public String JSCZ_extra;
     // 井室尺寸
     public String JSCC;
     // 附属物类型
@@ -46,6 +50,8 @@ public class JCJPointYS implements Parcelable {
     public float YZB;
     // 井类型
     public String JLX;
+
+    public String JLX_extra;
 
     public JCJPointYS() {
     }
@@ -168,56 +174,19 @@ public class JCJPointYS implements Parcelable {
         this.ID = ID;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeValue(this.ID);
-        dest.writeString(this.JCJBH);
-        dest.writeString(this.JGCZ);
-        dest.writeString(this.JGQK);
-        dest.writeString(this.JSQK);
-        dest.writeString(this.JSCZ);
-        dest.writeString(this.JSCC);
-        dest.writeString(this.FSWLX);
-        dest.writeString(this.SZDL);
-        dest.writeString(this.SFXG);
-        dest.writeString(this.BZ);
-        dest.writeFloat(this.XZB);
-        dest.writeFloat(this.YZB);
-        dest.writeString(this.JLX);
-    }
-
-    protected JCJPointYS(Parcel in) {
-        this.ID = (Long) in.readValue(Long.class.getClassLoader());
-        this.JCJBH = in.readString();
-        this.JGCZ = in.readString();
-        this.JGQK = in.readString();
-        this.JSQK = in.readString();
-        this.JSCZ = in.readString();
-        this.JSCC = in.readString();
-        this.FSWLX = in.readString();
-        this.SZDL = in.readString();
-        this.SFXG = in.readString();
-        this.BZ = in.readString();
-        this.XZB = in.readFloat();
-        this.YZB = in.readFloat();
-        this.JLX = in.readString();
-    }
-
-    @Generated(hash = 422866062)
-    public JCJPointYS(Long ID, String JCJBH, String JGCZ, String JGQK, String JSQK,
-            String JSCZ, String JSCC, String FSWLX, String SZDL, String SFXG,
-            String BZ, float XZB, float YZB, String JLX) {
+    @Generated(hash = 1637875100)
+    public JCJPointYS(Long ID, String JCJBH, String JGCZ, String JGCZ_extra,
+                      String JGQK, String JSQK, String JSCZ, String JSCZ_extra, String JSCC,
+                      String FSWLX, String SZDL, String SFXG, String BZ, float XZB, float YZB,
+                      String JLX, String JLX_extra) {
         this.ID = ID;
         this.JCJBH = JCJBH;
         this.JGCZ = JGCZ;
+        this.JGCZ_extra = JGCZ_extra;
         this.JGQK = JGQK;
         this.JSQK = JSQK;
         this.JSCZ = JSCZ;
+        this.JSCZ_extra = JSCZ_extra;
         this.JSCC = JSCC;
         this.FSWLX = FSWLX;
         this.SZDL = SZDL;
@@ -226,6 +195,77 @@ public class JCJPointYS implements Parcelable {
         this.XZB = XZB;
         this.YZB = YZB;
         this.JLX = JLX;
+        this.JLX_extra = JLX_extra;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    protected JCJPointYS(Parcel in) {
+        this.ID = (Long) in.readValue(Long.class.getClassLoader());
+        this.JCJBH = in.readString();
+        this.JGCZ = in.readString();
+        this.JGCZ_extra = in.readString();
+        this.JGQK = in.readString();
+        this.JSQK = in.readString();
+        this.JSCZ = in.readString();
+        this.JSCZ_extra = in.readString();
+        this.JSCC = in.readString();
+        this.FSWLX = in.readString();
+        this.SZDL = in.readString();
+        this.SFXG = in.readString();
+        this.BZ = in.readString();
+        this.XZB = in.readFloat();
+        this.YZB = in.readFloat();
+        this.JLX = in.readString();
+        this.JLX_extra = in.readString();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeValue(this.ID);
+        dest.writeString(this.JCJBH);
+        dest.writeString(this.JGCZ);
+        dest.writeString(this.JGCZ_extra);
+        dest.writeString(this.JGQK);
+        dest.writeString(this.JSQK);
+        dest.writeString(this.JSCZ);
+        dest.writeString(this.JSCZ_extra);
+        dest.writeString(this.JSCC);
+        dest.writeString(this.FSWLX);
+        dest.writeString(this.SZDL);
+        dest.writeString(this.SFXG);
+        dest.writeString(this.BZ);
+        dest.writeFloat(this.XZB);
+        dest.writeFloat(this.YZB);
+        dest.writeString(this.JLX);
+        dest.writeString(this.JLX_extra);
+    }
+
+    public String getJGCZ_extra() {
+        return this.JGCZ_extra;
+    }
+
+    public void setJGCZ_extra(String JGCZ_extra) {
+        this.JGCZ_extra = JGCZ_extra;
+    }
+
+    public String getJSCZ_extra() {
+        return this.JSCZ_extra;
+    }
+
+    public void setJSCZ_extra(String JSCZ_extra) {
+        this.JSCZ_extra = JSCZ_extra;
+    }
+
+    public String getJLX_extra() {
+        return this.JLX_extra;
+    }
+
+    public void setJLX_extra(String JLX_extra) {
+        this.JLX_extra = JLX_extra;
     }
 
     public static final Creator<JCJPointYS> CREATOR = new Creator<JCJPointYS>() {
