@@ -24,10 +24,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rv_property_list"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+            <include layout="@layout/layout_ys_point_inspect" />
 
             <com.google.android.material.tabs.TabLayout
                 android:id="@+id/tabLayout"

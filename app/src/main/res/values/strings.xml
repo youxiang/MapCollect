@@ -19,6 +19,21 @@
     <string name="jcjbh">检查井编号</string>
     <string name="title_activity_display_photo">查看照片</string>
     <string name="action_delete">删除</string>
+    <string name="jscz">井室材质</string>
+    <string name="jsqk">井室情况</string>
+    <string name="jgcz">井盖材质</string>
+    <string name="jgqk">井盖情况</string>
+    <string name="jscc">井室尺寸</string>
+    <string name="fswlx">附属物类型</string>
+    <string name="jlx">井类型</string>
+    <string name="ljdh">连接点号</string>
+    <string name="ms">埋深</string>
+    <string name="gj">管径</string>
+    <string name="gc">管材</string>
+    <string name="sfdtyz">是否与底图一致</string>
+    <string name="sfhj">是否混接</string>
+    <string name="hjlx">混接类型</string>
+    <string name="bz">备注</string>
     <string-array name="photo_type_arr">
         <item>清疏前</item>
         <item>清疏后</item>

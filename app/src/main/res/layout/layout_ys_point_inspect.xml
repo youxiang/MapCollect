@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout style="@style/AppTheme.Property">
+
+        <TextView
+            android:layout_width="@dimen/prop_name_width"
+            android:layout_height="wrap_content"
+            android:text="@string/jcjbh" />
+
+        <EditText
+            android:id="@+id/et_jcjbh"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <ImageButton
+            android:id="@+id/ib_add_photo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_add_photo" />
+    </LinearLayout>
+
+
+    <LinearLayout style="@style/AppTheme.Property">
+
+        <TextView
+            android:layout_width="@dimen/prop_name_width"
+            android:layout_height="wrap_content"
+            android:text="@string/jgcz" />
+
+        <Spinner
+            android:id="@+id/sp_jgcz"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <EditText
+            android:id="@+id/et_jgcz"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:visibility="visible" />
+    </LinearLayout>
+
+    <LinearLayout style="@style/AppTheme.Property">
+
+        <TextView
+            android:layout_width="@dimen/prop_name_width"
+            android:layout_height="wrap_content"
+            android:text="@string/jgqk" />
+
+        <Spinner
+            android:id="@+id/sp_jgqk"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+    </LinearLayout>
+
+    <LinearLayout style="@style/AppTheme.Property">
+
+        <TextView
+            android:layout_width="@dimen/prop_name_width"
+            android:layout_height="wrap_content"
+            android:text="@string/jscz" />
+
+        <Spinner
+            android:id="@+id/sp_jscz"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <EditText
+            android:id="@+id/et_jscz"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:visibility="visible" />
+    </LinearLayout>
+
+    <LinearLayout style="@style/AppTheme.Property">
+
+        <TextView
+            android:layout_width="@dimen/prop_name_width"
+            android:layout_height="wrap_content"
+            android:text="@string/jsqk" />
+
+        <Spinner
+            android:id="@+id/sp_jsqk"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+    </LinearLayout>
+
+    <LinearLayout style="@style/AppTheme.Property">
+
+        <TextView
+            android:layout_width="@dimen/prop_name_width"
+            android:layout_height="wrap_content"
+            android:text="@string/jscc" />
+
+        <EditText
+            android:id="@+id/et_jscc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+    </LinearLayout>
+
+    <LinearLayout style="@style/AppTheme.Property">
+
+        <TextView
+            android:layout_width="@dimen/prop_name_width"
+            android:layout_height="wrap_content"
+            android:text="@string/fswlx" />
+
+        <Spinner
+            android:id="@+id/sp_fswlx"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+    </LinearLayout>
+
+    <LinearLayout style="@style/AppTheme.Property">
+
+        <TextView
+            android:layout_width="@dimen/prop_name_width"
+            android:layout_height="wrap_content"
+            android:text="@string/jlx" />
+
+        <Spinner
+            android:id="@+id/sp_jlx"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <EditText
+            android:id="@+id/et_jlx"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:visibility="visible" />
+    </LinearLayout>
+
+
+</LinearLayout>

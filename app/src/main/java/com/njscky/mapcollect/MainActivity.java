@@ -85,7 +85,6 @@ public class MainActivity extends AppCompatActivity {
                     bottomSheetBehavior.setHideable(true);
                     bottomSheetBehavior.setState(STATE_HIDDEN);
                 }
-                layerManager.unHighlightGraphic();
 
 //                Point p = mMapView.toMapPoint(x, y);
 //                mMapView.centerAt(p, true);
@@ -122,6 +121,9 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     getWindow().setStatusBarColor(getResources().getColor(R.color.colorPrimaryTransparent));
                     decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+                    if (state == STATE_HIDDEN) {
+                        layerManager.unHighlightGraphic();
+                    }
                 }
             }
 
@@ -182,6 +184,8 @@ public class MainActivity extends AppCompatActivity {
                             getSupportFragmentManager().beginTransaction()
                                     .replace(R.id.fragment_container, fragment, JcjInspectFragment.class.getSimpleName())
                                     .commit();
+
+                            fragment.setBehaviorInstance(bottomSheetBehavior);
 
                             bottomSheetBehavior.setHideable(false);
                             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);

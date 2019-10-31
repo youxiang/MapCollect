@@ -1,19 +1,25 @@
 package com.njscky.mapcollect.business.jcjinspect;
 
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentPagerAdapter;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
 import com.esri.core.map.Graphic;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.tabs.TabLayout;
 import com.njscky.mapcollect.MapCollectApp;
 import com.njscky.mapcollect.R;
@@ -32,6 +38,7 @@ import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.Unbinder;
 
 /**
@@ -41,15 +48,36 @@ public class JcjInspectFragment extends Fragment {
 
     private static final String TAG = "JcjInspectFragment";
 
-    @BindView(R.id.rv_property_list)
-    RecyclerView rvPropertyList;
+    @BindView(R.id.et_jcjbh)
+    EditText etJCJBH;
+    @BindView(R.id.ib_add_photo)
+    ImageButton ibAddPhoto;
+    @BindView(R.id.sp_jgcz)
+    Spinner spJGCZ;
+    @BindView(R.id.et_jgcz)
+    EditText etJGCZ;
+    @BindView(R.id.sp_jgqk)
+    Spinner spJGQK;
+    @BindView(R.id.sp_jscz)
+    Spinner spJSCZ;
+    @BindView(R.id.et_jscz)
+    EditText etJSCZ;
+    @BindView(R.id.sp_jsqk)
+    Spinner spJSQK;
+    @BindView(R.id.et_jscc)
+    EditText etJSCC;
+    @BindView(R.id.sp_fswlx)
+    Spinner spFSWLX;
+    @BindView(R.id.sp_jlx)
+    Spinner spJLX;
+    @BindView(R.id.et_jlx)
+    EditText etJLX;
     @BindView(R.id.tabLayout)
     TabLayout tabLayout;
     @BindView(R.id.viewPager)
     ViewPager viewPager;
 
     private List<Fragment> fragments;
-
 
     private Unbinder unbiner;
 
@@ -58,9 +86,18 @@ public class JcjInspectFragment extends Fragment {
 
     private JCJPointYSDao pointYSDao;
     private JCJLineYSDao lineYSDao;
-    private PointPropertyListAdapter pointPropertyListAdapter;
 
     private LayerManager layerManager;
+    private BottomSheetBehavior behavior;
+
+    private JCJPointYS pointYS;
+    private List<JCJLineYS> lineYSList;
+    private String[] arrJGCZ;
+    private String[] arrJGQK;
+    private String[] arrJSCZ;
+    private String[] arrJSQK;
+    private String[] arrFSWLX;
+    private String[] arrJLX;
 
     public static JcjInspectFragment newInstance(Graphic graphic) {
 
@@ -102,6 +139,12 @@ public class JcjInspectFragment extends Fragment {
         pointYSDao = DbManager.getInstance(getContext()).getDaoSession().getJCJPointYSDao();
         lineYSDao = DbManager.getInstance(getContext()).getDaoSession().getJCJLineYSDao();
 
+        arrJGCZ = getResources().getStringArray(R.array.jgcz);
+        arrJGQK = getResources().getStringArray(R.array.jgqk);
+        arrJSCZ = getResources().getStringArray(R.array.jscz);
+        arrJSQK = getResources().getStringArray(R.array.jsqk);
+        arrFSWLX = getResources().getStringArray(R.array.fswlx);
+        arrJLX = getResources().getStringArray(R.array.jlx);
         loadInfo();
     }
 
@@ -121,79 +164,194 @@ public class JcjInspectFragment extends Fragment {
         AppExecutors.DB.execute(new Runnable() {
             @Override
             public void run() {
-                JCJPointYS pointYS = pointYSDao.queryBuilder().where(JCJPointYSDao.Properties.JCJBH.eq(JCJBH)).list().get(0);
+                pointYS = pointYSDao.queryBuilder().where(JCJPointYSDao.Properties.JCJBH.eq(JCJBH)).list().get(0);
 
-                List<JCJLineYS> lineYSList = lineYSDao.queryBuilder().where(JCJLineYSDao.Properties.JCJBH.eq(JCJBH)).list();
+                lineYSList = lineYSDao.queryBuilder().where(JCJLineYSDao.Properties.JCJBH.eq(JCJBH)).list();
 
-                showInfo(pointYS, lineYSList);
+                updateInfo();
             }
         });
     }
 
-    private void showInfo(JCJPointYS pointYS, List<JCJLineYS> lineYSList) {
-        AppExecutors.MAIN.execute(new Runnable() {
-            @Override
-            public void run() {
-                List<Property> pointProperties = getPointProperties(pointYS);
-                pointPropertyListAdapter = new PointPropertyListAdapter();
-                pointPropertyListAdapter.setOnItemClickListener(new PointPropertyListAdapter.OnItemClickListener() {
-                    @Override
-                    public void onAddPhoto() {
-                        AddPhotoActivity.start(getActivity(), pointYS.JCJBH);
-                    }
+    private void updateInfo() {
+        AppExecutors.MAIN.execute(() -> {
 
-                    @Override
-                    public void onViewPhoto() {
-//                        DisplayPhotoActivity.start(getActivity(), );
-                    }
-                });
-                GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 1);
-                rvPropertyList.setLayoutManager(layoutManager);
-                rvPropertyList.setNestedScrollingEnabled(false);
-                rvPropertyList.setAdapter(pointPropertyListAdapter);
-                pointPropertyListAdapter.setProperties(pointProperties);
+            etJCJBH.setText(pointYS.JCJBH);
 
-                if (fragments == null) {
-                    fragments = new ArrayList<>();
-                } else {
-                    fragments.clear();
+            spJGCZ.setAdapter(new ArrayAdapter<>
+                    (
+                            getContext(),
+                            android.R.layout.simple_list_item_1,
+                            arrJGCZ
+                    )
+            );
+
+            spJGCZ.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    Log.i(TAG, "onItemSelected: " + position);
+                    if (TextUtils.equals((String) spJGCZ.getSelectedItem(), "其他")) {
+                        etJGCZ.setVisibility(View.VISIBLE);
+                    } else {
+                        etJGCZ.setVisibility(View.GONE);
+                    }
                 }
 
-                int pipeLineCount = lineYSList.size();
-                for (int i = 0; i < pipeLineCount; i++) {
-                    fragments.add(ConnectPointFragment.newInstance(lineYSList.get(i), pointYS));
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+
+                    Log.i(TAG, "onNothingSelected: ");
                 }
+            });
 
-                viewPager.setAdapter(new FragmentPagerAdapter(getChildFragmentManager(), FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
-                    @Override
-                    public Fragment getItem(int position) {
-                        return fragments.get(position);
-                    }
-
-                    @Override
-                    public int getCount() {
-                        return fragments.size();
-                    }
-
-                    @Nullable
-                    @Override
-                    public CharSequence getPageTitle(int position) {
-                        return "连接点" + (position + 1);
-                    }
-                });
-
-                tabLayout.setupWithViewPager(viewPager);
-                tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
+            int jgczIndex = getSelectIndex(arrJGCZ, pointYS.JGCZ);
+            spJGCZ.setSelection(jgczIndex);
+            if (jgczIndex == arrJGCZ.length - 1) {
+                etJGCZ.setText(pointYS.JGCZ);
             }
+
+            spJGQK.setAdapter(new ArrayAdapter<>
+                    (
+                            getContext(),
+                            android.R.layout.simple_list_item_1,
+                            arrJGQK
+                    )
+            );
+
+            spJGQK.setSelection(getSelectIndex(arrJGQK, pointYS.JGQK));
+
+            spJSCZ.setAdapter(new ArrayAdapter<>
+                    (
+                            getContext(),
+                            android.R.layout.simple_list_item_1,
+                            arrJSCZ
+                    )
+            );
+            spJSCZ.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    if (TextUtils.equals((String) spJSCZ.getSelectedItem(), "其他")) {
+                        etJSCZ.setVisibility(View.VISIBLE);
+                    } else {
+                        etJSCZ.setVisibility(View.GONE);
+                    }
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+                }
+            });
+
+            int jsczIndex = getSelectIndex(arrJSCZ, pointYS.JSCZ);
+            spJSCZ.setSelection(jsczIndex);
+            if (jsczIndex == arrJSCZ.length - 1) {
+                etJGCZ.setText(pointYS.JSCZ);
+            }
+
+            spJSQK.setAdapter(new ArrayAdapter<>
+                    (
+                            getContext(),
+                            android.R.layout.simple_list_item_1,
+                            arrJSQK
+                    )
+            );
+            spJSQK.setSelection(getSelectIndex(arrJSQK, pointYS.JSQK));
+
+            etJSCC.setText(pointYS.JSCC);
+
+            spFSWLX.setAdapter(new ArrayAdapter<>
+                    (
+                            getContext(),
+                            android.R.layout.simple_list_item_1,
+                            arrFSWLX
+                    )
+            );
+
+            spFSWLX.setSelection(getSelectIndex(arrFSWLX, pointYS.FSWLX));
+
+            spJLX.setAdapter(new ArrayAdapter<>
+                    (
+                            getContext(),
+                            android.R.layout.simple_list_item_1,
+                            arrJLX
+                    )
+            );
+            spJLX.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    if (TextUtils.equals((String) spJLX.getSelectedItem(), "其他")) {
+                        etJLX.setVisibility(View.VISIBLE);
+                    } else {
+                        etJLX.setVisibility(View.GONE);
+                    }
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+                }
+            });
+
+            int jlxIndex = getSelectIndex(arrJLX, pointYS.JLX);
+            spJLX.setSelection(jlxIndex);
+
+            if (jlxIndex == arrJLX.length - 1) {
+                etJLX.setText(pointYS.CJQK);
+            }
+
+
+            if (fragments == null) {
+                fragments = new ArrayList<>();
+            } else {
+                fragments.clear();
+            }
+
+            int pipeLineCount = lineYSList.size();
+            for (int i = 0; i < pipeLineCount; i++) {
+                fragments.add(ConnectPointFragment.newInstance(lineYSList.get(i), pointYS));
+            }
+
+            viewPager.setAdapter(new FragmentPagerAdapter(getChildFragmentManager(), FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
+                @Override
+                public Fragment getItem(int position) {
+                    return fragments.get(position);
+                }
+
+                @Override
+                public int getCount() {
+                    return fragments.size();
+                }
+
+                @Nullable
+                @Override
+                public CharSequence getPageTitle(int position) {
+                    return "连接点" + (position + 1);
+                }
+            });
+
+            tabLayout.setupWithViewPager(viewPager);
+            tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
         });
+    }
+
+    private int getSelectIndex(String[] list, String item) {
+        if (TextUtils.isEmpty(item)) {
+            return 0;
+        }
+        for (int i = 0; i < list.length; i++) {
+            if (TextUtils.equals(list[i], item)) {
+                return i;
+            }
+        }
+
+        return list.length - 1;
     }
 
     private List<Property> getPointProperties(JCJPointYS pipePoint) {
         List<Property> rst = new ArrayList<>();
         rst.add(new PhotoProperty("检查井编号", pipePoint.JCJBH));
-        rst.add(new OptionalProperty("井盖材质", pipePoint.JGCZ, new String[]{"", "铸铁", "塑料", "矼", "其他"}, new int[]{4}));
+        rst.add(new OptionalProperty("井盖材质", pipePoint.JGCZ, new String[]{"", "铸铁", "塑料", "砼", "其他"}, new int[]{4}));
         rst.add(new OptionalProperty("井盖情况", pipePoint.JGQK, new String[]{"", "正常", "破损", "错盖"}));
-        rst.add(new OptionalProperty("井室材质", pipePoint.JSCZ, new String[]{"", "砖混", "塑料", "矼", "其他"}, new int[]{4}));
+        rst.add(new OptionalProperty("井室材质", pipePoint.JSCZ, new String[]{"", "砖砼混", "塑料", "矼", "其他"}, new int[]{4}));
         rst.add(new OptionalProperty("井室情况", pipePoint.JSQK, new String[]{"", "正常", "破损", "渗漏"}));
         rst.add(new Property("井室尺寸", pipePoint.JSCC, true));
         rst.add(new OptionalProperty("附属物类型", pipePoint.FSWLX, new String[]{"", "雨篦", "排放口"}));
@@ -219,5 +377,33 @@ public class JcjInspectFragment extends Fragment {
         } else {
             highlightGraphic();
         }
+    }
+
+    @OnClick(R.id.ib_add_photo)
+    void onAddPhoto() {
+        AddPhotoActivity.start(getActivity(), JCJBH);
+    }
+
+    @OnClick(R.id.btn_cancel)
+    void onCancel() {
+        //TODO
+        hideJcjInspectLayout();
+    }
+
+    private void hideJcjInspectLayout() {
+        if (behavior != null) {
+            behavior.setHideable(true);
+            behavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+            behavior = null;
+        }
+    }
+
+    @OnClick(R.id.btn_save)
+    void onSave() {
+        //TODO
+    }
+
+    public void setBehaviorInstance(BottomSheetBehavior bottomSheetBehavior) {
+        this.behavior = bottomSheetBehavior;
     }
 }

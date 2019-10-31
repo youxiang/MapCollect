@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="jgcz">
+        <item></item>
+        <item>铸铁</item>
+        <item>塑料</item>
+        <item>砼</item>
+        <item>其他</item>
+    </string-array>
+
+    <string-array name="jgqk">
+        <item></item>
+        <item>正常</item>
+        <item>错盖</item>
+        <item>破损</item>
+    </string-array>
+
+    <string-array name="jscz">
+        <item></item>
+        <item>砖混</item>
+        <item>塑料</item>
+        <item>砼</item>
+        <item>其他</item>
+    </string-array>
+
+    <string-array name="jsqk">
+        <item></item>
+        <item>正常</item>
+        <item>破损</item>
+        <item>渗漏</item>
+    </string-array>
+
+    <string-array name="fswlx">
+        <item></item>
+        <item>雨篦</item>
+        <item>排放口</item>
+    </string-array>
+
+    <string-array name="jlx">
+        <item></item>
+        <item>交叉井</item>
+        <item>截流井</item>
+        <item>节点井</item>
+        <item>穿井</item>
+    </string-array>
+
+    <string-array name="sfhj">
+        <item></item>
+        <item>是</item>
+        <item>否</item>
+    </string-array>
+
+    <string-array name="hjlx">
+        <item></item>
+        <item>雨混</item>
+        <item>污混</item>
+        <item>合流</item>
+        <item>片区</item>
+        <item>其他</item>
+    </string-array>
+    <string-array name="sfdtyz">
+        <item></item>
+        <item>是</item>
+        <item>否</item>
+    </string-array>
+</resources>
