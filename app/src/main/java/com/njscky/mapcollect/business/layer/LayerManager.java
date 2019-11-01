@@ -466,6 +466,10 @@ public class LayerManager {
         return gxLayer.getFullExtent();
     }
 
+    public Graphic getPointGraphicById(long graphicId) {
+        return ysjcjPointLayer.getGraphic((int) graphicId);
+    }
+
 
     public interface LayerListener {
 

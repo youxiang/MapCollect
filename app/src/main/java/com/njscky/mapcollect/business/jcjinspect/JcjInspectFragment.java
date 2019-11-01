@@ -98,11 +98,19 @@ public class JcjInspectFragment extends Fragment {
     private String[] arrJSQK;
     private String[] arrFSWLX;
     private String[] arrJLX;
+    private long graphicId;
 
     public static JcjInspectFragment newInstance(Graphic graphic) {
 
         Bundle args = new Bundle();
-        args.putSerializable("graphic", graphic);
+        args.putLong("graphicId", graphic.getId());
+        Map<String, Object> attributes = graphic.getAttributes();
+        String JCJBH = null;
+        if (attributes != null) {
+            JCJBH = (String) attributes.get("JCJBH");
+            args.putString("JCJBH", JCJBH);
+        }
+
 
         JcjInspectFragment fragment = new JcjInspectFragment();
         fragment.setArguments(args);
@@ -125,13 +133,10 @@ public class JcjInspectFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        graphic = (Graphic) getArguments().getSerializable("graphic");
+        graphicId = getArguments().getLong("graphicId");
         layerManager = MapCollectApp.getApp().getLayerManager();
-
-        Map<String, Object> attributes = graphic.getAttributes();
-        if (attributes != null) {
-            JCJBH = (String) attributes.get("JCJBH");
-        }
+        graphic = layerManager.getPointGraphicById(graphicId);
+        JCJBH = getArguments().getString("JCJBH");
 
         highlightGraphic();
 
