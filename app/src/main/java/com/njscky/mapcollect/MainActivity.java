@@ -60,7 +60,6 @@ public class MainActivity extends AppCompatActivity {
     private static final int REQ_PROJECT = 100;
 
     String dbName = "MapCollect.db";
-
     @BindView(R.id.map)
     MapView mMapView;
     IdentifyParameters params; //背景管线查询参数
@@ -71,6 +70,9 @@ public class MainActivity extends AppCompatActivity {
 
     @BindView(R.id.btnGCGL)
     Button btnProject;
+
+    @BindView(R.id.bottom_menu)
+    View bottomMenuLayout;
 
     BottomSheetBehavior bottomSheetBehavior;
     private AlertDialog choosePointsDialog;
@@ -83,12 +85,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         layerManager = MapCollectApp.getApp().getLayerManager();
+        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQ_PERMISSIONS);
+    }
 
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(MainActivity.this, PERMISSIONS, REQ_PERMISSIONS);
-        } else {
-
-        }
+    private void initMap() {
 
         mMapView.setOnSingleTapListener(new OnSingleTapListener() {
             @Override
@@ -144,11 +144,6 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-
-
-    }
-
-    private void initMap() {
 
         layerManager.loadLayers(new LayerManager.LayerListener() {
             @Override
@@ -217,13 +212,23 @@ public class MainActivity extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == REQ_PERMISSIONS) {
             if (isGranted(grantResults)) {
-                initMap();
+                onPermissionGrant();
             } else {
-                Snackbar.make(mMapView, "需要设置权限", Snackbar.LENGTH_INDEFINITE)
-                        .setAction("打开设置 ", v -> PermissionUtils.gotoSetting(MainActivity.this))
-                        .show();
+                onPermissionDeny();
             }
         }
+    }
+
+    private void onPermissionGrant() {
+        bottomMenuLayout.setVisibility(View.VISIBLE);
+        initMap();
+    }
+
+    private void onPermissionDeny() {
+        bottomMenuLayout.setVisibility(View.GONE);
+        Snackbar.make(mMapView, "需要设置权限", Snackbar.LENGTH_INDEFINITE)
+                .setAction("打开设置 ", v -> PermissionUtils.gotoSetting(this))
+                .show();
     }
 
     private boolean isGranted(int[] grantResults) {
@@ -240,13 +245,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         mMapView.unpause();
-
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PERMISSION_GRANTED) {
-            Snackbar.make(mMapView, "需要设置权限", Snackbar.LENGTH_INDEFINITE)
-                    .setAction("打开设置 ", v -> PermissionUtils.gotoSetting(MainActivity.this))
-                    .show();
+            onPermissionDeny();
         } else {
-            initMap();
+            onPermissionGrant();
         }
     }
 
@@ -299,78 +301,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
-    /*
-     * 异步执行查询任务
-     */
-    private class MyIdentifyTask extends
-            AsyncTask<IdentifyParameters, Void, IdentifyResult[]> {
-        IdentifyTask mIdentifyTask;
-        private Graphic[] highlightGraphics;
-        private Context mContext;
-        private GraphicsLayer mGraphicsLayer;
-        private Map<String, Object> map;
-
-        public MyIdentifyTask(GraphicsLayer graphicsLayer) {
-            this.mGraphicsLayer = graphicsLayer;
-        }
-
-        @Override
-        protected IdentifyResult[] doInBackground(IdentifyParameters... params) {
-            IdentifyResult[] mResult = null;
-            if (params != null && params.length > 0) {
-                IdentifyParameters mParams = params[0];
-                try {
-                    mResult = mIdentifyTask.execute(mParams);// 执行识别任务
-                } catch (Exception e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-
-            }
-            return mResult;
-        }
-
-        @Override
-        protected void onPostExecute(IdentifyResult[] results) {
-            // TODO 显示查询结果
-            if (results != null && results.length > 0) {
-                IdentifyResult tempResult = results[0];
-                String layerName = tempResult.getLayerName();
-                highlightGraphics = new Graphic[results.length];
-                Geometry geom = results[0].getGeometry();
-                String typeName = geom.getType().name();
-                map = results[0].getAttributes();
-                //显示到查询结果页面
-
-                QueryResultActivity.start(MainActivity.this, results);
-
-
-//                int color = Color.rgb(255, 255, 0);
-//                // 绘制点线面的要素
-//                if (typeName.equalsIgnoreCase("point")) {
-//                    SimpleMarkerSymbol sms = new SimpleMarkerSymbol(color, 20,
-//                            SimpleMarkerSymbol.STYLE.CIRCLE);
-//                    highlightGraphics[0] = new Graphic(geom, sms);
-//                } else if (typeName.equalsIgnoreCase("polyline")) {
-//                    SimpleLineSymbol sls = new SimpleLineSymbol(color, 5);
-//                    highlightGraphics[0] = new Graphic(geom, sls);
-//                }
-//                mGraphicsLayer.addGraphic(highlightGraphics[0]);
-            } else {
-                Toast toast = Toast.makeText(mContext, "没有拾取到对象！",
-                        Toast.LENGTH_SHORT);
-                toast.show();
-            }
-        }
-
-        @Override
-        protected void onPreExecute() {
-            mIdentifyTask = new IdentifyTask(
-                    "http://58.213.48.109/arcgis/rest/services/PSGX/MapServer");
-        }
-    }
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -441,5 +371,77 @@ public class MainActivity extends AppCompatActivity {
         layerManager.release();
 //        LayerHelper.getInstance(this).release();
         DbManager.getInstance(this).close();
+    }
+
+    /*
+     * 异步执行查询任务
+     */
+    private class MyIdentifyTask extends
+            AsyncTask<IdentifyParameters, Void, IdentifyResult[]> {
+        IdentifyTask mIdentifyTask;
+        private Graphic[] highlightGraphics;
+        private Context mContext;
+        private GraphicsLayer mGraphicsLayer;
+        private Map<String, Object> map;
+
+        public MyIdentifyTask(GraphicsLayer graphicsLayer) {
+            this.mGraphicsLayer = graphicsLayer;
+        }
+
+        @Override
+        protected IdentifyResult[] doInBackground(IdentifyParameters... params) {
+            IdentifyResult[] mResult = null;
+            if (params != null && params.length > 0) {
+                IdentifyParameters mParams = params[0];
+                try {
+                    mResult = mIdentifyTask.execute(mParams);// 执行识别任务
+                } catch (Exception e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+
+            }
+            return mResult;
+        }
+
+        @Override
+        protected void onPostExecute(IdentifyResult[] results) {
+            // TODO 显示查询结果
+            if (results != null && results.length > 0) {
+                IdentifyResult tempResult = results[0];
+                String layerName = tempResult.getLayerName();
+                highlightGraphics = new Graphic[results.length];
+                Geometry geom = results[0].getGeometry();
+                String typeName = geom.getType().name();
+                map = results[0].getAttributes();
+                //显示到查询结果页面
+
+                QueryResultActivity.start(MainActivity.this, results);
+
+
+//                int color = Color.rgb(255, 255, 0);
+//                // 绘制点线面的要素
+//                if (typeName.equalsIgnoreCase("point")) {
+//                    SimpleMarkerSymbol sms = new SimpleMarkerSymbol(color, 20,
+//                            SimpleMarkerSymbol.STYLE.CIRCLE);
+//                    highlightGraphics[0] = new Graphic(geom, sms);
+//                } else if (typeName.equalsIgnoreCase("polyline")) {
+//                    SimpleLineSymbol sls = new SimpleLineSymbol(color, 5);
+//                    highlightGraphics[0] = new Graphic(geom, sls);
+//                }
+//                mGraphicsLayer.addGraphic(highlightGraphics[0]);
+            } else {
+                Toast toast = Toast.makeText(mContext, "没有拾取到对象！",
+                        Toast.LENGTH_SHORT
+                );
+                toast.show();
+            }
+        }
+
+        @Override
+        protected void onPreExecute() {
+            mIdentifyTask = new IdentifyTask(
+                    "http://58.213.48.109/arcgis/rest/services/PSGX/MapServer");
+        }
     }
 }

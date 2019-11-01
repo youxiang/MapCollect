@@ -35,6 +35,7 @@
     <string name="sfhj">是否混接</string>
     <string name="hjlx">混接类型</string>
     <string name="bz">备注</string>
+    <string name="empty">无数据</string>
     <string-array name="photo_type_arr">
         <item>清疏前#QQ</item>
         <item>清疏后#QH</item>
