@@ -342,7 +342,6 @@ public class MainActivity extends AppCompatActivity {
                 map = results[0].getAttributes();
                 //显示到查询结果页面
 
-
 //                int color = Color.rgb(255, 255, 0);
 //                // 绘制点线面的要素
 //                if (typeName.equalsIgnoreCase("point")) {
