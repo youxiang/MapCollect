@@ -71,6 +71,8 @@ public class ProjectActivity extends AppCompatActivity {
 
     @OnClick(R.id.btn_exit)
     void onExit() {
+        setResult(RESULT_CANCELED);
+        finish();
     }
 
     @OnClick(R.id.btn_confirm)
