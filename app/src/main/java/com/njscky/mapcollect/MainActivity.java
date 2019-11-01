@@ -34,6 +34,7 @@ import com.njscky.mapcollect.business.jcjinspect.GraphicListAdpater;
 import com.njscky.mapcollect.business.jcjinspect.JcjInspectFragment;
 import com.njscky.mapcollect.business.layer.LayerManager;
 import com.njscky.mapcollect.business.project.ProjectActivity;
+import com.njscky.mapcollect.business.query.QueryResultActivity;
 import com.njscky.mapcollect.db.DbManager;
 import com.njscky.mapcollect.util.PermissionUtils;
 
@@ -341,6 +342,9 @@ public class MainActivity extends AppCompatActivity {
                 String typeName = geom.getType().name();
                 map = results[0].getAttributes();
                 //显示到查询结果页面
+
+                QueryResultActivity.start(MainActivity.this, results);
+
 
 //                int color = Color.rgb(255, 255, 0);
 //                // 绘制点线面的要素
