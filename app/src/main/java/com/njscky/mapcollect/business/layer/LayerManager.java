@@ -7,6 +7,7 @@ import com.esri.android.map.GraphicsLayer;
 import com.esri.android.map.Layer;
 import com.esri.android.map.TiledLayer;
 import com.esri.android.map.ags.ArcGISDynamicMapServiceLayer;
+import com.esri.android.map.ags.ArcGISLocalTiledLayer;
 import com.esri.android.map.ags.ArcGISTiledMapServiceLayer;
 import com.esri.android.map.event.OnStatusChangedListener;
 import com.esri.core.geometry.Line;
@@ -82,6 +83,18 @@ public class LayerManager {
 
     private void loadLocalTpks(LayerListener callback) {
         // TODO
+        LayerParameter parameter = config.baseMapParameter();
+        ArcGISLocalTiledLayer localTiledLayer = new ArcGISLocalTiledLayer(parameter.localDir.getAbsolutePath() + "/江东路以东地形.tpk");
+        localTiledLayer.setName("背景地形图");
+        localTiledLayer.setOnStatusChangedListener(new OnStatusChangedListener() {
+            @Override
+            public void onStatusChanged(Object o, STATUS status) {
+                Log.i(TAG, "localTiledLayer#onStatusChanged: " + status);
+            }
+        });
+        if (callback != null) {
+            callback.onBaseLayerLoaded(localTiledLayer);
+        }
     }
 
     private void loadFromNetwork(LayerListener callback) {
