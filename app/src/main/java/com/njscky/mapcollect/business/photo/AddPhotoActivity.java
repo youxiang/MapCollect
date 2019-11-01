@@ -243,6 +243,9 @@ public class AddPhotoActivity extends AppCompatActivity {
 
             AppExecutors.MAIN.execute(() -> {
                 photoListAdapter.setPhotos(photoList);
+                if (!photoList.isEmpty()) {
+                    etRemark.setText(photoList.get(0).BZ);
+                }
             });
         });
 
@@ -271,6 +274,11 @@ public class AddPhotoActivity extends AppCompatActivity {
     @OnClick(R.id.btn_confirm)
     void onConfirm() {
         List<PhotoJCJ> photoList = photoListAdapter.getData();
+
+        String bz = etRemark.getText().toString();
+        for (PhotoJCJ photo : photoList) {
+            photo.BZ = bz;
+        }
 
         AppExecutors.DB.execute(() -> {
             photoJCJDao.insertOrReplaceInTx(photoList);

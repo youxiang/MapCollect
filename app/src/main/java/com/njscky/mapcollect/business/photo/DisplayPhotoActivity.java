@@ -38,10 +38,9 @@ public class DisplayPhotoActivity extends AppCompatActivity {
     ViewPager vpPhotos;
     @BindView(R.id.tabLayout)
     TabLayout tabLayout;
+    PhotoPagerAdapter adapter;
     private List<PhotoJCJ> photos;
     private int current;
-    PhotoPagerAdapter adapter;
-
     private PhotoJCJDao photoJCJDao;
 
     public static void start(Activity activity, ArrayList<PhotoJCJ> photos, int current) {
@@ -55,7 +54,7 @@ public class DisplayPhotoActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_display_photo, menu);
+//        getMenuInflater().inflate(R.menu.menu_display_photo, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -114,13 +113,12 @@ public class DisplayPhotoActivity extends AppCompatActivity {
                 File targetFile = new File(target.ZPLJ);
                 if (targetFile.exists() && targetFile.canWrite()) {
                     if (targetFile.delete()) {
-//                photoJCJDao.delete(target);
-                        AppExecutors.MAIN.execute(new Runnable() {
-                            @Override
-                            public void run() {
-                                photos.remove(current);
-                                adapter.notifyDataSetChanged();
-                            }
+                        if (target.ID != null) {
+                            photoJCJDao.delete(target);
+                        }
+                        AppExecutors.MAIN.execute(() -> {
+                            photos.remove(current);
+                            adapter.notifyDataSetChanged();
                         });
                         Log.i(TAG, "delete successful: " + target.ZPLJ);
                     }
