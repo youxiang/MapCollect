@@ -74,6 +74,8 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.bottom_menu)
     View bottomMenuLayout;
 
+    private Snackbar snackbar;
+
     BottomSheetBehavior bottomSheetBehavior;
     private AlertDialog choosePointsDialog;
 
@@ -85,6 +87,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         layerManager = MapCollectApp.getApp().getLayerManager();
+        snackbar = Snackbar.make(mMapView, "需要设置权限", Snackbar.LENGTH_INDEFINITE)
+                .setAction("打开设置 ", v -> PermissionUtils.gotoSetting(this));
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQ_PERMISSIONS);
     }
 
@@ -220,15 +224,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void onPermissionGrant() {
+        snackbar.dismiss();
         bottomMenuLayout.setVisibility(View.VISIBLE);
         initMap();
     }
 
     private void onPermissionDeny() {
         bottomMenuLayout.setVisibility(View.GONE);
-        Snackbar.make(mMapView, "需要设置权限", Snackbar.LENGTH_INDEFINITE)
-                .setAction("打开设置 ", v -> PermissionUtils.gotoSetting(this))
-                .show();
+        snackbar.show();
     }
 
     private boolean isGranted(int[] grantResults) {
