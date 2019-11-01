@@ -41,7 +41,7 @@ import java.util.concurrent.Future;
 
 public class LayerManager {
 
-    private static final int PAGE_SIZE = 500;
+    private static final int PAGE_SIZE = 200;
 
     private static final String TAG = "LayerManager";
     private final Context context;
@@ -438,6 +438,7 @@ public class LayerManager {
 
     private void setHighlightTextSymbol(TextSymbol symbol) {
         symbol.setColor(context.getResources().getColor(R.color.colorPrimary));
+        symbol.setSize(symbol.getSize() * 1.3f);
     }
 
     private void setHighlightSimpleMarkerSymbol(SimpleMarkerSymbol symbol) {
