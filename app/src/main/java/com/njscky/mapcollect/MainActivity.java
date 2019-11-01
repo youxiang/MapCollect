@@ -194,6 +194,7 @@ public class MainActivity extends AppCompatActivity {
                         new GraphicListAdpater(graphics),
                         (dialog, which) -> {
                             Graphic graphic = graphics.get(which);
+                            mMapView.setExtent(graphic.getGeometry());
                             Log.i(TAG, "choosePoints: " + graphic.getAttributeValue("JCJBH"));
                             JcjInspectFragment fragment = JcjInspectFragment.newInstance(graphic);
                             getSupportFragmentManager().beginTransaction()
@@ -273,6 +274,7 @@ public class MainActivity extends AppCompatActivity {
     @OnClick(R.id.btnXJ)
     void onPhoto() {
         // TODO 背景管线查询
+        mMapView.setExtent(layerManager.getGxExtent());
         mMapView.setOnSingleTapListener(null);
         mMapView.setOnLongPressListener(null);
 
@@ -337,6 +339,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onFinish() {
                 Log.i(TAG, "loadData#onFinish: ");
+                mMapView.setExtent(layerManager.getPointExtent());
             }
         });
 

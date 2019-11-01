@@ -10,10 +10,13 @@ import com.esri.android.map.ags.ArcGISDynamicMapServiceLayer;
 import com.esri.android.map.ags.ArcGISLocalTiledLayer;
 import com.esri.android.map.ags.ArcGISTiledMapServiceLayer;
 import com.esri.android.map.event.OnStatusChangedListener;
+import com.esri.core.geometry.Envelope;
+import com.esri.core.geometry.Geometry;
 import com.esri.core.geometry.Line;
 import com.esri.core.geometry.Point;
 import com.esri.core.geometry.Polyline;
 import com.esri.core.map.Graphic;
+import com.esri.core.symbol.CompositeSymbol;
 import com.esri.core.symbol.SimpleLineSymbol;
 import com.esri.core.symbol.SimpleMarkerSymbol;
 import com.esri.core.symbol.Symbol;
@@ -33,10 +36,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 public class LayerManager {
 
-    private static final int PAGE_SIZE = 100;
+    private static final int PAGE_SIZE = 500;
 
     private static final String TAG = "LayerManager";
     private final Context context;
@@ -49,6 +54,7 @@ public class LayerManager {
     private ArcGISDynamicMapServiceLayer gxLayer;
     // 雨水检查井点
     private GraphicsLayer ysjcjPointLayer;
+    // REMOVED
     private GraphicsLayer ysjcjPointAnnotationLayer;
     // 雨水检查井线
     private GraphicsLayer ysjcjLineLayer;
@@ -152,13 +158,13 @@ public class LayerManager {
                 callback.onJCJPointLayerCreate(ysjcjPointLayer);
             }
         }
-        if (ysjcjPointAnnotationLayer == null || ysjcjPointAnnotationLayer.isRecycled()) {
-            ysjcjPointAnnotationLayer = new GraphicsLayer(GraphicsLayer.RenderingMode.STATIC);
-            ysjcjPointAnnotationLayer.setName(parameter.annotationName);
-            if (callback != null) {
-                callback.onJCJPointAnnotationLayerCreate(ysjcjPointAnnotationLayer);
-            }
-        }
+//        if (ysjcjPointAnnotationLayer == null || ysjcjPointAnnotationLayer.isRecycled()) {
+//            ysjcjPointAnnotationLayer = new GraphicsLayer(GraphicsLayer.RenderingMode.STATIC);
+//            ysjcjPointAnnotationLayer.setName(parameter.annotationName);
+//            if (callback != null) {
+//                callback.onJCJPointAnnotationLayerCreate(ysjcjPointAnnotationLayer);
+//            }
+//        }
 
 
     }
@@ -316,29 +322,56 @@ public class LayerManager {
         JCJPointYSDao pointDao = DbManager.getInstance(context).getDaoSession().getJCJPointYSDao();
         int pageIndex = 0;
         SimpleMarkerSymbol markerSymbol = new SimpleMarkerSymbol(parameter.symbolColor, parameter.symbolSize, SimpleMarkerSymbol.STYLE.CIRCLE);
-
+        List<Future<Boolean>> futureList = new ArrayList<>();
         for (; ; pageIndex++) {
+            Log.i(TAG, "loadPointData: " + pageIndex);
             List<JCJPointYS> points = pointDao.queryBuilder().offset(pageIndex * PAGE_SIZE).limit(PAGE_SIZE).list();
             if (points.isEmpty()) {
                 break;
             }
+            Future<Boolean> future = AppExecutors.MULTI_TASK.submit(() -> {
+                Point point = new Point();
+                for (JCJPointYS pointYS : points) {
+                    // FIXME swap XZB and YZB
+                    point.setXY(pointYS.YZB, pointYS.XZB);
+                    ysjcjPointLayer.addGraphic(getPointGraphic(pointYS, point, markerSymbol));
+                }
+                return true;
+            });
 
-            for (JCJPointYS pointYS : points) {
-                // FIXME swap XZB and YZB
-                Point point = new Point(pointYS.YZB, pointYS.XZB);
-                ysjcjPointLayer.addGraphic(getPointGraphic(pointYS, point, markerSymbol));
-                ysjcjPointAnnotationLayer.setMinScale(5000);
-                ysjcjPointAnnotationLayer.addGraphic(getPointAnnotationGraphic(pointYS, point));
-                ysjcjPointAnnotationLayer.setMinScale(5000);
+            futureList.add(future);
+
+        }
+
+        for (Future<Boolean> future : futureList) {
+            try {
+                Log.i(TAG, "loadPointData: " + future.get());
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
+
+        AppExecutors.MULTI_TASK.shutdown();
+
+        Log.i(TAG, "loadPointData: shutdown");
+
+
 
     }
 
     private Graphic getPointGraphic(JCJPointYS pointYS, Point point, SimpleMarkerSymbol markerSymbol) {
         Map<String, Object> attributes = new HashMap<String, Object>();
         attributes.put("JCJBH", pointYS.JCJBH);
-        return new Graphic(point, markerSymbol, attributes);
+        GraphicLayerParameter parameter = config.pointParameter();
+        TextSymbol textSymbol = new ChineseSupportTextSymbol(parameter.annotationLayerSymbolSize, pointYS.JCJBH, parameter.annotationLayerSymbolColor);
+        textSymbol.setOffsetX(5);
+        textSymbol.setOffsetY(5);
+        CompositeSymbol compositeSymbol = new CompositeSymbol();
+        compositeSymbol.add(textSymbol);
+        compositeSymbol.add(markerSymbol);
+        return new Graphic(point, compositeSymbol, attributes);
     }
 
     private Graphic getPointAnnotationGraphic(JCJPointYS pointYS, Point point) {
@@ -384,16 +417,52 @@ public class LayerManager {
 
     private Graphic getHighlightGraphic(Graphic graphic) {
         Symbol symbol = graphic.getSymbol();
+
         if (symbol instanceof SimpleMarkerSymbol) {
-            SimpleMarkerSymbol simpleMarkerSymbol = (SimpleMarkerSymbol) symbol;
-            simpleMarkerSymbol.setColor(context.getResources().getColor(R.color.colorPrimary));
-            simpleMarkerSymbol.setSize(simpleMarkerSymbol.getSize() * 1.3f);
-            simpleMarkerSymbol.setStyle(SimpleMarkerSymbol.STYLE.CIRCLE);
+            setHighlightSimpleMarkerSymbol((SimpleMarkerSymbol) symbol);
+        } else if (symbol instanceof CompositeSymbol) {
+            CompositeSymbol compositeSymbol = (CompositeSymbol) symbol;
+            for (Symbol childSymbol : compositeSymbol.getSymbols()) {
+                if (childSymbol instanceof SimpleMarkerSymbol) {
+                    setHighlightSimpleMarkerSymbol((SimpleMarkerSymbol) childSymbol);
+                } else if (childSymbol instanceof TextSymbol) {
+                    setHighlightTextSymbol((TextSymbol) childSymbol);
+                }
+            }
         }
 
         Graphic rst = new Graphic(graphic.getGeometry(), symbol);
 
         return rst;
+    }
+
+    private void setHighlightTextSymbol(TextSymbol symbol) {
+        symbol.setColor(context.getResources().getColor(R.color.colorPrimary));
+    }
+
+    private void setHighlightSimpleMarkerSymbol(SimpleMarkerSymbol symbol) {
+        symbol.setColor(context.getResources().getColor(R.color.colorPrimary));
+        symbol.setSize(symbol.getSize() * 1.3f);
+        symbol.setStyle(SimpleMarkerSymbol.STYLE.CIRCLE);
+    }
+
+    public Geometry getPointExtent() {
+        Envelope rst = new Envelope();
+        Envelope env = new Envelope();
+        for (int i : ysjcjPointLayer.getGraphicIDs()) {
+            try {
+                Geometry p = ysjcjPointLayer.getGraphic(i).getGeometry();
+                p.queryEnvelope(env);
+                rst.merge(env);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return rst;
+    }
+
+    public Geometry getGxExtent() {
+        return gxLayer.getFullExtent();
     }
 
 
