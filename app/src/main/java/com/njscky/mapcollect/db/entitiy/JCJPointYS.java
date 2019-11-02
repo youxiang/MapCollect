@@ -51,7 +51,14 @@ public class JCJPointYS implements Parcelable {
     // 井类型
     public String JLX;
 
+    // 井类型-额外字段
     public String JLX_extra;
+
+    // 是否填写完成
+    public Boolean SFTXWC;
+
+    // 是否拍照完成
+    public Boolean SFPZWC;
 
     public JCJPointYS() {
     }
@@ -174,11 +181,11 @@ public class JCJPointYS implements Parcelable {
         this.ID = ID;
     }
 
-    @Generated(hash = 1637875100)
-    public JCJPointYS(Long ID, String JCJBH, String JGCZ, String JGCZ_extra,
-                      String JGQK, String JSQK, String JSCZ, String JSCZ_extra, String JSCC,
-                      String FSWLX, String SZDL, String SFXG, String BZ, float XZB, float YZB,
-                      String JLX, String JLX_extra) {
+    @Generated(hash = 1262054955)
+    public JCJPointYS(Long ID, String JCJBH, String JGCZ, String JGCZ_extra, String JGQK,
+                      String JSQK, String JSCZ, String JSCZ_extra, String JSCC, String FSWLX,
+                      String SZDL, String SFXG, String BZ, float XZB, float YZB, String JLX,
+                      String JLX_extra, Boolean SFTXWC, Boolean SFPZWC) {
         this.ID = ID;
         this.JCJBH = JCJBH;
         this.JGCZ = JGCZ;
@@ -196,11 +203,8 @@ public class JCJPointYS implements Parcelable {
         this.YZB = YZB;
         this.JLX = JLX;
         this.JLX_extra = JLX_extra;
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
+        this.SFTXWC = SFTXWC;
+        this.SFPZWC = SFPZWC;
     }
 
     protected JCJPointYS(Parcel in) {
@@ -221,27 +225,8 @@ public class JCJPointYS implements Parcelable {
         this.YZB = in.readFloat();
         this.JLX = in.readString();
         this.JLX_extra = in.readString();
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeValue(this.ID);
-        dest.writeString(this.JCJBH);
-        dest.writeString(this.JGCZ);
-        dest.writeString(this.JGCZ_extra);
-        dest.writeString(this.JGQK);
-        dest.writeString(this.JSQK);
-        dest.writeString(this.JSCZ);
-        dest.writeString(this.JSCZ_extra);
-        dest.writeString(this.JSCC);
-        dest.writeString(this.FSWLX);
-        dest.writeString(this.SZDL);
-        dest.writeString(this.SFXG);
-        dest.writeString(this.BZ);
-        dest.writeFloat(this.XZB);
-        dest.writeFloat(this.YZB);
-        dest.writeString(this.JLX);
-        dest.writeString(this.JLX_extra);
+        this.SFTXWC = (Boolean) in.readValue(Boolean.class.getClassLoader());
+        this.SFPZWC = (Boolean) in.readValue(Boolean.class.getClassLoader());
     }
 
     public String getJGCZ_extra() {
@@ -264,8 +249,52 @@ public class JCJPointYS implements Parcelable {
         return this.JLX_extra;
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
     public void setJLX_extra(String JLX_extra) {
         this.JLX_extra = JLX_extra;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeValue(this.ID);
+        dest.writeString(this.JCJBH);
+        dest.writeString(this.JGCZ);
+        dest.writeString(this.JGCZ_extra);
+        dest.writeString(this.JGQK);
+        dest.writeString(this.JSQK);
+        dest.writeString(this.JSCZ);
+        dest.writeString(this.JSCZ_extra);
+        dest.writeString(this.JSCC);
+        dest.writeString(this.FSWLX);
+        dest.writeString(this.SZDL);
+        dest.writeString(this.SFXG);
+        dest.writeString(this.BZ);
+        dest.writeFloat(this.XZB);
+        dest.writeFloat(this.YZB);
+        dest.writeString(this.JLX);
+        dest.writeString(this.JLX_extra);
+        dest.writeValue(this.SFTXWC);
+        dest.writeValue(this.SFPZWC);
+    }
+
+    public Boolean getSFTXWC() {
+        return this.SFTXWC;
+    }
+
+    public void setSFTXWC(Boolean SFTXWC) {
+        this.SFTXWC = SFTXWC;
+    }
+
+    public Boolean getSFPZWC() {
+        return this.SFPZWC;
+    }
+
+    public void setSFPZWC(Boolean SFPZWC) {
+        this.SFPZWC = SFPZWC;
     }
 
     public static final Creator<JCJPointYS> CREATOR = new Creator<JCJPointYS>() {

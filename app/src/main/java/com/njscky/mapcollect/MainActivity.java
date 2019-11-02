@@ -141,7 +141,8 @@ public class MainActivity extends AppCompatActivity {
                     getWindow().setStatusBarColor(getResources().getColor(R.color.colorPrimaryTransparent));
                     decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
                     if (state == STATE_HIDDEN) {
-                        layerManager.unHighlightGraphic();
+                        layerManager.unHighlightPointGraphic();
+                        layerManager.clearLines();
                     }
                 }
             }

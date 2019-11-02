@@ -1,6 +1,8 @@
 package com.njscky.mapcollect.business.layer;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.esri.android.map.GraphicsLayer;
@@ -59,8 +61,8 @@ public class LayerManager {
     // 雨水检查井线
     private GraphicsLayer ysjcjLineLayer;
     private GraphicsLayer ysjcjLineAnnotationLayer;
-    private Graphic highlightedGraphic;
-
+    private Graphic highlightedPointGraphic;
+    private Graphic highlightedLineGraphic;
 
     public LayerManager(Context context, LayerConfig config) {
         this.config = config;
@@ -403,16 +405,16 @@ public class LayerManager {
         return ysjcjPointLayer;
     }
 
-    public void unHighlightGraphic() {
-        if (highlightedGraphic != null) {
-            ysjcjPointLayer.updateGraphic((int) highlightedGraphic.getId(), highlightedGraphic);
-            highlightedGraphic = null;
+    public void unHighlightPointGraphic() {
+        if (highlightedPointGraphic != null) {
+            ysjcjPointLayer.updateGraphic((int) highlightedPointGraphic.getId(), highlightedPointGraphic);
+            highlightedPointGraphic = null;
         }
     }
 
-    public void highLightGraphic(Graphic graphic) {
+    public void highLightPointGraphic(Graphic graphic) {
         ysjcjPointLayer.updateGraphic((int) graphic.getId(), getHighlightGraphic(graphic));
-        highlightedGraphic = graphic;
+        highlightedPointGraphic = graphic;
     }
 
     private Graphic getHighlightGraphic(Graphic graphic) {
@@ -427,6 +429,8 @@ public class LayerManager {
                     setHighlightSimpleMarkerSymbol((SimpleMarkerSymbol) childSymbol);
                 } else if (childSymbol instanceof TextSymbol) {
                     setHighlightTextSymbol((TextSymbol) childSymbol);
+                } else if (childSymbol instanceof SimpleLineSymbol) {
+                    setHighlightSimpleLineSymbol((SimpleLineSymbol) childSymbol);
                 }
             }
         }
@@ -436,13 +440,18 @@ public class LayerManager {
         return rst;
     }
 
+    private void setHighlightSimpleLineSymbol(SimpleLineSymbol symbol) {
+        symbol.setColor(context.getResources().getColor(R.color.highlight_color));
+        symbol.setWidth(symbol.getWidth() * 1.3f);
+    }
+
     private void setHighlightTextSymbol(TextSymbol symbol) {
-        symbol.setColor(context.getResources().getColor(R.color.colorPrimary));
+        symbol.setColor(context.getResources().getColor(R.color.highlight_color));
         symbol.setSize(symbol.getSize() * 1.3f);
     }
 
     private void setHighlightSimpleMarkerSymbol(SimpleMarkerSymbol symbol) {
-        symbol.setColor(context.getResources().getColor(R.color.colorPrimary));
+        symbol.setColor(context.getResources().getColor(R.color.highlight_color));
         symbol.setSize(symbol.getSize() * 1.3f);
         symbol.setStyle(SimpleMarkerSymbol.STYLE.CIRCLE);
     }
@@ -470,6 +479,77 @@ public class LayerManager {
         return ysjcjPointLayer.getGraphic((int) graphicId);
     }
 
+    public void drawLines(List<JCJLineYS> lineYSList) {
+        GraphicLayerParameter parameter = config.lineParameter();
+        parameter.symbolColor = Color.rgb(255, 0, 0);
+        SimpleLineSymbol lineSymbol = new SimpleLineSymbol(parameter.symbolColor, parameter.symbolSize, SimpleLineSymbol.STYLE.SOLID);
+        for (JCJLineYS jcjLineYS : lineYSList) {
+            Point startPoint = new Point(jcjLineYS.QDYZB, jcjLineYS.QDXZB);
+
+            Point endPoint = new Point(jcjLineYS.ZDYZB, jcjLineYS.ZDXZB);
+
+            if (startPoint.isValid() && endPoint.isValid()) {
+                Line line = new Line();
+                line.setStart(startPoint);
+                line.setEnd(endPoint);
+
+                Polyline polyline = new Polyline();
+                polyline.addSegment(line, true);
+
+                Map<String, Object> attributes = new HashMap<String, Object>();
+                attributes.put("LJBH", jcjLineYS.LJBH);
+                attributes.put("jcjLineYS", jcjLineYS);
+
+                TextSymbol textSymbol = createTextSymbolInLineCenter(jcjLineYS.GJ + " " + jcjLineYS.CZ, parameter.symbolColor, parameter.annotationLayerSymbolSize, startPoint, endPoint);
+                CompositeSymbol compositeSymbol = new CompositeSymbol();
+                compositeSymbol.add(lineSymbol);
+                compositeSymbol.add(textSymbol);
+
+                Graphic polylineGraphic = new Graphic(polyline, compositeSymbol, attributes);
+                ysjcjLineLayer.addGraphic(polylineGraphic);
+            }
+
+        }
+    }
+
+    public void highLightLine(JCJLineYS jcjLineYS) {
+        unHighLightLines();
+        Log.i(TAG, "highLightLine: " + jcjLineYS.LJBH);
+        for (int graphicId : ysjcjLineLayer.getGraphicIDs()) {
+            Graphic graphic = ysjcjLineLayer.getGraphic(graphicId);
+            if (isGraphicMatched(graphic, jcjLineYS)) {
+                ysjcjLineLayer.updateGraphic(graphicId, getHighlightGraphic(graphic));
+                highlightedLineGraphic = graphic;
+            }
+        }
+    }
+
+    public void unHighLightLines() {
+        if (highlightedLineGraphic != null) {
+            Log.i(TAG, "unHighLightLines: ");
+            ysjcjLineLayer.updateGraphic((int) highlightedLineGraphic.getId(), highlightedLineGraphic);
+            highlightedLineGraphic = null;
+        }
+    }
+
+    private boolean isGraphicMatched(Graphic graphic, JCJLineYS jcjLineYS) {
+        Map<String, Object> attributes = graphic.getAttributes();
+        String LJBH = null;
+        if (attributes != null) {
+            LJBH = (String) attributes.get("LJBH");
+        }
+        if (TextUtils.equals(LJBH, jcjLineYS.LJBH)) {
+            Log.i(TAG, "isGraphicMatched: matched");
+            return true;
+        }
+        Log.i(TAG, "isGraphicMatched: unmatched");
+        return false;
+    }
+
+    public void clearLines() {
+        ysjcjLineLayer.removeAll();
+        highlightedLineGraphic = null;
+    }
 
     public interface LayerListener {
 

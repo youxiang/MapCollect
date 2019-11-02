@@ -155,13 +155,13 @@ public class JcjInspectFragment extends Fragment {
 
     private void highlightGraphic() {
         if (graphic != null) {
-            layerManager.highLightGraphic(graphic);
+            layerManager.highLightPointGraphic(graphic);
         }
     }
 
     private void unHighlightGraphic() {
         if (graphic != null) {
-            layerManager.unHighlightGraphic();
+            layerManager.unHighlightPointGraphic();
         }
     }
 
@@ -297,11 +297,31 @@ public class JcjInspectFragment extends Fragment {
                 fragments.clear();
             }
 
+            layerManager.drawLines(lineYSList);
             int pipeLineCount = lineYSList.size();
             for (int i = 0; i < pipeLineCount; i++) {
+                if (i == 0) {
+                    layerManager.highLightLine(lineYSList.get(i));
+                }
                 fragments.add(ConnectPointFragment.newInstance(lineYSList.get(i), pointYS));
             }
 
+            viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+                @Override
+                public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+                }
+
+                @Override
+                public void onPageSelected(int position) {
+                    layerManager.highLightLine(lineYSList.get(position));
+                }
+
+                @Override
+                public void onPageScrollStateChanged(int state) {
+
+                }
+            });
             viewPager.setAdapter(new FragmentPagerAdapter(getChildFragmentManager(), FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
                 @Override
                 public Fragment getItem(int position) {
@@ -322,6 +342,7 @@ public class JcjInspectFragment extends Fragment {
 
             tabLayout.setupWithViewPager(viewPager);
             tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
+
         });
     }
 

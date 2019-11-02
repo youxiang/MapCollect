@@ -8,4 +8,5 @@
     <color name="list_item_db_selected">#DDDDDD</color>
     <color name="transparent">#0000</color>
     <color name="blue">#0000ff</color>
+    <color name="highlight_color">#229923</color>
 </resources>
