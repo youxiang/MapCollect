@@ -12,11 +12,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-
 import com.esri.android.map.GraphicsLayer;
 import com.esri.android.map.Layer;
 import com.esri.android.map.MapView;
@@ -42,6 +37,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -127,6 +126,10 @@ public class MainActivity extends AppCompatActivity {
         });
 
         bottomSheetBehavior = BottomSheetBehavior.from(mBottomSheetView);
+
+        android.graphics.Point outSize = new android.graphics.Point();
+        getWindowManager().getDefaultDisplay().getSize(outSize);
+        bottomSheetBehavior.setPeekHeight(outSize.y / 2);
         bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
             public void onStateChanged(@NonNull View view, int state) {
