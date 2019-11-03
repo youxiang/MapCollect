@@ -231,7 +231,24 @@ public class MainActivity extends AppCompatActivity {
             graphics.add(graphic);
         }
 
-        choosePoints(layer, graphics);
+        if (graphics.size() == 1) {
+            showInspect(graphics.get(0));
+        } else {
+            choosePoints(layer, graphics);
+        }
+    }
+
+    private void showInspect(Graphic graphic) {
+        Log.i(TAG, "showInspect: " + graphic.getAttributeValue("JCJBH"));
+        JcjInspectFragment fragment = JcjInspectFragment.newInstance(graphic);
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragment_container, fragment, JcjInspectFragment.class.getSimpleName())
+                .commit();
+
+        fragment.setBehaviorInstance(bottomSheetBehavior);
+
+        bottomSheetBehavior.setHideable(false);
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
     }
 
     private void choosePoints(GraphicsLayer layer, List<Graphic> graphics) {
@@ -240,17 +257,7 @@ public class MainActivity extends AppCompatActivity {
                 .setAdapter(
                         new GraphicListAdpater(graphics),
                         (dialog, which) -> {
-                            Graphic graphic = graphics.get(which);
-                            Log.i(TAG, "choosePoints: " + graphic.getAttributeValue("JCJBH"));
-                            JcjInspectFragment fragment = JcjInspectFragment.newInstance(graphic);
-                            getSupportFragmentManager().beginTransaction()
-                                    .replace(R.id.fragment_container, fragment, JcjInspectFragment.class.getSimpleName())
-                                    .commit();
-
-                            fragment.setBehaviorInstance(bottomSheetBehavior);
-
-                            bottomSheetBehavior.setHideable(false);
-                            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                            showInspect(graphics.get(which));
                         }
                 )
                 .create();
