@@ -59,8 +59,8 @@
             android:layout_height="wrap_content"
             android:text="@string/gc" />
 
-        <EditText
-            android:id="@+id/et_gc"
+        <Spinner
+            android:id="@+id/sp_gc"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"

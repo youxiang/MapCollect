@@ -35,8 +35,8 @@ public class ConnectPointFragment extends Fragment {
     EditText etMS;
     @BindView(R.id.et_gj)
     EditText etGJ;
-    @BindView(R.id.et_gc)
-    EditText etGC;
+    @BindView(R.id.sp_gc)
+    Spinner spGC;
     @BindView(R.id.sp_sfdtyz)
     Spinner spSFDTYZ;
     @BindView(R.id.sp_sfhj)
@@ -54,6 +54,7 @@ public class ConnectPointFragment extends Fragment {
     private String[] arrSFDTYZ;
     private String[] arrSFHJ;
     private String[] arrHJLX;
+    private String[] arrGC;
 
     public static ConnectPointFragment newInstance(JCJLineYS line, JCJPointYS point) {
         ConnectPointFragment fragment = new ConnectPointFragment();
@@ -91,10 +92,13 @@ public class ConnectPointFragment extends Fragment {
         arrSFDTYZ = getResources().getStringArray(R.array.sfdtyz);
         arrSFHJ = getResources().getStringArray(R.array.sfhj);
         arrHJLX = getResources().getStringArray(R.array.hjlx);
+        arrGC = getResources().getStringArray(R.array.gc);
         etLJDH.setText(line.LJBH);
         etMS.setText(String.valueOf(line.QDMS));
         etGJ.setText(line.GJ);
-        etGC.setText(line.CZ);
+        spGC.setAdapter(new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, arrGC));
+        spGC.setSelection(getSelectIndex(arrGC, line.CZ));
+
         spSFDTYZ.setAdapter(new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, arrSFDTYZ));
         spSFDTYZ.setSelection(getSelectIndex(arrSFDTYZ, line.SFDTYZ));
 
@@ -133,7 +137,7 @@ public class ConnectPointFragment extends Fragment {
         lineYS.LJBH = etLJDH.getText().toString();
         lineYS.QDMS = AppUtils.parseFloat(etMS.getText().toString());
         lineYS.GJ = etGJ.getText().toString();
-        lineYS.CZ = etGC.getText().toString();
+        lineYS.CZ = (String) spGC.getSelectedItem();
         lineYS.SFDTYZ = (String) spSFDTYZ.getSelectedItem();
         lineYS.SFHJ = (String) spSFHJ.getSelectedItem();
         lineYS.HJLX = (String) spHJLX.getSelectedItem();

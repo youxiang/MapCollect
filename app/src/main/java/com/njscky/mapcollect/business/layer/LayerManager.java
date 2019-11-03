@@ -575,6 +575,7 @@ public class LayerManager {
         if (oldSymbol instanceof CompositeSymbol) {
             for (Symbol oldItem : ((CompositeSymbol) oldSymbol).getSymbols()) {
                 if (oldItem instanceof TextSymbol) {
+                    ((TextSymbol) oldItem).setColor(parameter.annotationLayerSymbolColor);
                     compositeSymbol.add(oldItem);
                 }
             }

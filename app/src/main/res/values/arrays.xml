@@ -63,4 +63,15 @@
         <item>是</item>
         <item>否</item>
     </string-array>
+    <string-array name="gc">
+        <item></item>
+        <item>PE</item>
+        <item>PVC</item>
+        <item>钢</item>
+        <item>塑料</item>
+        <item>陶瓷</item>
+        <item>砼</item>
+        <item>铸铁</item>
+        <item>砖</item>
+    </string-array>
 </resources>
