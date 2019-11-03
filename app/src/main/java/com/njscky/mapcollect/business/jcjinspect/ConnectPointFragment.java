@@ -126,6 +126,10 @@ public class ConnectPointFragment extends Fragment {
     }
 
     void updateLineValue(JCJLineYS lineYS) {
+        float QDMS = lineYS.QDMS;
+        String GJ = lineYS.GJ;
+        String CZ = lineYS.CZ;
+
         lineYS.LJBH = etLJDH.getText().toString();
         lineYS.QDMS = AppUtils.parseFloat(etMS.getText().toString());
         lineYS.GJ = etGJ.getText().toString();
@@ -133,6 +137,11 @@ public class ConnectPointFragment extends Fragment {
         lineYS.SFDTYZ = (String) spSFDTYZ.getSelectedItem();
         lineYS.SFHJ = (String) spSFHJ.getSelectedItem();
         lineYS.HJLX = (String) spHJLX.getSelectedItem();
+        boolean sfxg = false;
+        if (QDMS == lineYS.QDMS || !TextUtils.equals(GJ, lineYS.GJ) || !TextUtils.equals(CZ, lineYS.CZ)) {
+            sfxg = true;
+        }
+        lineYS.SFXG = sfxg ? "是" : "否";
         if (TextUtils.equals(lineYS.HJLX, "其他") || TextUtils.equals(lineYS.HJLX, "片区")) {
             lineYS.HJLX_extra = etHJLX.getText().toString();
         }

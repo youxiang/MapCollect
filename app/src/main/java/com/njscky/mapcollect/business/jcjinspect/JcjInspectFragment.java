@@ -407,6 +407,9 @@ public class JcjInspectFragment extends Fragment {
 
     @OnClick(R.id.btn_save)
     void onSave() {
+        String JGCZ = pointYS.JGCZ;
+        String JSCZ = pointYS.JSCZ;
+
         pointYS.JCJBH = etJCJBH.getText().toString();
         pointYS.JGCZ = (String) spJGCZ.getSelectedItem();
         if (TextUtils.equals(pointYS.JGCZ, "其他")) {
@@ -423,6 +426,11 @@ public class JcjInspectFragment extends Fragment {
         pointYS.JLX = (String) spJLX.getSelectedItem();
         pointYS.SFTXWC = cbSFTXWC.isChecked();
         pointYS.SFPZWC = cbSFPZWC.isChecked();
+        boolean sfxg = false;
+        if (!TextUtils.equals(JGCZ, pointYS.JGCZ) || !TextUtils.equals(JSCZ, pointYS.JSCZ)) {
+            sfxg = true;
+        }
+        pointYS.SFXG = sfxg ? "是" : "否";
         if (TextUtils.equals(pointYS.JLX, "穿井")) {
             pointYS.JLX_extra = etJLX.getText().toString();
         }
