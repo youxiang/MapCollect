@@ -2,6 +2,7 @@ package com.njscky.mapcollect.business.jcjinspect;
 
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -67,6 +68,7 @@ public class ConnectPointFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_connect_point, container, false);
+        Log.i(TAG, "onCreateView: ");
         unbinder = ButterKnife.bind(this, view);
         return view;
     }
@@ -140,6 +142,7 @@ public class ConnectPointFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        Log.i(TAG, "onDestroyView: ");
         if (unbinder != null) {
             unbinder.unbind();
         }
@@ -158,4 +161,9 @@ public class ConnectPointFragment extends Fragment {
         return list.length - 1;
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.i(TAG, "onDestroy: ");
+    }
 }

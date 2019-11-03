@@ -38,12 +38,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 
 public class LayerManager {
 
-    private static final int PAGE_SIZE = 200;
+    private static final int PAGE_SIZE = 500;
 
     private static final String TAG = "LayerManager";
     private final Context context;
@@ -324,42 +322,38 @@ public class LayerManager {
         JCJPointYSDao pointDao = DbManager.getInstance(context).getDaoSession().getJCJPointYSDao();
         int pageIndex = 0;
         SimpleMarkerSymbol markerSymbol = new SimpleMarkerSymbol(parameter.symbolColor, parameter.symbolSize, SimpleMarkerSymbol.STYLE.CIRCLE);
-        List<Future<Boolean>> futureList = new ArrayList<>();
+        SimpleMarkerSymbol markerSymbolTXWC = new SimpleMarkerSymbol(context.getResources().getColor(R.color.colorSFTXWC), parameter.symbolSize, SimpleMarkerSymbol.STYLE.CIRCLE);
+        SimpleMarkerSymbol markerSymbolPZWC = new SimpleMarkerSymbol(context.getResources().getColor(R.color.colorSFPZWC), parameter.symbolSize, SimpleMarkerSymbol.STYLE.CIRCLE);
+        SimpleMarkerSymbol markerSymbolWC = new SimpleMarkerSymbol(context.getResources().getColor(R.color.colorWC), parameter.symbolSize, SimpleMarkerSymbol.STYLE.CIRCLE);
         for (; ; pageIndex++) {
             Log.i(TAG, "loadPointData: " + pageIndex);
             List<JCJPointYS> points = pointDao.queryBuilder().offset(pageIndex * PAGE_SIZE).limit(PAGE_SIZE).list();
             if (points.isEmpty()) {
                 break;
             }
-            Future<Boolean> future = AppExecutors.MULTI_TASK.submit(() -> {
+            AppExecutors.MULTI_TASK.submit(() -> {
                 Point point = new Point();
                 for (JCJPointYS pointYS : points) {
                     // FIXME swap XZB and YZB
                     point.setXY(pointYS.YZB, pointYS.XZB);
-                    ysjcjPointLayer.addGraphic(getPointGraphic(pointYS, point, markerSymbol));
+
+                    boolean sftxwc = pointYS.SFTXWC == null ? false : pointYS.SFTXWC;
+                    boolean sfpzwc = pointYS.SFPZWC == null ? false : pointYS.SFPZWC;
+                    SimpleMarkerSymbol symbol = markerSymbol;
+                    if (sftxwc || sfpzwc) {
+                        if (!sftxwc) {
+                            symbol = markerSymbolPZWC;
+                        } else if (!sfpzwc) {
+                            symbol = markerSymbolTXWC;
+                        } else {
+                            symbol = markerSymbolWC;
+                        }
+                    }
+                    ysjcjPointLayer.addGraphic(getPointGraphic(pointYS, point, symbol));
                 }
                 return true;
             });
-
-            futureList.add(future);
-
         }
-
-        for (Future<Boolean> future : futureList) {
-            try {
-                Log.i(TAG, "loadPointData: " + future.get());
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-
-        AppExecutors.MULTI_TASK.shutdown();
-
-        Log.i(TAG, "loadPointData: shutdown");
-
-
 
     }
 
@@ -441,17 +435,17 @@ public class LayerManager {
     }
 
     private void setHighlightSimpleLineSymbol(SimpleLineSymbol symbol) {
-        symbol.setColor(context.getResources().getColor(R.color.highlight_color));
+        symbol.setColor(context.getResources().getColor(R.color.colorHighlight));
         symbol.setWidth(symbol.getWidth() * 1.3f);
     }
 
     private void setHighlightTextSymbol(TextSymbol symbol) {
-        symbol.setColor(context.getResources().getColor(R.color.highlight_color));
+        symbol.setColor(context.getResources().getColor(R.color.colorHighlight));
         symbol.setSize(symbol.getSize() * 1.3f);
     }
 
     private void setHighlightSimpleMarkerSymbol(SimpleMarkerSymbol symbol) {
-        symbol.setColor(context.getResources().getColor(R.color.highlight_color));
+        symbol.setColor(context.getResources().getColor(R.color.colorHighlight));
         symbol.setSize(symbol.getSize() * 1.3f);
         symbol.setStyle(SimpleMarkerSymbol.STYLE.CIRCLE);
     }
@@ -549,6 +543,46 @@ public class LayerManager {
     public void clearLines() {
         ysjcjLineLayer.removeAll();
         highlightedLineGraphic = null;
+    }
+
+    public void updatePoint(long graphicId, JCJPointYS pointYS, boolean cancelHightlightPoint) {
+        Log.i(TAG, "updatePoint: " + graphicId + ", " + pointYS.JCJBH);
+        Map<String, Object> attributes = new HashMap<String, Object>();
+        attributes.put("JCJBH", pointYS.JCJBH);
+        GraphicLayerParameter parameter = config.pointParameter();
+        SimpleMarkerSymbol markerSymbol = new SimpleMarkerSymbol(parameter.symbolColor, parameter.symbolSize, SimpleMarkerSymbol.STYLE.CIRCLE);
+        SimpleMarkerSymbol markerSymbolTXWC = new SimpleMarkerSymbol(context.getResources().getColor(R.color.colorSFTXWC), parameter.symbolSize, SimpleMarkerSymbol.STYLE.CIRCLE);
+        SimpleMarkerSymbol markerSymbolPZWC = new SimpleMarkerSymbol(context.getResources().getColor(R.color.colorSFPZWC), parameter.symbolSize, SimpleMarkerSymbol.STYLE.CIRCLE);
+        SimpleMarkerSymbol markerSymbolWC = new SimpleMarkerSymbol(context.getResources().getColor(R.color.colorWC), parameter.symbolSize, SimpleMarkerSymbol.STYLE.CIRCLE);
+
+        boolean sftxwc = pointYS.SFTXWC == null ? false : pointYS.SFTXWC;
+        boolean sfpzwc = pointYS.SFPZWC == null ? false : pointYS.SFPZWC;
+        SimpleMarkerSymbol symbol = markerSymbol;
+        if (sftxwc || sfpzwc) {
+            if (!sftxwc) {
+                symbol = markerSymbolPZWC;
+            } else if (!sfpzwc) {
+                symbol = markerSymbolTXWC;
+            } else {
+                symbol = markerSymbolWC;
+            }
+        }
+        Graphic graphic = ysjcjPointLayer.getGraphic((int) graphicId);
+        CompositeSymbol compositeSymbol = new CompositeSymbol();
+        compositeSymbol.add(symbol);
+
+        Symbol oldSymbol = graphic.getSymbol();
+        if (oldSymbol instanceof CompositeSymbol) {
+            for (Symbol oldItem : ((CompositeSymbol) oldSymbol).getSymbols()) {
+                if (oldItem instanceof TextSymbol) {
+                    compositeSymbol.add(oldItem);
+                }
+            }
+        }
+        ysjcjPointLayer.updateGraphic((int) graphicId, new Graphic(graphic.getGeometry(), compositeSymbol, attributes));
+        if (cancelHightlightPoint) {
+            highlightedPointGraphic = null;
+        }
     }
 
     public interface LayerListener {

@@ -207,6 +207,26 @@ public class JCJPointYS implements Parcelable {
         this.SFPZWC = SFPZWC;
     }
 
+    public String getJGCZ_extra() {
+        return this.JGCZ_extra;
+    }
+
+    public void setJGCZ_extra(String JGCZ_extra) {
+        this.JGCZ_extra = JGCZ_extra;
+    }
+
+    public String getJSCZ_extra() {
+        return this.JSCZ_extra;
+    }
+
+    public void setJSCZ_extra(String JSCZ_extra) {
+        this.JSCZ_extra = JSCZ_extra;
+    }
+
+    public String getJLX_extra() {
+        return this.JLX_extra;
+    }
+
     protected JCJPointYS(Parcel in) {
         this.ID = (Long) in.readValue(Long.class.getClassLoader());
         this.JCJBH = in.readString();
@@ -229,33 +249,25 @@ public class JCJPointYS implements Parcelable {
         this.SFPZWC = (Boolean) in.readValue(Boolean.class.getClassLoader());
     }
 
-    public String getJGCZ_extra() {
-        return this.JGCZ_extra;
+    public void setJLX_extra(String JLX_extra) {
+        this.JLX_extra = JLX_extra;
     }
 
-    public void setJGCZ_extra(String JGCZ_extra) {
-        this.JGCZ_extra = JGCZ_extra;
+    public Boolean getSFTXWC() {
+        return this.SFTXWC;
     }
 
-    public String getJSCZ_extra() {
-        return this.JSCZ_extra;
+    public void setSFTXWC(Boolean SFTXWC) {
+        this.SFTXWC = SFTXWC;
     }
 
-    public void setJSCZ_extra(String JSCZ_extra) {
-        this.JSCZ_extra = JSCZ_extra;
-    }
-
-    public String getJLX_extra() {
-        return this.JLX_extra;
+    public Boolean getSFPZWC() {
+        return this.SFPZWC;
     }
 
     @Override
     public int describeContents() {
         return 0;
-    }
-
-    public void setJLX_extra(String JLX_extra) {
-        this.JLX_extra = JLX_extra;
     }
 
     @Override
@@ -279,18 +291,6 @@ public class JCJPointYS implements Parcelable {
         dest.writeString(this.JLX_extra);
         dest.writeValue(this.SFTXWC);
         dest.writeValue(this.SFPZWC);
-    }
-
-    public Boolean getSFTXWC() {
-        return this.SFTXWC;
-    }
-
-    public void setSFTXWC(Boolean SFTXWC) {
-        this.SFTXWC = SFTXWC;
-    }
-
-    public Boolean getSFPZWC() {
-        return this.SFPZWC;
     }
 
     public void setSFPZWC(Boolean SFPZWC) {

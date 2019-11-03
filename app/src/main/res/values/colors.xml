@@ -8,5 +8,8 @@
     <color name="list_item_db_selected">#DDDDDD</color>
     <color name="transparent">#0000</color>
     <color name="blue">#0000ff</color>
-    <color name="highlight_color">#229923</color>
+    <color name="colorHighlight">#008577</color>
+    <color name="colorSFTXWC">#4CAF50</color>
+    <color name="colorSFPZWC">#FFC107</color>
+    <color name="colorWC">#673AB7</color>
 </resources>

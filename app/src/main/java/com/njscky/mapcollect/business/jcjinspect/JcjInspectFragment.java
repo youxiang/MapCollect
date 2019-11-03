@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Spinner;
@@ -76,6 +77,10 @@ public class JcjInspectFragment extends Fragment {
     TabLayout tabLayout;
     @BindView(R.id.viewPager)
     ViewPager viewPager;
+    @BindView(R.id.cb_sftxwc)
+    CheckBox cbSFTXWC;
+    @BindView(R.id.cb_sfpzwc)
+    CheckBox cbSFPZWC;
 
     private List<ConnectPointFragment> fragments;
 
@@ -341,8 +346,11 @@ public class JcjInspectFragment extends Fragment {
             });
 
             tabLayout.setupWithViewPager(viewPager);
+            viewPager.setOffscreenPageLimit(fragments.size());
             tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
 
+            cbSFTXWC.setChecked(pointYS.SFTXWC != null ? pointYS.SFTXWC : false);
+            cbSFPZWC.setChecked(pointYS.SFPZWC != null ? pointYS.SFPZWC : false);
         });
     }
 
@@ -413,6 +421,8 @@ public class JcjInspectFragment extends Fragment {
         pointYS.JSCC = etJSCC.getText().toString();
         pointYS.FSWLX = (String) spFSWLX.getSelectedItem();
         pointYS.JLX = (String) spJLX.getSelectedItem();
+        pointYS.SFTXWC = cbSFTXWC.isChecked();
+        pointYS.SFPZWC = cbSFPZWC.isChecked();
         if (TextUtils.equals(pointYS.JLX, "穿井")) {
             pointYS.JLX_extra = etJLX.getText().toString();
         }
@@ -434,7 +444,6 @@ public class JcjInspectFragment extends Fragment {
                     return true;
                 });
 
-
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
@@ -442,6 +451,10 @@ public class JcjInspectFragment extends Fragment {
                 AppExecutors.MAIN.execute(() -> {
                     hideJcjInspectLayout();
                     Toast.makeText(getContext(), finalResult ? "保存成功" : "保存失败", Toast.LENGTH_SHORT).show();
+
+                    if (finalResult) {
+                        layerManager.updatePoint(graphicId, pointYS, true);
+                    }
                 });
             }
 

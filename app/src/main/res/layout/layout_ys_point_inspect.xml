@@ -148,5 +148,39 @@
             android:visibility="visible" />
     </LinearLayout>
 
+    <LinearLayout
+        style="@style/AppTheme.Property"
+        android:gravity="end|center_vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/sftxwc" />
+
+        <CheckBox
+            android:id="@+id/cb_sftxwc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        style="@style/AppTheme.Property"
+        android:gravity="end|center_vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/sfpzwc" />
+
+        <CheckBox
+            android:id="@+id/cb_sfpzwc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp" />
+
+    </LinearLayout>
+
 
 </LinearLayout>
