@@ -402,12 +402,14 @@ public class LayerManager {
 
     public void unHighlightPointGraphic() {
         if (highlightedPointGraphic != null) {
+            Log.i(TAG, "unHighlightPointGraphic: ");
             ysjcjPointLayer.updateGraphic((int) highlightedPointGraphic.getId(), highlightedPointGraphic);
             highlightedPointGraphic = null;
         }
     }
 
     public void highLightPointGraphic(Graphic graphic) {
+        Log.i(TAG, "highLightPointGraphic: ");
         ysjcjPointLayer.updateGraphic((int) graphic.getId(), getHighlightGraphic(graphic));
         highlightedPointGraphic = graphic;
     }
@@ -545,6 +547,7 @@ public class LayerManager {
     }
 
     public void clearLines() {
+        Log.i(TAG, "clearLines: ");
         ysjcjLineLayer.removeAll();
         highlightedLineGraphic = null;
     }

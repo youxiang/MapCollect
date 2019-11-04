@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
@@ -50,6 +51,8 @@ public class JcjInspectFragment extends Fragment {
 
     private static final String TAG = "JcjInspectFragment";
 
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
     @BindView(R.id.et_jcjbh)
     EditText etJCJBH;
     @BindView(R.id.ib_add_photo)
@@ -82,7 +85,6 @@ public class JcjInspectFragment extends Fragment {
     CheckBox cbSFTXWC;
     @BindView(R.id.cb_sfpzwc)
     CheckBox cbSFPZWC;
-
     private List<ConnectPointFragment> fragments;
 
     private Unbinder unbiner;
@@ -139,6 +141,9 @@ public class JcjInspectFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        toolbar.setNavigationOnClickListener(v -> {
+            hideJcjInspectLayout();
+        });
         graphicId = getArguments().getLong("graphicId");
         layerManager = MapCollectApp.getApp().getLayerManager();
         graphic = layerManager.getPointGraphicById(graphicId);
@@ -353,6 +358,11 @@ public class JcjInspectFragment extends Fragment {
             cbSFTXWC.setChecked(pointYS.SFTXWC != null ? pointYS.SFTXWC : false);
             cbSFPZWC.setChecked(pointYS.SFPZWC != null ? pointYS.SFPZWC : false);
         });
+    }
+
+    @OnClick(R.id.ll_check)
+    void onCheckLayout() {
+        // Do nothing
     }
 
     private int getSelectIndex(String[] list, String item) {

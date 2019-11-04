@@ -11,6 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/colorPrimary"
+        app:navigationIcon="@drawable/ic_close"
         app:title="@string/title_jcj_inspect"
         app:titleTextColor="@color/white" />
 
@@ -70,6 +71,7 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/ll_check"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">

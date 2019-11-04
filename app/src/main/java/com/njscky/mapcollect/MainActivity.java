@@ -242,10 +242,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void singleTapInspect(float x, float y) {
-        if (bottomSheetBehavior != null) {
-            bottomSheetBehavior.setHideable(true);
-            bottomSheetBehavior.setState(STATE_HIDDEN);
-        }
 
 //                Point p = mMapView.toMapPoint(x, y);
 //                mMapView.centerAt(p, true);
@@ -255,7 +251,7 @@ public class MainActivity extends AppCompatActivity {
         int[] graphicIds = layer.getGraphicIDs(x, y, 15);
 
         if (graphicIds == null || graphicIds.length == 0) {
-            Toast.makeText(MainActivity.this, "此处无检查井", Toast.LENGTH_SHORT).show();
+
             return;
         }
 
@@ -275,6 +271,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showInspect(Graphic graphic) {
+        layerManager.clearLines();
         Log.i(TAG, "showInspect: " + graphic.getAttributeValue("JCJBH"));
         JcjInspectFragment fragment = JcjInspectFragment.newInstance(graphic);
         getSupportFragmentManager().beginTransaction()
@@ -283,8 +280,16 @@ public class MainActivity extends AppCompatActivity {
 
         fragment.setBehaviorInstance(bottomSheetBehavior);
 
-        bottomSheetBehavior.setHideable(false);
-        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+        if (bottomSheetBehavior != null) {
+            int bottomSheetState = bottomSheetBehavior.getState();
+            if (bottomSheetState == STATE_HIDDEN) {
+                bottomSheetBehavior.setHideable(false);
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            }
+        }
+
+//        bottomSheetBehavior.setHideable(false);
+//        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
     }
 
     private void choosePoints(GraphicsLayer layer, List<Graphic> graphics) {
