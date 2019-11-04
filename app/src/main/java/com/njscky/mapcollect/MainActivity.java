@@ -218,9 +218,9 @@ public class MainActivity extends AppCompatActivity {
         tempGraphicsLayer.setName("tempGraphicsLayer");
         mMapView.addLayer(tempGraphicsLayer);
 
-        Envelope env = new Envelope();
-        env.setCoords(323907.3532868966, 345990.89497398573, 328618.26895872795, 349614.3709709378);
-        mMapView.setExtent(env);
+//        Envelope env = new Envelope();
+//        env.setCoords(323907.3532868966, 345990.89497398573, 328618.26895872795, 349614.3709709378);
+//        mMapView.setExtent(env);
     }
 
     private void singleTapQuery(float x, float y) {
@@ -252,7 +252,7 @@ public class MainActivity extends AppCompatActivity {
 
         GraphicsLayer layer = (GraphicsLayer) layerManager.getYSPointLayer();
 
-        int[] graphicIds = layer.getGraphicIDs(x, y, 10);
+        int[] graphicIds = layer.getGraphicIDs(x, y, 15);
 
         if (graphicIds == null || graphicIds.length == 0) {
             Toast.makeText(MainActivity.this, "此处无检查井", Toast.LENGTH_SHORT).show();
@@ -363,6 +363,7 @@ public class MainActivity extends AppCompatActivity {
     @OnClick(R.id.btnLayer)
     void onLayer() {
         // TODO 图层
+
     }
 
     @OnClick(R.id.btnQuery)

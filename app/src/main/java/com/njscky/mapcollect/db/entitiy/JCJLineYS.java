@@ -22,6 +22,8 @@ public class JCJLineYS implements Parcelable {
     public String LJBH;
     // 起点埋深
     public float QDMS;
+    // 终点埋深
+    public float ZDMS;
     // 管径
     public String GJ;
     // 材质
@@ -68,12 +70,58 @@ public class JCJLineYS implements Parcelable {
         this.LJBH = LJBH;
     }
 
-    public float getQDMS() {
-        return this.QDMS;
+    protected JCJLineYS(Parcel in) {
+        this.ID = (Long) in.readValue(Long.class.getClassLoader());
+        this.JCJBH = in.readString();
+        this.LJBH = in.readString();
+        this.QDMS = in.readFloat();
+        this.ZDMS = in.readFloat();
+        this.GJ = in.readString();
+        this.CZ = in.readString();
+        this.SFXG = in.readString();
+        this.SFDTYZ = in.readString();
+        this.SFHJ = in.readString();
+        this.HJLX = in.readString();
+        this.HJLX_extra = in.readString();
+        this.LX = in.readString();
+        this.BZ = in.readString();
+        this.QDXZB = in.readFloat();
+        this.QDYZB = in.readFloat();
+        this.ZDXZB = in.readFloat();
+        this.ZDYZB = in.readFloat();
     }
 
     public void setQDMS(float QDMS) {
         this.QDMS = QDMS;
+    }
+
+    @Generated(hash = 1288413871)
+    public JCJLineYS(Long ID, String JCJBH, String LJBH, float QDMS, float ZDMS, String GJ,
+                     String CZ, String SFXG, String SFDTYZ, String SFHJ, String HJLX,
+                     String HJLX_extra, String LX, String BZ, float QDXZB, float QDYZB, float ZDXZB,
+                     float ZDYZB) {
+        this.ID = ID;
+        this.JCJBH = JCJBH;
+        this.LJBH = LJBH;
+        this.QDMS = QDMS;
+        this.ZDMS = ZDMS;
+        this.GJ = GJ;
+        this.CZ = CZ;
+        this.SFXG = SFXG;
+        this.SFDTYZ = SFDTYZ;
+        this.SFHJ = SFHJ;
+        this.HJLX = HJLX;
+        this.HJLX_extra = HJLX_extra;
+        this.LX = LX;
+        this.BZ = BZ;
+        this.QDXZB = QDXZB;
+        this.QDYZB = QDYZB;
+        this.ZDXZB = ZDXZB;
+        this.ZDYZB = ZDYZB;
+    }
+
+    public float getQDMS() {
+        return this.QDMS;
     }
 
     public String getGJ() {
@@ -173,48 +221,37 @@ public class JCJLineYS implements Parcelable {
     }
 
 
-    @Generated(hash = 1848944537)
-    public JCJLineYS(Long ID, String JCJBH, String LJBH, float QDMS, String GJ,
-                     String CZ, String SFXG, String SFDTYZ, String SFHJ, String HJLX,
-                     String HJLX_extra, String LX, String BZ, float QDXZB, float QDYZB,
-                     float ZDXZB, float ZDYZB) {
-        this.ID = ID;
-        this.JCJBH = JCJBH;
-        this.LJBH = LJBH;
-        this.QDMS = QDMS;
-        this.GJ = GJ;
-        this.CZ = CZ;
-        this.SFXG = SFXG;
-        this.SFDTYZ = SFDTYZ;
-        this.SFHJ = SFHJ;
-        this.HJLX = HJLX;
-        this.HJLX_extra = HJLX_extra;
-        this.LX = LX;
-        this.BZ = BZ;
-        this.QDXZB = QDXZB;
-        this.QDYZB = QDYZB;
-        this.ZDXZB = ZDXZB;
-        this.ZDYZB = ZDYZB;
+//    @Generated(hash = 1848944537)
+//    public JCJLineYS(Long ID, String JCJBH, String LJBH, float QDMS, float ZDMS,String GJ,
+//                     String CZ, String SFXG, String SFDTYZ, String SFHJ, String HJLX,
+//                     String HJLX_extra, String LX, String BZ, float QDXZB, float QDYZB,
+//                     float ZDXZB, float ZDYZB) {
+//        this.ID = ID;
+//        this.JCJBH = JCJBH;
+//        this.LJBH = LJBH;
+//        this.QDMS = QDMS;
+//        this.ZDMS = ZDMS;
+//        this.GJ = GJ;
+//        this.CZ = CZ;
+//        this.SFXG = SFXG;
+//        this.SFDTYZ = SFDTYZ;
+//        this.SFHJ = SFHJ;
+//        this.HJLX = HJLX;
+//        this.HJLX_extra = HJLX_extra;
+//        this.LX = LX;
+//        this.BZ = BZ;
+//        this.QDXZB = QDXZB;
+//        this.QDYZB = QDYZB;
+//        this.ZDXZB = ZDXZB;
+//        this.ZDYZB = ZDYZB;
+//    }
+
+    public float getZDMS() {
+        return this.ZDMS;
     }
 
-    protected JCJLineYS(Parcel in) {
-        this.ID = (Long) in.readValue(Long.class.getClassLoader());
-        this.JCJBH = in.readString();
-        this.LJBH = in.readString();
-        this.QDMS = in.readFloat();
-        this.GJ = in.readString();
-        this.CZ = in.readString();
-        this.SFXG = in.readString();
-        this.SFDTYZ = in.readString();
-        this.SFHJ = in.readString();
-        this.HJLX = in.readString();
-        this.HJLX_extra = in.readString();
-        this.LX = in.readString();
-        this.BZ = in.readString();
-        this.QDXZB = in.readFloat();
-        this.QDYZB = in.readFloat();
-        this.ZDXZB = in.readFloat();
-        this.ZDYZB = in.readFloat();
+    public void setZDMS(float ZDMS) {
+        this.ZDMS = ZDMS;
     }
 
     public Long getID() {
@@ -236,6 +273,7 @@ public class JCJLineYS implements Parcelable {
         dest.writeString(this.JCJBH);
         dest.writeString(this.LJBH);
         dest.writeFloat(this.QDMS);
+        dest.writeFloat(this.ZDMS);
         dest.writeString(this.GJ);
         dest.writeString(this.CZ);
         dest.writeString(this.SFXG);

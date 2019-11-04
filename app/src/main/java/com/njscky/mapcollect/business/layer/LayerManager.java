@@ -495,10 +495,10 @@ public class LayerManager {
                 attributes.put("LJBH", jcjLineYS.LJBH);
                 attributes.put("jcjLineYS", jcjLineYS);
 
-                TextSymbol textSymbol = createTextSymbolInLineCenter(jcjLineYS.GJ + " " + jcjLineYS.CZ, parameter.symbolColor, parameter.annotationLayerSymbolSize, startPoint, endPoint);
+                // TextSymbol textSymbol = createTextSymbolInLineCenter(jcjLineYS.GJ + " " + jcjLineYS.CZ, parameter.symbolColor, parameter.annotationLayerSymbolSize, startPoint, endPoint);
                 CompositeSymbol compositeSymbol = new CompositeSymbol();
                 compositeSymbol.add(lineSymbol);
-                compositeSymbol.add(textSymbol);
+                // compositeSymbol.add(textSymbol);
 
                 Graphic polylineGraphic = new Graphic(polyline, compositeSymbol, attributes);
                 ysjcjLineLayer.addGraphic(polylineGraphic);

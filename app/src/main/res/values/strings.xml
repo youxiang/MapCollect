@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">清淤检测助手</string>
+    <string name="app_name">管线调查</string>
     <string name="title_activity_project">工程管理</string>
     <string name="project">工程</string>
     <string name="edit">调查</string>

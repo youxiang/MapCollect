@@ -11,14 +11,15 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
 import com.njscky.mapcollect.R;
 import com.njscky.mapcollect.db.entitiy.JCJLineYS;
 import com.njscky.mapcollect.db.entitiy.JCJPointYS;
 import com.njscky.mapcollect.util.AppUtils;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
@@ -93,7 +94,12 @@ public class ConnectPointFragment extends Fragment {
         arrSFHJ = getResources().getStringArray(R.array.sfhj);
         arrHJLX = getResources().getStringArray(R.array.hjlx);
         arrGC = getResources().getStringArray(R.array.gc);
-        etLJDH.setText(line.LJBH);
+        String JCJBH = point.JCJBH;  //增加判断，当点的JCJBH=线的JCJBH时，取LJBH的值，否则取JCJBH的值
+        if (TextUtils.equals(JCJBH, line.JCJBH)) {
+            etLJDH.setText(line.LJBH);
+        } else {
+            etLJDH.setText(line.JCJBH);
+        }
         etMS.setText(String.valueOf(line.QDMS));
         etGJ.setText(line.GJ);
         spGC.setAdapter(new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, arrGC));
@@ -131,24 +137,36 @@ public class ConnectPointFragment extends Fragment {
 
     void updateLineValue(JCJLineYS lineYS) {
         float QDMS = lineYS.QDMS;
+        float ZDMS = lineYS.ZDMS;
         String GJ = lineYS.GJ;
         String CZ = lineYS.CZ;
+        String LX = lineYS.LX;  //增加流向的判断
 
-        lineYS.LJBH = etLJDH.getText().toString();
-        lineYS.QDMS = AppUtils.parseFloat(etMS.getText().toString());
+        //lineYS.LJBH = etLJDH.getText().toString();
+        if (TextUtils.equals(etLJDH.getText().toString(), lineYS.LJBH) && LX == "0") {
+            lineYS.QDMS = AppUtils.parseFloat(etMS.getText().toString());
+        } else if (TextUtils.equals(etLJDH.getText().toString(), lineYS.LJBH) && LX == "1") {
+            lineYS.ZDMS = AppUtils.parseFloat(etMS.getText().toString());
+        } else if (TextUtils.equals(etLJDH.getText().toString(), lineYS.JCJBH) && LX == "0") {
+            lineYS.ZDMS = AppUtils.parseFloat(etMS.getText().toString());
+        } else if (TextUtils.equals(etLJDH.getText().toString(), lineYS.JCJBH) && LX == "1") {
+            lineYS.QDMS = AppUtils.parseFloat(etMS.getText().toString());
+        }
+        //lineYS.QDMS = AppUtils.parseFloat(etMS.getText().toString());
         lineYS.GJ = etGJ.getText().toString();
         lineYS.CZ = (String) spGC.getSelectedItem();
         lineYS.SFDTYZ = (String) spSFDTYZ.getSelectedItem();
         lineYS.SFHJ = (String) spSFHJ.getSelectedItem();
         lineYS.HJLX = (String) spHJLX.getSelectedItem();
         boolean sfxg = false;
-        if (QDMS == lineYS.QDMS || !TextUtils.equals(GJ, lineYS.GJ) || !TextUtils.equals(CZ, lineYS.CZ)) {
+        if (QDMS != lineYS.QDMS || ZDMS != lineYS.ZDMS || !TextUtils.equals(GJ, lineYS.GJ) || !TextUtils.equals(CZ, lineYS.CZ)) {
             sfxg = true;
         }
         lineYS.SFXG = sfxg ? "是" : "否";
         if (TextUtils.equals(lineYS.HJLX, "其他") || TextUtils.equals(lineYS.HJLX, "片区")) {
             lineYS.HJLX_extra = etHJLX.getText().toString();
         }
+
         lineYS.BZ = etBZ.getText().toString();
     }
 
