@@ -9,8 +9,15 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+
+import com.esri.android.map.Callout;
 import com.esri.android.map.GraphicsLayer;
 import com.esri.android.map.Layer;
 import com.esri.android.map.MapView;
@@ -27,17 +34,15 @@ import com.njscky.mapcollect.business.jcjinspect.GraphicListAdpater;
 import com.njscky.mapcollect.business.jcjinspect.JcjInspectFragment;
 import com.njscky.mapcollect.business.layer.LayerManager;
 import com.njscky.mapcollect.business.project.ProjectActivity;
-import com.njscky.mapcollect.business.query.QueryResultActivity;
+import com.njscky.mapcollect.business.query.Callout_Adapter;
+import com.njscky.mapcollect.business.query.CalloutitemClass;
 import com.njscky.mapcollect.db.DbManager;
 import com.njscky.mapcollect.util.PermissionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -63,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
     String dbName = "MapCollect.db";
     @BindView(R.id.map)
     MapView mMapView;
+    Callout mcallout;
     IdentifyParameters params; //背景管线查询参数
     GraphicsLayer tempGraphicsLayer; //临时图层，主要用于存放临时绘制的要素，如高亮显示的要素
 
@@ -95,6 +101,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+        mcallout = mMapView.getCallout();
         layerManager = MapCollectApp.getApp().getLayerManager();
         snackbar = Snackbar.make(mMapView, "需要设置权限", Snackbar.LENGTH_INDEFINITE)
                 .setAction("打开设置 ", v -> PermissionUtils.gotoSetting(this));
@@ -149,6 +156,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+//        ArcGISTiledMapServiceLayer baseMapLayer = new ArcGISTiledMapServiceLayer("http://58.213.48.104/arcgis/rest/services/NJ08/NJDXT20180830/MapServer");
+//        baseMapLayer.setName("基础底图");
+//        mMapView.addLayer(baseMapLayer);
+//
+//        ArcGISDynamicMapServiceLayer dxLayer = new ArcGISDynamicMapServiceLayer("http://58.213.48.109/arcgis/rest/services/PSDX1/MapServer");
+//        dxLayer.setName("地形图");
+//        mMapView.addLayer(dxLayer);
+
         layerManager.loadLayers(new LayerManager.LayerListener() {
             @Override
             public void onBaseLayerLoaded(Layer baseMapLayer) {
@@ -181,10 +196,31 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+//        ArcGISTiledMapServiceLayer baseMapLayer = new ArcGISTiledMapServiceLayer("http://58.213.48.104/arcgis/rest/services/NJ08/NJDXT20180830/MapServer");
+//        baseMapLayer.setName("基础底图");
+//        mMapView.addLayer(baseMapLayer);
+//
+//        File dir = null;
+//        if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
+//            dir = Environment.getExternalStorageDirectory();
+//        }
+//
+//        ArcGISLocalTiledLayer baseLocalMapLayer = new ArcGISLocalTiledLayer(dir.getAbsolutePath() +"/offlinemap/江东路以东地形.tpk");
+//        baseLocalMapLayer.setName("背景地形图");
+//        mMapView.addLayer(baseLocalMapLayer);
+//
+//        ArcGISDynamicMapServiceLayer gxLayer = new ArcGISDynamicMapServiceLayer("http://58.213.48.109/arcgis/rest/services/PSGX/MapServer");
+//        gxLayer.setName("背景管线图");
+//        mMapView.addLayer(gxLayer);
+//
         //添加tempGraphicsLayer
         tempGraphicsLayer = new GraphicsLayer(GraphicsLayer.RenderingMode.STATIC);
         tempGraphicsLayer.setName("tempGraphicsLayer");
         mMapView.addLayer(tempGraphicsLayer);
+
+        Envelope env = new Envelope();
+        env.setCoords(323907.3532868966, 345990.89497398573, 328618.26895872795, 349614.3709709378);
+        mMapView.setExtent(env);
     }
 
     private void singleTapQuery(float x, float y) {
@@ -441,6 +477,20 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
+    private void ShowCallout(Point point, List dataList) {
+        View mCalloutView = View.inflate(this, R.layout.layout_callout, null);
+        ListView listView = mCalloutView.findViewById(R.id.listview_callout);
+        Callout_Adapter calloutAdapter = new Callout_Adapter(this, dataList);
+        listView.setAdapter(calloutAdapter);
+
+        //获取Callout
+        mcallout.setContent(mCalloutView);
+        mcallout.setStyle(R.xml.callout_style);
+        mcallout.show(point);
+    }
+
+
     /*
      * 异步执行查询任务
      */
@@ -448,7 +498,7 @@ public class MainActivity extends AppCompatActivity {
             AsyncTask<IdentifyParameters, Void, IdentifyResult[]> {
         IdentifyTask mIdentifyTask;
         private GraphicsLayer mGraphicsLayer;
-
+        Point identifyPoint;
         public MyIdentifyTask(GraphicsLayer graphicsLayer) {
             this.mGraphicsLayer = graphicsLayer;
         }
@@ -458,6 +508,7 @@ public class MainActivity extends AppCompatActivity {
             IdentifyResult[] mResult = null;
             if (params != null && params.length > 0) {
                 IdentifyParameters mParams = params[0];
+                identifyPoint = (Point) mParams.getGeometry();
                 try {
                     mResult = mIdentifyTask.execute(mParams);// 执行识别任务
                 } catch (Exception e) {
@@ -471,7 +522,64 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(IdentifyResult[] results) {
             if (results != null && results.length > 0) {
-                QueryResultActivity.start(MainActivity.this, results);
+                IdentifyResult result = results[0];
+                Map<String, Object> map = result.getAttributes();
+                List<CalloutitemClass> dataList = new ArrayList();
+                if (map.containsKey("材质")) {
+                    String strCZ = map.get("材质").toString();
+                    String strGJ = map.get("管径").toString();
+                    String strQDMS = map.get("起点埋深").toString();
+                    String strZDMS = map.get("终点埋深").toString();
+
+                    CalloutitemClass mCalloutitemClass_cz = new CalloutitemClass();
+                    mCalloutitemClass_cz.setName("材质：");
+                    mCalloutitemClass_cz.setValue(strCZ);
+                    dataList.add(mCalloutitemClass_cz);
+
+                    CalloutitemClass mCalloutitemClass_gj = new CalloutitemClass();
+                    mCalloutitemClass_gj.setName("管径：");
+                    mCalloutitemClass_gj.setValue(strGJ);
+                    dataList.add(mCalloutitemClass_gj);
+
+                    CalloutitemClass mCalloutitemClass_qdms = new CalloutitemClass();
+                    mCalloutitemClass_qdms.setName("起点埋深：");
+                    mCalloutitemClass_qdms.setValue(strQDMS);
+                    dataList.add(mCalloutitemClass_qdms);
+
+                    CalloutitemClass mCalloutitemClass_zdms = new CalloutitemClass();
+                    mCalloutitemClass_zdms.setName("终点埋深：");
+                    mCalloutitemClass_zdms.setValue(strZDMS);
+                    dataList.add(mCalloutitemClass_zdms);
+
+                    ShowCallout(identifyPoint, dataList);
+                } else if (map.containsKey("附属物")) {
+                    String strDMGC = map.get("地面高程").toString();
+                    String strTZD = map.get("特征点").toString();
+                    String strFSW = map.get("附属物").toString();
+                    String strJGCZ = map.get("井盖材质").toString();
+
+                    CalloutitemClass mCalloutitemClass_dmgc = new CalloutitemClass();
+                    mCalloutitemClass_dmgc.setName("地面高程：");
+                    mCalloutitemClass_dmgc.setValue(strDMGC);
+                    dataList.add(mCalloutitemClass_dmgc);
+
+                    CalloutitemClass mCalloutitemClass_tzd = new CalloutitemClass();
+                    mCalloutitemClass_tzd.setName("特征点：");
+                    mCalloutitemClass_tzd.setValue(strTZD);
+                    dataList.add(mCalloutitemClass_tzd);
+
+                    CalloutitemClass mCalloutitemClass_fsw = new CalloutitemClass();
+                    mCalloutitemClass_fsw.setName("附属物：");
+                    mCalloutitemClass_fsw.setValue(strFSW);
+                    dataList.add(mCalloutitemClass_fsw);
+
+                    CalloutitemClass mCalloutitemClass_jgcz = new CalloutitemClass();
+                    mCalloutitemClass_jgcz.setName("井盖材质：");
+                    mCalloutitemClass_jgcz.setValue(strJGCZ);
+                    dataList.add(mCalloutitemClass_jgcz);
+                }
+                ShowCallout(identifyPoint, dataList);
+                //QueryResultActivity.start(MainActivity.this, results);
             } else {
                 Toast.makeText(MainActivity.this, "没有拾取到对象！", Toast.LENGTH_SHORT).show();
             }

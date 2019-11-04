@@ -7,7 +7,6 @@ import android.util.Log;
 
 import com.esri.android.map.GraphicsLayer;
 import com.esri.android.map.Layer;
-import com.esri.android.map.TiledLayer;
 import com.esri.android.map.ags.ArcGISDynamicMapServiceLayer;
 import com.esri.android.map.ags.ArcGISLocalTiledLayer;
 import com.esri.android.map.ags.ArcGISTiledMapServiceLayer;
@@ -49,7 +48,9 @@ public class LayerManager {
     private LayerConfig config;
 
     // 底图
-    private TiledLayer baseMapLayer;
+    private ArcGISTiledMapServiceLayer baseMapLayer;
+    private ArcGISLocalTiledLayer baseLocalMapLayer;
+
     // 管线layer
     private ArcGISDynamicMapServiceLayer gxLayer;
     // 雨水检查井点
@@ -90,16 +91,16 @@ public class LayerManager {
     private void loadLocalTpks(LayerListener callback) {
         // TODO
         LayerParameter parameter = config.baseMapParameter();
-        baseMapLayer = new ArcGISLocalTiledLayer(parameter.localDir.getAbsolutePath() + "/江东路以东地形.tpk");
-        baseMapLayer.setName("背景地形图");
-        baseMapLayer.setOnStatusChangedListener(new OnStatusChangedListener() {
+        baseLocalMapLayer = new ArcGISLocalTiledLayer(parameter.localDir.getAbsolutePath() + "/江东路以东地形.tpk");
+        baseLocalMapLayer.setName("背景地形图");
+        baseLocalMapLayer.setOnStatusChangedListener(new OnStatusChangedListener() {
             @Override
             public void onStatusChanged(Object o, STATUS status) {
                 Log.i(TAG, "localTiledLayer#onStatusChanged: " + status);
             }
         });
         if (callback != null) {
-            callback.onBaseLayerLoaded(baseMapLayer);
+            callback.onBaseLayerLoaded(baseLocalMapLayer);
         }
     }
 
