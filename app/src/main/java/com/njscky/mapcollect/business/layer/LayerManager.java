@@ -437,7 +437,7 @@ public class LayerManager {
 
     private void setHighlightSimpleLineSymbol(SimpleLineSymbol symbol) {
         symbol.setColor(context.getResources().getColor(R.color.colorHighlight));
-        symbol.setWidth(symbol.getWidth() * 1.3f);
+        symbol.setWidth(symbol.getWidth() * 1.5f);
     }
 
     private void setHighlightTextSymbol(TextSymbol symbol) {
@@ -492,6 +492,7 @@ public class LayerManager {
                 polyline.addSegment(line, true);
 
                 Map<String, Object> attributes = new HashMap<String, Object>();
+                attributes.put("JCJBH", jcjLineYS.JCJBH);
                 attributes.put("LJBH", jcjLineYS.LJBH);
                 attributes.put("jcjLineYS", jcjLineYS);
 
@@ -530,10 +531,12 @@ public class LayerManager {
     private boolean isGraphicMatched(Graphic graphic, JCJLineYS jcjLineYS) {
         Map<String, Object> attributes = graphic.getAttributes();
         String LJBH = null;
+        String JCJBH = null;
         if (attributes != null) {
             LJBH = (String) attributes.get("LJBH");
+            JCJBH = (String) attributes.get("JCJBH");
         }
-        if (TextUtils.equals(LJBH, jcjLineYS.LJBH)) {
+        if (TextUtils.equals(LJBH, jcjLineYS.LJBH) && TextUtils.equals(JCJBH, jcjLineYS.JCJBH)) {
             Log.i(TAG, "isGraphicMatched: matched");
             return true;
         }
