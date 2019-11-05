@@ -432,7 +432,7 @@ public class LayerManager {
             }
         }
 
-        Graphic rst = new Graphic(graphic.getGeometry(), symbol);
+        Graphic rst = new Graphic(graphic.getGeometry(), symbol, graphic.getAttributes());
 
         return rst;
     }
