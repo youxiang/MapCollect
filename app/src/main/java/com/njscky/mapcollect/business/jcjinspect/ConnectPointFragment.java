@@ -95,12 +95,26 @@ public class ConnectPointFragment extends Fragment {
         arrHJLX = getResources().getStringArray(R.array.hjlx);
         arrGC = getResources().getStringArray(R.array.gc);
         String JCJBH = point.JCJBH;  //增加判断，当点的JCJBH=线的JCJBH时，取LJBH的值，否则取JCJBH的值
+        String LX = line.LX;
+        // 1）  如果当前选中点编号=线表中JCJBH的值且LX=0时，埋深值取 ZDMS字段；当前选中点编号=线表中JCJBH的值且LX=1时， 埋深值取  QDMS字段;
+        // 2）  如果当前选中点编号=线表中LJBH的值且LX=0时，埋深值取  QDMS字段；当前选中点编号=线表中LJBH的值且LX=1时， 埋深值取 ZDMS字段;
+
         if (TextUtils.equals(JCJBH, line.JCJBH)) {
             etLJDH.setText(line.LJBH);
+            if (TextUtils.equals(LX, "0")) {
+                etMS.setText(String.valueOf(line.ZDMS));
+            } else {
+                etMS.setText(String.valueOf(line.QDMS));
+            }
         } else {
             etLJDH.setText(line.JCJBH);
+            if (TextUtils.equals(LX, "0")) {
+                etMS.setText(String.valueOf(line.QDMS));
+            } else {
+                etMS.setText(String.valueOf(line.ZDMS));
+            }
         }
-        etMS.setText(String.valueOf(line.QDMS));
+
         etGJ.setText(line.GJ);
         spGC.setAdapter(new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, arrGC));
         spGC.setSelection(getSelectIndex(arrGC, line.CZ));
@@ -143,13 +157,13 @@ public class ConnectPointFragment extends Fragment {
         String LX = lineYS.LX;  //增加流向的判断
 
         //lineYS.LJBH = etLJDH.getText().toString();
-        if (TextUtils.equals(etLJDH.getText().toString(), lineYS.LJBH) && LX == "0") {
+        if (TextUtils.equals(etLJDH.getText().toString(), lineYS.LJBH) && TextUtils.equals(LX, "1")) {
             lineYS.QDMS = AppUtils.parseFloat(etMS.getText().toString());
-        } else if (TextUtils.equals(etLJDH.getText().toString(), lineYS.LJBH) && LX == "1") {
+        } else if (TextUtils.equals(etLJDH.getText().toString(), lineYS.LJBH) && TextUtils.equals(LX, "0")) {
             lineYS.ZDMS = AppUtils.parseFloat(etMS.getText().toString());
-        } else if (TextUtils.equals(etLJDH.getText().toString(), lineYS.JCJBH) && LX == "0") {
+        } else if (TextUtils.equals(etLJDH.getText().toString(), lineYS.JCJBH) && TextUtils.equals(LX, "1")) {
             lineYS.ZDMS = AppUtils.parseFloat(etMS.getText().toString());
-        } else if (TextUtils.equals(etLJDH.getText().toString(), lineYS.JCJBH) && LX == "1") {
+        } else if (TextUtils.equals(etLJDH.getText().toString(), lineYS.JCJBH) && TextUtils.equals(LX, "0")) {
             lineYS.QDMS = AppUtils.parseFloat(etMS.getText().toString());
         }
         //lineYS.QDMS = AppUtils.parseFloat(etMS.getText().toString());

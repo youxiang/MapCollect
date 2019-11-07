@@ -12,7 +12,6 @@
     <Button
         android:id="@+id/btnGCGL"
         style="@style/BottomMenuButton"
-        android:background="@color/white"
         android:drawableLeft="@drawable/gc"
         android:text="@string/project" />
 

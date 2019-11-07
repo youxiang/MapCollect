@@ -149,6 +149,19 @@
     </LinearLayout>
 
 
+    <LinearLayout style="@style/AppTheme.Property">
 
+        <TextView
+            android:layout_width="@dimen/prop_name_width"
+            android:layout_height="wrap_content"
+            android:text="@string/bz" />
+
+        <EditText
+            android:id="@+id/et_jcjbz"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:visibility="visible" />
+    </LinearLayout>
 
 </LinearLayout>

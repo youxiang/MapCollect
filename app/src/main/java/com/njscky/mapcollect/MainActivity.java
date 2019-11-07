@@ -2,11 +2,13 @@ package com.njscky.mapcollect;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
@@ -106,6 +108,33 @@ public class MainActivity extends AppCompatActivity {
         snackbar = Snackbar.make(mMapView, "需要设置权限", Snackbar.LENGTH_INDEFINITE)
                 .setAction("打开设置 ", v -> PermissionUtils.gotoSetting(this));
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQ_PERMISSIONS);
+    }
+
+    DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
+        public void onClick(DialogInterface dialog, int which) {
+            switch (which) {
+                case AlertDialog.BUTTON_POSITIVE:// "确认"按钮退出程序
+                    System.exit(0);
+                    break;
+                case AlertDialog.BUTTON_NEGATIVE:// "取消"第二个按钮取消对话框
+                    break;
+                default:
+                    break;
+            }
+        }
+    };
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            AlertDialog isExit = new AlertDialog.Builder(this).create();
+            isExit.setTitle("系统提示");
+            isExit.setMessage("确定要退出系统?");
+            isExit.setButton("确定", listener);
+            isExit.setButton2("取消", listener);
+            isExit.show();
+        }
+        return false;
     }
 
     private void initMap() {
@@ -352,34 +381,54 @@ public class MainActivity extends AppCompatActivity {
 
     @OnClick(R.id.btnGCGL)
     void onProject() {
+        btnProject.setTextColor(this.getResources().getColor(R.color.orange));
+        btnInspect.setTextColor(this.getResources().getColor(R.color.black));
+        btnLayer.setTextColor(this.getResources().getColor(R.color.black));
+        btnQuery.setTextColor(this.getResources().getColor(R.color.black));
         ProjectActivity.startForResult(this, REQ_PROJECT);
     }
 
     @OnClick(R.id.btnInspect)
     void onInspect() {
-        if (state == STATE_INSPECT) {
-            state = STATE_INIT;
-        } else {
-            state = STATE_INSPECT;
-        }
-        updateState();
+//        if (state == STATE_INSPECT) {
+//            state = STATE_INIT;
+//        } else {
+//            state = STATE_INSPECT;
+//        }
+        btnProject.setTextColor(this.getResources().getColor(R.color.black));
+        btnInspect.setTextColor(this.getResources().getColor(R.color.orange));
+        btnLayer.setTextColor(this.getResources().getColor(R.color.black));
+        btnQuery.setTextColor(this.getResources().getColor(R.color.black));
+        state = STATE_INSPECT;
+        // updateState();
     }
 
     @OnClick(R.id.btnLayer)
     void onLayer() {
         // TODO 图层
-
+        btnProject.setTextColor(this.getResources().getColor(R.color.black));
+        btnInspect.setTextColor(this.getResources().getColor(R.color.black));
+        btnLayer.setTextColor(this.getResources().getColor(R.color.orange));
+        btnQuery.setTextColor(this.getResources().getColor(R.color.black));
     }
 
     @OnClick(R.id.btnQuery)
     void onQuery() {
         // TODO 背景管线查询
-        if (state == STATE_QUERY) {
-            state = STATE_INIT;
-        } else {
-            state = STATE_QUERY;
+//        if (state == STATE_QUERY) {
+//            state = STATE_INIT;
+//        } else {
+//            state = STATE_QUERY;
+//        }
+        btnProject.setTextColor(this.getResources().getColor(R.color.black));
+        btnInspect.setTextColor(this.getResources().getColor(R.color.black));
+        btnLayer.setTextColor(this.getResources().getColor(R.color.black));
+        btnQuery.setTextColor(this.getResources().getColor(R.color.orange));
+        state = STATE_QUERY;
+        //updateState();
+        if (mcallout != null) {
+            mcallout.hide();
         }
-        updateState();
         params = new IdentifyParameters();
         params.setTolerance(20); //设置容差
         params.setDPI(98);

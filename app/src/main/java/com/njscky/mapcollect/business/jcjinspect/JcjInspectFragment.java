@@ -77,6 +77,8 @@ public class JcjInspectFragment extends Fragment {
     Spinner spJLX;
     @BindView(R.id.et_jlx)
     EditText etJLX;
+    @BindView(R.id.et_jcjbz)
+    EditText etJCJBZ;
     @BindView(R.id.tabLayout)
     TabLayout tabLayout;
     @BindView(R.id.viewPager)
@@ -302,6 +304,8 @@ public class JcjInspectFragment extends Fragment {
             spJLX.setSelection(jlxIndex);
             etJLX.setText(pointYS.JLX_extra);
 
+            etJCJBZ.setText(pointYS.BZ); //增加备注
+
             if (fragments == null) {
                 fragments = new ArrayList<>();
             } else {
@@ -435,6 +439,7 @@ public class JcjInspectFragment extends Fragment {
         pointYS.JSCC = etJSCC.getText().toString();
         pointYS.FSWLX = (String) spFSWLX.getSelectedItem();
         pointYS.JLX = (String) spJLX.getSelectedItem();
+        pointYS.BZ = etJCJBZ.getText().toString();
         pointYS.SFTXWC = cbSFTXWC.isChecked();
         pointYS.SFPZWC = cbSFPZWC.isChecked();
         boolean sfxg = false;
