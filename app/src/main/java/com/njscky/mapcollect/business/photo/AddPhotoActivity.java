@@ -7,7 +7,6 @@ import android.content.pm.PackageManager;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Log;
@@ -20,14 +19,6 @@ import android.widget.PopupWindow;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.FileProvider;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.njscky.mapcollect.R;
 import com.njscky.mapcollect.db.DbManager;
@@ -42,6 +33,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.FileProvider;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -187,7 +185,7 @@ public class AddPhotoActivity extends AppCompatActivity {
 
     private void takePhoto() {
         PhotoTypeItem photoType = (PhotoTypeItem) spPhotoType.getSelectedItem();
-        File photoDir = getPhotoDir(photoType);
+        File photoDir = PhotoHelper.getPhotoDir(this, photoType);
         String fileName = generateFileName(JCJBH, photoType);
         photoFile = new File(photoDir, fileName);
 
@@ -203,15 +201,6 @@ public class AddPhotoActivity extends AppCompatActivity {
         String name = String.format(Locale.getDefault(), "%s%s%d.jpg", JCJBH, photoType.typeShortName, serialNumber);
         Log.i(TAG, "generateFileName: " + name);
         return name;
-    }
-
-    private File getPhotoDir(PhotoTypeItem photoType) {
-        String photoDirPath = Environment.getExternalStorageDirectory() + File.separator + getPackageName() + File.separator + "photos" + File.separator + photoType.typeName;
-        File photoDir = new File(photoDirPath);
-        if (!photoDir.exists()) {
-            photoDir.mkdirs();
-        }
-        return photoDir;
     }
 
     private void showPopupWindow() {

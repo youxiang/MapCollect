@@ -14,11 +14,6 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-
 import com.esri.android.map.Callout;
 import com.esri.android.map.GraphicsLayer;
 import com.esri.android.map.Layer;
@@ -35,6 +30,7 @@ import com.google.android.material.snackbar.Snackbar;
 import com.njscky.mapcollect.business.jcjinspect.GraphicListAdpater;
 import com.njscky.mapcollect.business.jcjinspect.JcjInspectFragment;
 import com.njscky.mapcollect.business.layer.LayerManager;
+import com.njscky.mapcollect.business.photo.album.AlbumListActivity;
 import com.njscky.mapcollect.business.project.ProjectActivity;
 import com.njscky.mapcollect.business.query.Callout_Adapter;
 import com.njscky.mapcollect.business.query.CalloutitemClass;
@@ -45,6 +41,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -58,7 +58,8 @@ public class MainActivity extends AppCompatActivity {
     private static final int STATE_INIT = 0;
     private static final int STATE_PROJECT = 1;
     private static final int STATE_INSPECT = 2;
-    private static final int STATE_QUERY = 3;
+    private static final int STATE_LAYER = 3;
+    private static final int STATE_QUERY = 4;
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -69,7 +70,6 @@ public class MainActivity extends AppCompatActivity {
 
     public static String strUserCode = "BH01"; //当前登录用户编号
 
-    String dbName = "MapCollect.db";
     @BindView(R.id.map)
     MapView mMapView;
     Callout mcallout;
@@ -226,10 +226,6 @@ public class MainActivity extends AppCompatActivity {
         tempGraphicsLayer.setName("tempGraphicsLayer");
         mMapView.addLayer(tempGraphicsLayer);
 
-//        Envelope env = new Envelope();
-//        env.setCoords(323907.3532868966, 345990.89497398573, 328618.26895872795, 349614.3709709378);
-//        mMapView.setExtent(env);
-
     }
 
     private void singleTapQuery(float x, float y) {
@@ -251,19 +247,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void singleTapInspect(float x, float y) {
-
-//                Point p = mMapView.toMapPoint(x, y);
-//                mMapView.centerAt(p, true);
-
         GraphicsLayer layer = (GraphicsLayer) layerManager.getYSPointLayer();
-
         int[] graphicIds = layer.getGraphicIDs(x, y, 15);
-
         if (graphicIds == null || graphicIds.length == 0) {
-
             return;
         }
-
         List<Graphic> graphics = new ArrayList<>(graphicIds.length);
 
         for (int graphicId : graphicIds) {
@@ -296,9 +284,6 @@ public class MainActivity extends AppCompatActivity {
                 bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
             }
         }
-
-//        bottomSheetBehavior.setHideable(false);
-//        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
     }
 
     private void choosePoints(GraphicsLayer layer, List<Graphic> graphics) {
@@ -361,51 +346,45 @@ public class MainActivity extends AppCompatActivity {
 
     @OnClick(R.id.btnGCGL)
     void onProject() {
-        btnProject.setTextColor(this.getResources().getColor(R.color.orange));
-        btnInspect.setTextColor(this.getResources().getColor(R.color.black));
-        btnLayer.setTextColor(this.getResources().getColor(R.color.black));
-        btnQuery.setTextColor(this.getResources().getColor(R.color.black));
+        if (state == STATE_PROJECT) {
+            state = STATE_INIT;
+        } else {
+            state = STATE_PROJECT;
+        }
+        updateState();
         ProjectActivity.startForResult(this, REQ_PROJECT);
     }
 
     @OnClick(R.id.btnInspect)
     void onInspect() {
-//        if (state == STATE_INSPECT) {
-//            state = STATE_INIT;
-//        } else {
-//            state = STATE_INSPECT;
-//        }
-        btnProject.setTextColor(this.getResources().getColor(R.color.black));
-        btnInspect.setTextColor(this.getResources().getColor(R.color.orange));
-        btnLayer.setTextColor(this.getResources().getColor(R.color.black));
-        btnQuery.setTextColor(this.getResources().getColor(R.color.black));
-        state = STATE_INSPECT;
-        // updateState();
+        if (state == STATE_INSPECT) {
+            state = STATE_INIT;
+        } else {
+            state = STATE_INSPECT;
+        }
+        updateState();
+
     }
 
     @OnClick(R.id.btnLayer)
     void onLayer() {
-        // TODO 图层
-        btnProject.setTextColor(this.getResources().getColor(R.color.black));
-        btnInspect.setTextColor(this.getResources().getColor(R.color.black));
-        btnLayer.setTextColor(this.getResources().getColor(R.color.orange));
-        btnQuery.setTextColor(this.getResources().getColor(R.color.black));
+        if (state == STATE_LAYER) {
+            state = STATE_INIT;
+        } else {
+            state = STATE_LAYER;
+        }
+        updateState();
+        AlbumListActivity.start(this);
     }
 
     @OnClick(R.id.btnQuery)
     void onQuery() {
-        // TODO 背景管线查询
-//        if (state == STATE_QUERY) {
-//            state = STATE_INIT;
-//        } else {
-//            state = STATE_QUERY;
-//        }
-        btnProject.setTextColor(this.getResources().getColor(R.color.black));
-        btnInspect.setTextColor(this.getResources().getColor(R.color.black));
-        btnLayer.setTextColor(this.getResources().getColor(R.color.black));
-        btnQuery.setTextColor(this.getResources().getColor(R.color.orange));
-        state = STATE_QUERY;
-        //updateState();
+        if (state == STATE_QUERY) {
+            state = STATE_INIT;
+        } else {
+            state = STATE_QUERY;
+        }
+        updateState();
         if (mcallout != null) {
             mcallout.hide();
         }
@@ -451,62 +430,48 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-//        ysPointLayerManager.loadLayers(new LayerCallback() {
-//            @Override
-//            public void onLayerLoaded() {
-//                Log.i(TAG, "onLayerLoaded: ");
-//            }
-//
-//            @Override
-//            public void onLayerLoading() {
-//                Log.i(TAG, "onLayerLoading: ");
-//            }
-//        });
-//        ysLineLayerManager.loadLayers(new LayerCallback() {
-//            @Override
-//            public void onLayerLoaded() {
-//                Log.i(TAG, "onLayerLoaded: ");
-//            }
-//
-//            @Override
-//            public void onLayerLoading() {
-//                Log.i(TAG, "onLayerLoading: ");
-//            }
-//        });
-
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         Log.i(TAG, "onDestroy: ");
-//        baseMapManager.release();
-//        gxlayerManager.release();
         layerManager.release();
-//        LayerHelper.getInstance(this).release();
         DbManager.getInstance(this).close();
     }
 
     private void updateState() {
         switch (state) {
             case STATE_INSPECT:
-                btnProject.setEnabled(false);
-                btnInspect.setEnabled(true);
-                btnLayer.setEnabled(false);
-                btnQuery.setEnabled(false);
+                btnProject.setSelected(false);
+                btnInspect.setSelected(true);
+                btnLayer.setSelected(false);
+                btnQuery.setSelected(false);
                 break;
             case STATE_QUERY:
-                btnProject.setEnabled(false);
-                btnInspect.setEnabled(false);
-                btnLayer.setEnabled(false);
-                btnQuery.setEnabled(true);
+                btnProject.setSelected(false);
+                btnInspect.setSelected(false);
+                btnLayer.setSelected(false);
+                btnQuery.setSelected(true);
+                break;
+            case STATE_LAYER:
+                btnProject.setSelected(false);
+                btnInspect.setSelected(false);
+                btnLayer.setSelected(true);
+                btnQuery.setSelected(false);
+                break;
+            case STATE_PROJECT:
+                btnProject.setSelected(true);
+                btnInspect.setSelected(false);
+                btnLayer.setSelected(false);
+                btnQuery.setSelected(false);
                 break;
             case STATE_INIT:
+                btnProject.setSelected(false);
+                btnInspect.setSelected(false);
+                btnLayer.setSelected(false);
+                btnQuery.setSelected(false);
             default:
-                btnProject.setEnabled(true);
-                btnInspect.setEnabled(true);
-                btnLayer.setEnabled(true);
-                btnQuery.setEnabled(true);
                 break;
         }
 
@@ -614,7 +579,6 @@ public class MainActivity extends AppCompatActivity {
                     dataList.add(mCalloutitemClass_jgcz);
                 }
                 ShowCallout(identifyPoint, dataList);
-                //QueryResultActivity.start(MainActivity.this, results);
             } else {
                 Toast.makeText(MainActivity.this, "没有拾取到对象！", Toast.LENGTH_SHORT).show();
             }

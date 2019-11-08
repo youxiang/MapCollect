@@ -38,6 +38,11 @@
     <string name="empty">无数据</string>
     <string name="sftxwc">确认填写完成</string>
     <string name="sfpzwc">确认拍照完成</string>
+    <string name="select_all">全选</string>
+    <string name="delete">删除</string>
+    <string name="title_album_list">所有照片</string>
+    <string name="title_album_list_edit">已选择%1$d项</string>
+    <string name="unselect_all">取消全选</string>
     <string-array name="photo_type_arr">
         <item>清疏前#QQ</item>
         <item>清疏后#QH</item>

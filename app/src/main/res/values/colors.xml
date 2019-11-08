@@ -12,6 +12,7 @@
     <color name="colorSFTXWC">#4CAF50</color>
     <color name="colorSFPZWC">#FFC107</color>
     <color name="colorWC">#673AB7</color>
+    <color name="colorButtonBackground">#DADADA</color>
     <color name="black">#000000</color>
     <color name="gray">#808A87</color>
     <color name="orange">#FFA500</color>
