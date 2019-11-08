@@ -67,6 +67,8 @@ public class MainActivity extends AppCompatActivity {
     private static final String[] PERMISSIONS = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
     private static final int REQ_PROJECT = 100;
 
+    public static String strUserCode = "BH01"; //当前登录用户编号
+
     String dbName = "MapCollect.db";
     @BindView(R.id.map)
     MapView mMapView;
@@ -108,6 +110,10 @@ public class MainActivity extends AppCompatActivity {
         snackbar = Snackbar.make(mMapView, "需要设置权限", Snackbar.LENGTH_INDEFINITE)
                 .setAction("打开设置 ", v -> PermissionUtils.gotoSetting(this));
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQ_PERMISSIONS);
+
+//        Intent intent1 = new Intent();
+//        intent1.setClass(MainActivity.this, Login.class);
+//        startActivity(intent1);
     }
 
     DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
@@ -138,7 +144,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initMap() {
-
         mMapView.setOnSingleTapListener(new OnSingleTapListener() {
             @Override
             public void onSingleTap(float x, float y) {
@@ -185,14 +190,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-//        ArcGISTiledMapServiceLayer baseMapLayer = new ArcGISTiledMapServiceLayer("http://58.213.48.104/arcgis/rest/services/NJ08/NJDXT20180830/MapServer");
-//        baseMapLayer.setName("基础底图");
-//        mMapView.addLayer(baseMapLayer);
-//
-//        ArcGISDynamicMapServiceLayer dxLayer = new ArcGISDynamicMapServiceLayer("http://58.213.48.109/arcgis/rest/services/PSDX1/MapServer");
-//        dxLayer.setName("地形图");
-//        mMapView.addLayer(dxLayer);
-
         layerManager.loadLayers(new LayerManager.LayerListener() {
             @Override
             public void onBaseLayerLoaded(Layer baseMapLayer) {
@@ -224,24 +221,6 @@ public class MainActivity extends AppCompatActivity {
                 mMapView.addLayer(ysjcjLineAnnotationLayer);
             }
         });
-
-//        ArcGISTiledMapServiceLayer baseMapLayer = new ArcGISTiledMapServiceLayer("http://58.213.48.104/arcgis/rest/services/NJ08/NJDXT20180830/MapServer");
-//        baseMapLayer.setName("基础底图");
-//        mMapView.addLayer(baseMapLayer);
-//
-//        File dir = null;
-//        if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
-//            dir = Environment.getExternalStorageDirectory();
-//        }
-//
-//        ArcGISLocalTiledLayer baseLocalMapLayer = new ArcGISLocalTiledLayer(dir.getAbsolutePath() +"/offlinemap/江东路以东地形.tpk");
-//        baseLocalMapLayer.setName("背景地形图");
-//        mMapView.addLayer(baseLocalMapLayer);
-//
-//        ArcGISDynamicMapServiceLayer gxLayer = new ArcGISDynamicMapServiceLayer("http://58.213.48.109/arcgis/rest/services/PSGX/MapServer");
-//        gxLayer.setName("背景管线图");
-//        mMapView.addLayer(gxLayer);
-//
         //添加tempGraphicsLayer
         tempGraphicsLayer = new GraphicsLayer(GraphicsLayer.RenderingMode.STATIC);
         tempGraphicsLayer.setName("tempGraphicsLayer");
@@ -250,6 +229,7 @@ public class MainActivity extends AppCompatActivity {
 //        Envelope env = new Envelope();
 //        env.setCoords(323907.3532868966, 345990.89497398573, 328618.26895872795, 349614.3709709378);
 //        mMapView.setExtent(env);
+
     }
 
     private void singleTapQuery(float x, float y) {
