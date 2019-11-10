@@ -150,6 +150,16 @@ public class AlbumDirListAdapter extends RecyclerView.Adapter<AlbumDirListAdapte
         return data.get(position);
     }
 
+    public List<PhotoJCJ> getSelectedPhotos() {
+        List<PhotoJCJ> rst = new ArrayList<>();
+        for (AlbumDir item : data) {
+            if (item.selected && item.photos != null) {
+                rst.addAll(item.photos);
+            }
+        }
+        return rst;
+    }
+
     public interface OnItemLongClickListener {
         void onItemLongClick(View view, int position);
     }

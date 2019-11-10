@@ -1,16 +1,22 @@
 package com.njscky.mapcollect.business.photo.album;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import com.njscky.mapcollect.R;
 import com.njscky.mapcollect.business.photo.DisplayPhotoActivity;
+import com.njscky.mapcollect.business.photo.PhotoHelper;
+import com.njscky.mapcollect.db.DbManager;
+import com.njscky.mapcollect.db.entitiy.PhotoJCJ;
+import com.njscky.mapcollect.db.entitiy.PhotoJCJDao;
+import com.njscky.mapcollect.util.AppExecutors;
 
+import java.util.List;
 import java.util.Locale;
 
 import androidx.annotation.Nullable;
@@ -38,14 +44,18 @@ public class AlbumListActivity extends AppCompatActivity {
     @BindView(R.id.btn_select_all)
     Button btnSelectAll;
 
-    private AlbumDir albumDir;
+    private String JCJBH;
+    private String photoType;
+
     private PhotoAdapter adapter;
 
     private int state = STATE_VIEW;
+    private PhotoJCJDao photoJCJDao;
 
-    public static void start(Activity activity, AlbumDir item) {
+    public static void start(Activity activity, String JCJBH, String photoType) {
         Intent intent = new Intent(activity, AlbumListActivity.class);
-        intent.putExtra("albumDir", item);
+        intent.putExtra("JCJBH", JCJBH);
+        intent.putExtra("photoType", photoType);
         activity.startActivity(intent);
     }
 
@@ -56,6 +66,7 @@ public class AlbumListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_album_list);
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
+        photoJCJDao = DbManager.getInstance(this).getDaoSession().getPhotoJCJDao();
         toolbar.setNavigationOnClickListener(v -> {
             switch (state) {
                 case STATE_VIEW:
@@ -68,7 +79,8 @@ public class AlbumListActivity extends AppCompatActivity {
                     break;
             }
         });
-        albumDir = getIntent().getParcelableExtra("albumDir");
+        JCJBH = getIntent().getStringExtra("JCJBH");
+        photoType = getIntent().getStringExtra("photoType");
         rvPhotoList.setLayoutManager(new GridLayoutManager(this, 3));
         adapter = new PhotoAdapter();
         adapter.setOnItemLongClickListener(new PhotoAdapter.OnItemLongClickListener() {
@@ -91,7 +103,7 @@ public class AlbumListActivity extends AppCompatActivity {
             @Override
             public void onItemClick(View view, int position) {
                 if (state == STATE_VIEW) {
-                    DisplayPhotoActivity.start(AlbumListActivity.this, albumDir.photos, position);
+                    DisplayPhotoActivity.start(AlbumListActivity.this, adapter.getPhotos(), position);
                 }
             }
         });
@@ -120,10 +132,7 @@ public class AlbumListActivity extends AppCompatActivity {
     }
 
     private String getAlbumName() {
-        if (albumDir != null) {
-            return String.format(Locale.getDefault(), "%s(%s)", albumDir.dirName, albumDir.JCJBH);
-        }
-        return "";
+        return String.format(Locale.getDefault(), "%s(%s)", photoType, JCJBH);
     }
 
     private void refreshStateEdit() {
@@ -148,19 +157,53 @@ public class AlbumListActivity extends AppCompatActivity {
     }
 
     private void loadData() {
-        if (albumDir != null && albumDir.photos != null) {
-            adapter.setData(albumDir.photos);
-        }
+        AppExecutors.DB.execute(() -> {
+            List<PhotoJCJ> photoList = photoJCJDao.queryBuilder()
+                    .where(PhotoJCJDao.Properties.JCJBH.eq(JCJBH), PhotoJCJDao.Properties.ZPLX.eq(photoType))
+                    .list();
+
+            AppExecutors.MAIN.execute(() -> {
+                adapter.setData(photoList);
+                refreshStatus();
+            });
+        });
     }
 
     @OnClick(R.id.btn_delete)
     void onDelete() {
-        Toast.makeText(this, "Unimplemented", Toast.LENGTH_SHORT).show();
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.dialog_title)
+                .setMessage(R.string.dialog_delete_photo)
+                .setPositiveButton(R.string.confirm, (dialog, which) -> {
+                    doDelete();
+                })
+                .setNegativeButton(R.string.cancel, (dialog, which) -> {
+
+                })
+                .show();
+    }
+
+    private void doDelete() {
+        AppExecutors.DB.execute(() -> {
+            List<PhotoJCJ> photos = adapter.getSelectedPhotos();
+            for (PhotoJCJ photo : photos) {
+                boolean success = PhotoHelper.deletePhotoFile(this, photo);
+            }
+            photoJCJDao.deleteInTx(photos);
+
+            state = STATE_VIEW;
+            loadData();
+        });
     }
 
     @OnClick(R.id.btn_select_all)
     void onSelectALl() {
-
-        Toast.makeText(this, "Unimplemented", Toast.LENGTH_SHORT).show();
+        if (adapter != null) {
+            if (btnSelectAll.getText().toString().equals(getString(R.string.select_all))) {
+                adapter.selectAll();
+            } else {
+                adapter.unselectAll();
+            }
+        }
     }
 }

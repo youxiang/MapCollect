@@ -1,15 +1,16 @@
 package com.njscky.mapcollect.business.photo.album;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.njscky.mapcollect.R;
+import com.njscky.mapcollect.business.photo.PhotoHelper;
 import com.njscky.mapcollect.db.DbManager;
 import com.njscky.mapcollect.db.entitiy.PhotoJCJ;
 import com.njscky.mapcollect.db.entitiy.PhotoJCJDao;
@@ -96,7 +97,8 @@ public class AlbumDirListActivity extends AppCompatActivity {
                 if (state == STATE_EDIT) {
 
                 } else {
-                    AlbumListActivity.start(AlbumDirListActivity.this, adapter.getItem(position));
+                    AlbumDir albumDir = adapter.getItem(position);
+                    AlbumListActivity.start(AlbumDirListActivity.this, albumDir.JCJBH, albumDir.dirName);
                 }
             }
         });
@@ -138,6 +140,7 @@ public class AlbumDirListActivity extends AppCompatActivity {
 
                 AppExecutors.MAIN.execute(() -> {
                     adapter.setData(albumDirs);
+                    refreshStatus();
                 });
 
             }
@@ -188,8 +191,29 @@ public class AlbumDirListActivity extends AppCompatActivity {
 
     @OnClick(R.id.btn_delete)
     void onDelete() {
-        Log.i(TAG, "onDelete: ");
-        Toast.makeText(this, "Not Implemented", Toast.LENGTH_SHORT).show();
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.dialog_title)
+                .setMessage(R.string.dialog_delete_photo)
+                .setPositiveButton(R.string.confirm, (dialog, which) -> {
+                    doDelete();
+                })
+                .setNegativeButton(R.string.cancel, (dialog, which) -> {
+
+                })
+                .show();
+    }
+
+    private void doDelete() {
+        AppExecutors.DB.execute(() -> {
+            List<PhotoJCJ> photos = adapter.getSelectedPhotos();
+            for (PhotoJCJ photo : photos) {
+                boolean success = PhotoHelper.deletePhotoFile(this, photo);
+                Log.i(TAG, "onDelete: Delete success? " + success);
+            }
+            photoJCJDao.deleteInTx(photos);
+            state = STATE_VIEW;
+            loadData();
+        });
     }
 
     @OnClick(R.id.btn_select_all)

@@ -13,6 +13,7 @@ import com.njscky.mapcollect.db.entitiy.PhotoJCJ;
 import com.njscky.mapcollect.util.GlideApp;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -22,7 +23,7 @@ import static com.njscky.mapcollect.business.photo.album.AlbumListActivity.STATE
 
 public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.VH> {
 
-    private ArrayList<PhotoJCJ> photos;
+    private List<PhotoJCJ> photos;
 
     private int state;
 
@@ -61,7 +62,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.VH> {
         return photos == null ? 0 : photos.size();
     }
 
-    public void setData(ArrayList<PhotoJCJ> albums) {
+    public void setData(List<PhotoJCJ> albums) {
         this.photos = albums;
         notifyDataSetChanged();
     }
@@ -77,7 +78,19 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.VH> {
         }
     }
 
-    private void unselectAll() {
+    void selectAll() {
+        if (photos == null || photos.isEmpty()) {
+            return;
+        }
+        for (PhotoJCJ photo : photos) {
+            if (!photo.isSelected) {
+                photo.isSelected = true;
+            }
+        }
+        notifyDataSetChanged();
+    }
+
+    void unselectAll() {
         if (photos == null || photos.isEmpty()) {
             return;
         }
@@ -112,6 +125,20 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.VH> {
 
     public void setOnItemSelectListener(OnItemSelectListener onItemSelectListener) {
         this.onItemSelectListener = onItemSelectListener;
+    }
+
+    public List<PhotoJCJ> getSelectedPhotos() {
+        List<PhotoJCJ> photoJCJList = new ArrayList<>();
+        for (PhotoJCJ photo : photos) {
+            if (photo.isSelected) {
+                photoJCJList.add(photo);
+            }
+        }
+        return photoJCJList;
+    }
+
+    public ArrayList<PhotoJCJ> getPhotos() {
+        return (ArrayList<PhotoJCJ>) photos;
     }
 
     public interface OnItemLongClickListener {

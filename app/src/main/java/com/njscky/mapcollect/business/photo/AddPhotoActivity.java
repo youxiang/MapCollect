@@ -36,6 +36,7 @@ import java.util.Locale;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -55,6 +56,8 @@ public class AddPhotoActivity extends AppCompatActivity {
     private static final int REQ_PICK_PHOTO = 101;
     private static final int REQ_TAKE_PHOTO_PERMISSION = 1;
     private static final String TAG = "AddPhotoActivity";
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
     @BindView(R.id.jcj_bh)
     TextView tvJCJBH;
     @BindView(R.id.et_remark)
@@ -87,6 +90,13 @@ public class AddPhotoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_photo);
         ButterKnife.bind(this);
+        setSupportActionBar(toolbar);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
 
         photoJCJDao = DbManager.getInstance(this).getDaoSession().getPhotoJCJDao();
         JCJBH = getIntent().getStringExtra("JCJBH");

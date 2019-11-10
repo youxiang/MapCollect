@@ -2,13 +2,11 @@ package com.njscky.mapcollect;
 
 import android.Manifest;
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
@@ -98,6 +96,7 @@ public class MainActivity extends AppCompatActivity {
     private AlertDialog choosePointsDialog;
 
     private LayerManager layerManager;
+    private boolean isFirstInit = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,36 +109,25 @@ public class MainActivity extends AppCompatActivity {
                 .setAction("打开设置 ", v -> PermissionUtils.gotoSetting(this));
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQ_PERMISSIONS);
 
-//        Intent intent1 = new Intent();
-//        intent1.setClass(MainActivity.this, Login.class);
-//        startActivity(intent1);
     }
 
-    DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
-        public void onClick(DialogInterface dialog, int which) {
-            switch (which) {
-                case AlertDialog.BUTTON_POSITIVE:// "确认"按钮退出程序
-                    System.exit(0);
-                    break;
-                case AlertDialog.BUTTON_NEGATIVE:// "取消"第二个按钮取消对话框
-                    break;
-                default:
-                    break;
-            }
-        }
-    };
 
     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            AlertDialog isExit = new AlertDialog.Builder(this).create();
-            isExit.setTitle("系统提示");
-            isExit.setMessage("确定要退出系统?");
-            isExit.setButton("确定", listener);
-            isExit.setButton2("取消", listener);
+    public void onBackPressed() {
+        if (bottomSheetBehavior.getState() == STATE_HIDDEN) {
+            AlertDialog isExit = new AlertDialog.Builder(this)
+                    .setTitle("系统提示")
+                    .setMessage("确定要退出系统?")
+                    .setNegativeButton("取消", (dialog, which) -> {
+                        // Do nothing
+                    })
+                    .setPositiveButton("确定", (dialog, which) -> finish())
+                    .create();
             isExit.show();
+        } else {
+            bottomSheetBehavior.setHideable(true);
+            bottomSheetBehavior.setState(STATE_HIDDEN);
         }
-        return false;
     }
 
     private void initMap() {
@@ -189,6 +177,12 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        if (isFirstInit) {
+            isFirstInit = false;
+            bottomSheetBehavior.setHideable(true);
+            bottomSheetBehavior.setState(STATE_HIDDEN);
+
+        }
         layerManager.loadLayers(new LayerManager.LayerListener() {
             @Override
             public void onBaseLayerLoaded(Layer baseMapLayer) {
