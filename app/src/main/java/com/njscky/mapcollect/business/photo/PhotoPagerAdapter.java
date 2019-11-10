@@ -5,14 +5,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import androidx.annotation.NonNull;
-import androidx.viewpager.widget.PagerAdapter;
-
 import com.njscky.mapcollect.R;
 import com.njscky.mapcollect.db.entitiy.PhotoJCJ;
 import com.njscky.mapcollect.util.GlideApp;
 
 import java.util.List;
+
+import androidx.annotation.NonNull;
+import androidx.viewpager.widget.PagerAdapter;
 
 public class PhotoPagerAdapter extends PagerAdapter {
 
@@ -46,5 +46,10 @@ public class PhotoPagerAdapter extends PagerAdapter {
     @Override
     public boolean isViewFromObject(@NonNull View view, @NonNull Object object) {
         return view == object;
+    }
+
+    @Override
+    public int getItemPosition(@NonNull Object object) {
+        return POSITION_NONE;
     }
 }

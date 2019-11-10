@@ -8,6 +8,7 @@
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         style="@style/AppTheme.Toolbar"
+        app:navigationIcon="@drawable/ic_nav_back"
         app:title="@string/title_activity_display_photo" />
 
     <androidx.viewpager.widget.ViewPager

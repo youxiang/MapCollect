@@ -56,6 +56,7 @@ public class AddPhotoActivity extends AppCompatActivity {
     private static final int REQ_PICK_PHOTO = 101;
     private static final int REQ_TAKE_PHOTO_PERMISSION = 1;
     private static final String TAG = "AddPhotoActivity";
+    private static final int REQ_DISPLAY_PHOTO = 102;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     @BindView(R.id.jcj_bh)
@@ -117,7 +118,7 @@ public class AddPhotoActivity extends AppCompatActivity {
 
             @Override
             public void onItemClick(int position) {
-                DisplayPhotoActivity.start(AddPhotoActivity.this, (ArrayList<PhotoJCJ>) photoListAdapter.getData(), position);
+                DisplayPhotoActivity.startForResult(AddPhotoActivity.this, (ArrayList<PhotoJCJ>) photoListAdapter.getData(), position, REQ_DISPLAY_PHOTO);
             }
         });
 
@@ -178,6 +179,12 @@ public class AddPhotoActivity extends AppCompatActivity {
                     }
                 }
 
+                break;
+            case REQ_DISPLAY_PHOTO:
+                if (data != null) {
+                    ArrayList<PhotoJCJ> photos = data.getParcelableArrayListExtra("photos");
+                    photoListAdapter.setPhotos(photos);
+                }
                 break;
         }
     }
