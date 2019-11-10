@@ -20,8 +20,13 @@ public class PhotoHelper {
     }
 
     public static File getPhotoDir(Context context, PhotoTypeItem photoTypeItem) {
+        return getPhotoDir(context, photoTypeItem.typeName);
+    }
+
+
+    public static File getPhotoDir(Context context, String typeName) {
         File photoRootDir = getPhotoRootDir(context);
-        File photoDir = new File(photoRootDir, photoTypeItem.typeName);
+        File photoDir = new File(photoRootDir, typeName);
         if (!photoDir.exists()) {
             photoDir.mkdirs();
         }

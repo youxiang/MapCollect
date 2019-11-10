@@ -14,13 +14,6 @@ import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentPagerAdapter;
-import androidx.viewpager.widget.ViewPager;
-
 import com.esri.core.map.Graphic;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.tabs.TabLayout;
@@ -28,6 +21,7 @@ import com.njscky.mapcollect.MapCollectApp;
 import com.njscky.mapcollect.R;
 import com.njscky.mapcollect.business.layer.LayerManager;
 import com.njscky.mapcollect.business.photo.AddPhotoActivity;
+import com.njscky.mapcollect.business.photo.album.AlbumDirListActivity;
 import com.njscky.mapcollect.db.DbManager;
 import com.njscky.mapcollect.db.entitiy.JCJLineYS;
 import com.njscky.mapcollect.db.entitiy.JCJLineYSDao;
@@ -39,6 +33,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.viewpager.widget.ViewPager;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -405,6 +405,11 @@ public class JcjInspectFragment extends Fragment {
     @OnClick(R.id.ib_add_photo)
     void onAddPhoto() {
         AddPhotoActivity.start(getActivity(), JCJBH);
+    }
+
+    @OnClick(R.id.ib_photo_library)
+    void onPhotoLibrary() {
+        AlbumDirListActivity.start(getActivity(), JCJBH);
     }
 
     @OnClick(R.id.btn_cancel)

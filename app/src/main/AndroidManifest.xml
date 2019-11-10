@@ -75,6 +75,7 @@
 
         <activity android:name=".business.query.QueryResultActivity" />
 
+        <activity android:name=".business.photo.album.AlbumDirListActivity" />
         <activity android:name=".business.photo.album.AlbumListActivity" />
         <provider
             android:name=".util.MapCollectFileProvider"

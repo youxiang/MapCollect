@@ -9,19 +9,24 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.njscky.mapcollect.R;
+import com.njscky.mapcollect.business.photo.PhotoHelper;
+import com.njscky.mapcollect.db.entitiy.PhotoJCJ;
 import com.njscky.mapcollect.util.GlideApp;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class AlbumListAdapter extends RecyclerView.Adapter<AlbumListAdapter.VH> {
+public class AlbumDirListAdapter extends RecyclerView.Adapter<AlbumDirListAdapter.VH> {
 
     public static final int STATE_VIEW = 0;
     public static final int STATE_EDIT = 1;
 
-    private Album[] data;
+    private List<AlbumDir> data;
 
     private int state = STATE_VIEW;
 
@@ -43,18 +48,21 @@ public class AlbumListAdapter extends RecyclerView.Adapter<AlbumListAdapter.VH> 
         if (data == null) {
             return;
         }
-        Album album = data[position];
-        File dir = album.albumDir;
+        AlbumDir album = data.get(position);
+        File dir = PhotoHelper.getPhotoDir(holder.itemView.getContext(), album.dirName);
         holder.tvName.setText(dir.getName());
-        File[] childFiles = dir.listFiles();
-        holder.tvCount.setText(String.valueOf(childFiles.length));
-        if (childFiles.length > 0) {
-            GlideApp.with(holder.ivPic).load(childFiles[0]).into(holder.ivPic);
+        int photoNum = album.getPhotoNum();
+        holder.tvCount.setText(String.valueOf(photoNum));
+        if (photoNum > 0) {
+            PhotoJCJ photoJCJ = album.photos.get(0);
+            if (photoJCJ != null) {
+                GlideApp.with(holder.ivPic).load(photoJCJ.ZPLJ).into(holder.ivPic);
+            }
         }
 
         if (state == STATE_EDIT) {
             holder.cbSelected.setVisibility(View.VISIBLE);
-            holder.cbSelected.setChecked(album.isSelected);
+            holder.cbSelected.setChecked(album.selected);
         } else {
             holder.cbSelected.setVisibility(View.GONE);
         }
@@ -64,7 +72,7 @@ public class AlbumListAdapter extends RecyclerView.Adapter<AlbumListAdapter.VH> 
 
     @Override
     public int getItemCount() {
-        return data == null ? 0 : data.length;
+        return data == null ? 0 : data.size();
     }
 
     public void setOnItemLongClickListener(OnItemLongClickListener onItemLongClickListener) {
@@ -74,12 +82,22 @@ public class AlbumListAdapter extends RecyclerView.Adapter<AlbumListAdapter.VH> 
     public void setState(int stateView) {
         if (state != stateView) {
             state = stateView;
-            notifyDataSetChanged();
+            if (state == STATE_VIEW) {
+                unselectAll();
+            } else {
+                notifyDataSetChanged();
+            }
         }
     }
 
-    public void setData(Album[] data) {
-        this.data = data;
+    public void setData(Collection<AlbumDir> data) {
+        if (this.data == null) {
+            this.data = new ArrayList<>();
+        }
+        this.data.clear();
+        if (data != null) {
+            this.data.addAll(data);
+        }
         notifyDataSetChanged();
     }
 
@@ -92,12 +110,12 @@ public class AlbumListAdapter extends RecyclerView.Adapter<AlbumListAdapter.VH> 
     }
 
     public int getSelectedCount() {
-        if (data == null || data.length == 0) {
+        if (data == null || data.isEmpty()) {
             return 0;
         }
         int rst = 0;
-        for (Album album : data) {
-            if (album.isSelected) {
+        for (AlbumDir album : data) {
+            if (album.selected) {
                 rst++;
             }
         }
@@ -105,27 +123,31 @@ public class AlbumListAdapter extends RecyclerView.Adapter<AlbumListAdapter.VH> 
     }
 
     public void selectAll() {
-        if (data == null || data.length == 0) {
+        if (data == null || data.isEmpty()) {
             return;
         }
-        for (Album album : data) {
-            if (!album.isSelected) {
-                album.isSelected = true;
+        for (AlbumDir album : data) {
+            if (!album.selected) {
+                album.selected = true;
             }
         }
         notifyDataSetChanged();
     }
 
     public void unselectAll() {
-        if (data == null || data.length == 0) {
+        if (data == null || data.isEmpty()) {
             return;
         }
-        for (Album album : data) {
-            if (album.isSelected) {
-                album.isSelected = false;
+        for (AlbumDir album : data) {
+            if (album.selected) {
+                album.selected = false;
             }
         }
         notifyDataSetChanged();
+    }
+
+    public AlbumDir getItem(int position) {
+        return data.get(position);
     }
 
     public interface OnItemLongClickListener {
@@ -156,13 +178,7 @@ public class AlbumListAdapter extends RecyclerView.Adapter<AlbumListAdapter.VH> 
             cbSelected.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    if (isChecked) {
-                        itemView.setAlpha(0.6f);
-                    } else {
-                        itemView.setAlpha(1f);
-                    }
-                    data[getAdapterPosition()].isSelected = isChecked;
-
+                    data.get(getAdapterPosition()).selected = isChecked;
                     if (onItemSelectListener != null) {
                         onItemSelectListener.onItemClick(itemView, isChecked);
                     }

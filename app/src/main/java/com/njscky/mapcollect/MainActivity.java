@@ -30,7 +30,6 @@ import com.google.android.material.snackbar.Snackbar;
 import com.njscky.mapcollect.business.jcjinspect.GraphicListAdpater;
 import com.njscky.mapcollect.business.jcjinspect.JcjInspectFragment;
 import com.njscky.mapcollect.business.layer.LayerManager;
-import com.njscky.mapcollect.business.photo.album.AlbumListActivity;
 import com.njscky.mapcollect.business.project.ProjectActivity;
 import com.njscky.mapcollect.business.query.Callout_Adapter;
 import com.njscky.mapcollect.business.query.CalloutitemClass;
@@ -374,7 +373,6 @@ public class MainActivity extends AppCompatActivity {
             state = STATE_LAYER;
         }
         updateState();
-        AlbumListActivity.start(this);
     }
 
     @OnClick(R.id.btnQuery)
