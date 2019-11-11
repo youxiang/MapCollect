@@ -6,8 +6,12 @@ import android.net.Uri;
 import android.os.Environment;
 
 import com.njscky.mapcollect.db.entitiy.PhotoJCJ;
+import com.njscky.mapcollect.util.AppExecutors;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 public class PhotoHelper {
 
@@ -47,5 +51,56 @@ public class PhotoHelper {
             }
         }
         return success;
+    }
+
+    public static void copyPhoto(Context context, String srcPhotoPath, File targetPhotoFile, Callback callback) {
+        File srcPhotoFile = new File(srcPhotoPath);
+
+        AppExecutors.DB.execute(() -> {
+            FileInputStream fis = null;
+            FileOutputStream fos = null;
+            try {
+                if (!targetPhotoFile.exists()) {
+                    targetPhotoFile.createNewFile();
+                }
+
+                fis = new FileInputStream(srcPhotoFile);
+                fos = new FileOutputStream(targetPhotoFile);
+
+                int length = -1;
+                byte[] buffer = new byte[4096];
+                while ((length = fis.read(buffer)) != -1) {
+                    fos.write(buffer, 0, length);
+                }
+
+                if (callback != null) {
+                    AppExecutors.MAIN.execute(() -> {
+                        context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(targetPhotoFile)));
+                        callback.onCopyFinished();
+                    });
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    if (fis != null) {
+                        fis.close();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    if (fos != null) {
+                        fos.close();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    public interface Callback {
+        void onCopyFinished();
     }
 }

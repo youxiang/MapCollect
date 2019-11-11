@@ -174,8 +174,12 @@ public class AddPhotoActivity extends AppCompatActivity {
                 if (data != null) {
                     String photoPath = AppUtils.getRealPathFromUri(this, data.getData());
                     if (!TextUtils.isEmpty(photoPath)) {
-                        photoFile = new File(photoPath);
-                        updatePhotoList();
+                        PhotoTypeItem photoType = (PhotoTypeItem) spPhotoType.getSelectedItem();
+                        File photoDir = PhotoHelper.getPhotoDir(this, photoType);
+                        String fileName = generateFileName(JCJBH, photoType);
+                        photoFile = new File(photoDir, fileName);
+
+                        PhotoHelper.copyPhoto(this, photoPath, photoFile, this::updatePhotoList);
                     }
                 }
 
