@@ -2,11 +2,13 @@ package com.njscky.mapcollect.business.photo;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.database.DataSetObserver;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.google.android.material.tabs.TabLayout;
 import com.njscky.mapcollect.R;
@@ -32,6 +34,8 @@ import butterknife.ButterKnife;
 public class DisplayPhotoActivity extends AppCompatActivity {
 
     private static final String TAG = "DisplayPhotoActivity";
+    @BindView(R.id.empty_view)
+    View emptyView;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     @BindView(R.id.vp_photos)
@@ -42,6 +46,19 @@ public class DisplayPhotoActivity extends AppCompatActivity {
     private ArrayList<PhotoJCJ> photos;
     private int current;
     private PhotoJCJDao photoJCJDao;
+    private DataSetObserver emptyObserver = new DataSetObserver() {
+        @Override
+        public void onChanged() {
+            super.onChanged();
+            if (adapter != null && adapter.getCount() > 0) {
+                emptyView.setVisibility(View.GONE);
+                vpPhotos.setVisibility(View.VISIBLE);
+            } else {
+                emptyView.setVisibility(View.VISIBLE);
+                vpPhotos.setVisibility(View.GONE);
+            }
+        }
+    };
 
     public static void start(Activity activity, ArrayList<PhotoJCJ> photos, int current) {
         Intent intent = new Intent(activity, DisplayPhotoActivity.class);
@@ -107,6 +124,7 @@ public class DisplayPhotoActivity extends AppCompatActivity {
         });
         photoJCJDao = DbManager.getInstance(this).getDaoSession().getPhotoJCJDao();
         adapter = new PhotoPagerAdapter(photos);
+        adapter.registerDataSetObserver(emptyObserver);
         vpPhotos.setAdapter(adapter);
         vpPhotos.setCurrentItem(current);
         vpPhotos.setPageTransformer(false, new DepthPageTransformer());
@@ -132,29 +150,29 @@ public class DisplayPhotoActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (adapter != null) {
+            adapter.unregisterDataSetObserver(emptyObserver);
+        }
+    }
+
     private void deletePhoto() {
-        AppExecutors.DB.execute(new Runnable() {
-            @Override
-            public void run() {
-                int current = vpPhotos.getCurrentItem();
-                Log.i(TAG, "run: " + photos.size() + ", " + current);
-                PhotoJCJ target = photos.get(current);
-                File targetFile = new File(target.ZPLJ);
-                if (targetFile.exists() && targetFile.canWrite()) {
-                    if (targetFile.delete()) {
-                        sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(targetFile)));
-                        if (target.ID != null) {
-                            photoJCJDao.delete(target);
-                        }
-                        AppExecutors.MAIN.execute(() -> {
-                            photos.remove(current);
-                            adapter.notifyDataSetChanged();
-                            supportInvalidateOptionsMenu();
-                        });
-                        Log.i(TAG, "delete successful: " + target.ZPLJ);
-                    }
-                }
+        AppExecutors.DB.execute(() -> {
+            int current = vpPhotos.getCurrentItem();
+            Log.i(TAG, "run: " + photos.size() + ", " + current);
+            PhotoJCJ target = photos.remove(current);
+            File targetFile = new File(target.ZPLJ);
+            targetFile.delete();
+            if (target.ID != null) {
+                photoJCJDao.delete(target);
             }
+            AppExecutors.MAIN.execute(() -> {
+                sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(targetFile)));
+                adapter.notifyDataSetChanged();
+                supportInvalidateOptionsMenu();
+            });
         });
 
 

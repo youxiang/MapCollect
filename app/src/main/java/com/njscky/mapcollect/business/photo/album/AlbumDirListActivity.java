@@ -35,6 +35,8 @@ public class AlbumDirListActivity extends AppCompatActivity {
     private static final int STATE_VIEW = 0;
     private static final int STATE_EDIT = 1;
     private static final String TAG = "AlbumDirListActivity";
+    @BindView(R.id.empty_view)
+    View emptyView;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     @BindView(R.id.rv_album_list)
@@ -52,6 +54,20 @@ public class AlbumDirListActivity extends AppCompatActivity {
     private int state = STATE_VIEW;
 
     private String JCJBH;
+
+    private RecyclerView.AdapterDataObserver emptyObserver = new RecyclerView.AdapterDataObserver() {
+        @Override
+        public void onChanged() {
+            super.onChanged();
+            if (adapter != null && adapter.getItemCount() > 0) {
+                emptyView.setVisibility(View.GONE);
+                rvAlbumList.setVisibility(View.VISIBLE);
+            } else {
+                emptyView.setVisibility(View.VISIBLE);
+                rvAlbumList.setVisibility(View.GONE);
+            }
+        }
+    };
 
     public static void start(Activity activity, String JCJBH) {
         Intent intent = new Intent(activity, AlbumDirListActivity.class);
@@ -82,6 +98,7 @@ public class AlbumDirListActivity extends AppCompatActivity {
 
         rvAlbumList.setLayoutManager(new GridLayoutManager(this, 3));
         adapter = new AlbumDirListAdapter();
+        adapter.registerAdapterDataObserver(emptyObserver);
         rvAlbumList.setAdapter(adapter);
 
         adapter.setOnItemSelectListener(new AlbumDirListAdapter.OnItemSelectListener() {
@@ -110,8 +127,21 @@ public class AlbumDirListActivity extends AppCompatActivity {
                 adapter.setState(state);
             }
         });
-        loadData();
         refreshStatus();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadData();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (adapter != null) {
+            adapter.unregisterAdapterDataObserver(emptyObserver);
+        }
     }
 
     private void loadData() {

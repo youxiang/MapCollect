@@ -11,11 +11,23 @@
         app:navigationIcon="@drawable/ic_nav_back"
         app:title="@string/title_activity_display_photo" />
 
-    <androidx.viewpager.widget.ViewPager
-        android:id="@+id/vp_photos"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_weight="1">
+
+        <androidx.viewpager.widget.ViewPager
+            android:id="@+id/vp_photos"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <include
+            android:id="@+id/empty_view"
+            layout="@layout/empty_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone" />
+    </FrameLayout>
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabLayout"

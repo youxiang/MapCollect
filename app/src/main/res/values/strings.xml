@@ -44,6 +44,7 @@
     <string name="title_album_list_edit">已选择%1$d项</string>
     <string name="unselect_all">取消全选</string>
     <string name="dialog_delete_photo">是否删除？</string>
+    <string name="no_photo">没有照片</string>
     <string-array name="photo_type_arr">
         <item>清疏前#QQ</item>
         <item>清疏后#QH</item>

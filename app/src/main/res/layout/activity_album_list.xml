@@ -8,11 +8,23 @@
         android:id="@+id/toolbar"
         style="@style/AppTheme.Toolbar" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_album_list"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_weight="1">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_album_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <include
+            android:id="@+id/empty_view"
+            layout="@layout/empty_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone" />
+    </FrameLayout>
 
     <LinearLayout
         android:id="@+id/ll_bottom_menu"

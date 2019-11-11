@@ -33,6 +33,8 @@ public class AlbumListActivity extends AppCompatActivity {
     public static final int STATE_VIEW = 0;
     public static final int STATE_EDIT = 1;
 
+    @BindView(R.id.empty_view)
+    View emptyView;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     @BindView(R.id.rv_album_list)
@@ -51,6 +53,20 @@ public class AlbumListActivity extends AppCompatActivity {
 
     private int state = STATE_VIEW;
     private PhotoJCJDao photoJCJDao;
+
+    private RecyclerView.AdapterDataObserver emptyObserver = new RecyclerView.AdapterDataObserver() {
+        @Override
+        public void onChanged() {
+            super.onChanged();
+            if (adapter != null && adapter.getItemCount() > 0) {
+                emptyView.setVisibility(View.GONE);
+                rvPhotoList.setVisibility(View.VISIBLE);
+            } else {
+                emptyView.setVisibility(View.VISIBLE);
+                rvPhotoList.setVisibility(View.GONE);
+            }
+        }
+    };
 
     public static void start(Activity activity, String JCJBH, String photoType) {
         Intent intent = new Intent(activity, AlbumListActivity.class);
@@ -83,6 +99,7 @@ public class AlbumListActivity extends AppCompatActivity {
         photoType = getIntent().getStringExtra("photoType");
         rvPhotoList.setLayoutManager(new GridLayoutManager(this, 3));
         adapter = new PhotoAdapter();
+        adapter.registerAdapterDataObserver(emptyObserver);
         adapter.setOnItemLongClickListener(new PhotoAdapter.OnItemLongClickListener() {
             @Override
             public void onItemLongClick(View view, int position) {
@@ -109,7 +126,20 @@ public class AlbumListActivity extends AppCompatActivity {
         });
         rvPhotoList.setAdapter(adapter);
         refreshStatus();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         loadData();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (adapter != null) {
+            adapter.unregisterAdapterDataObserver(emptyObserver);
+        }
     }
 
     private void refreshStatus() {
