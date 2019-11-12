@@ -35,15 +35,19 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".business.project.ProjectActivity"
-            android:label="@string/title_activity_project"></activity>
-        <activity
-            android:name=".MainActivity"
-            android:theme="@style/AppTheme.TransparentStatusBar">
+            android:label="@string/title_activity_project" />
+
+        <activity android:name=".business.account.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".MainActivity"
+            android:theme="@style/AppTheme.TransparentStatusBar">
         </activity>
 
         <activity android:name=".business.photo.AddPhotoActivity" />

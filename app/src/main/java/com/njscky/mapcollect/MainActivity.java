@@ -108,9 +108,7 @@ public class MainActivity extends AppCompatActivity {
         snackbar = Snackbar.make(mMapView, "需要设置权限", Snackbar.LENGTH_INDEFINITE)
                 .setAction("打开设置 ", v -> PermissionUtils.gotoSetting(this));
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQ_PERMISSIONS);
-
     }
-
 
     @Override
     public void onBackPressed() {

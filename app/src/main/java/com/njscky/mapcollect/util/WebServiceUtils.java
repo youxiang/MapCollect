@@ -1,8 +1,5 @@
 package com.njscky.mapcollect.util;
 
-import android.os.Handler;
-import android.os.Message;
-
 import org.ksoap2.SoapEnvelope;
 import org.ksoap2.serialization.SoapObject;
 import org.ksoap2.serialization.SoapSerializationEnvelope;
@@ -13,13 +10,9 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class WebServiceUtils {
     public static final String WEB_SERVER_URL = "http://58.213.48.109/GXXJWebService/Service1.asmx";
-    private static final ExecutorService executorService = Executors
-            .newFixedThreadPool(3);
     private static final String NAMESPACE = "http://tempuri.org/";
 
     public static void callWebService(String url, final String methodName,
@@ -36,46 +29,31 @@ public class WebServiceUtils {
                 soapObject.addProperty(entry.getKey(), entry.getValue());
             }
         }
-
         final SoapSerializationEnvelope soapEnvelope = new SoapSerializationEnvelope(
                 SoapEnvelope.VER12);
 
         soapEnvelope.setOutputSoapObject(soapObject);
         soapEnvelope.dotNet = true;
         httpTransportSE.debug = true;
-
-        final Handler mHandler = new Handler() {
-
-            @Override
-            public void handleMessage(Message msg) {
-                super.handleMessage(msg);
-
-                webServiceCallBack.callBack((SoapObject) msg.obj);
-            }
-
-        };
-
-
-        executorService.submit(new Runnable() {
-
-            @Override
-            public void run() {
-                SoapObject resultSoapObject = null;
-                try {
-                    httpTransportSE.call(NAMESPACE + methodName, soapEnvelope);
-                    if (soapEnvelope.getResponse() != null) {
-
-                        resultSoapObject = (SoapObject) soapEnvelope.bodyIn;
-                    }
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (XmlPullParserException e) {
-                    e.printStackTrace();
-                } finally {
-                    mHandler.sendMessage(mHandler.obtainMessage(0,
-                            resultSoapObject));
+        AppExecutors.NETWORK.execute(() -> {
+            SoapObject resultSoapObject = null;
+            try {
+                httpTransportSE.call(NAMESPACE + methodName, soapEnvelope);
+                if (soapEnvelope.getResponse() != null) {
+                    resultSoapObject = (SoapObject) soapEnvelope.bodyIn;
                 }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (XmlPullParserException e) {
+                e.printStackTrace();
+            } finally {
+                SoapObject finalResultSoapObject = resultSoapObject;
+                AppExecutors.MAIN.execute(() -> {
+                    if (webServiceCallBack != null) {
+                        webServiceCallBack.callBack(finalResultSoapObject);
+                    }
+                });
             }
         });
     }
