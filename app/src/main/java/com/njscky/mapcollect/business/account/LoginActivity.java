@@ -14,13 +14,13 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.njscky.mapcollect.MainActivity;
 import com.njscky.mapcollect.R;
 import com.njscky.mapcollect.util.WebServiceUtils;
 
 import java.util.HashMap;
-
-import androidx.appcompat.app.AppCompatActivity;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -92,7 +92,7 @@ public class LoginActivity extends AppCompatActivity {
         rememberPasswordCheckBox.setChecked(rememberPassword);
         autologinCheckBox.setChecked(autoLogin);
         if (autoLogin) {
-            login();
+            //login();
         }
     }
 
@@ -117,7 +117,7 @@ public class LoginActivity extends AppCompatActivity {
                 loadingProgressBar.setVisibility(View.GONE);
                 if (result.toString().contains("登录失败") || result.toString().contains("账号密码不正确")) {
                     Toast.makeText(LoginActivity.this, result.toString(), Toast.LENGTH_SHORT).show();
-                    enterMainActivity();
+                    //enterMainActivity();
                 } else {
                     String userId = result.toString().substring(result.toString().indexOf("=") + 1, result.toString().indexOf(";"));
                     userManager.saveUserId(userId);
