@@ -20,15 +20,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.FileProvider;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import com.njscky.mapcollect.R;
 import com.njscky.mapcollect.db.DbManager;
 import com.njscky.mapcollect.db.entitiy.PhotoJCJ;
@@ -42,6 +33,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.FileProvider;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -287,8 +286,10 @@ public class AddPhotoActivity extends AppCompatActivity {
         List<PhotoJCJ> photoList = photoListAdapter.getData();
 
         String bz = etRemark.getText().toString();
+        long time = System.currentTimeMillis();
         for (PhotoJCJ photo : photoList) {
             photo.BZ = bz;
+            photo.ZPSJ = time;
         }
 
         AppExecutors.DB.execute(() -> {

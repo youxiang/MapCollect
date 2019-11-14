@@ -59,6 +59,10 @@ public class JCJPointYS implements Parcelable {
 
     // 是否拍照完成
     public Boolean SFPZWC;
+    // 调查人
+    public String DCR;
+    // 调查时间
+    public Long DCSJ;
 
     public JCJPointYS() {
     }
@@ -181,11 +185,11 @@ public class JCJPointYS implements Parcelable {
         this.ID = ID;
     }
 
-    @Generated(hash = 1262054955)
+    @Generated(hash = 1765988489)
     public JCJPointYS(Long ID, String JCJBH, String JGCZ, String JGCZ_extra, String JGQK,
                       String JSQK, String JSCZ, String JSCZ_extra, String JSCC, String FSWLX,
                       String SZDL, String SFXG, String BZ, float XZB, float YZB, String JLX,
-                      String JLX_extra, Boolean SFTXWC, Boolean SFPZWC) {
+                      String JLX_extra, Boolean SFTXWC, Boolean SFPZWC, String DCR, Long DCSJ) {
         this.ID = ID;
         this.JCJBH = JCJBH;
         this.JGCZ = JGCZ;
@@ -205,6 +209,8 @@ public class JCJPointYS implements Parcelable {
         this.JLX_extra = JLX_extra;
         this.SFTXWC = SFTXWC;
         this.SFPZWC = SFPZWC;
+        this.DCR = DCR;
+        this.DCSJ = DCSJ;
     }
 
     public String getJGCZ_extra() {
@@ -227,6 +233,22 @@ public class JCJPointYS implements Parcelable {
         return this.JLX_extra;
     }
 
+    public void setJLX_extra(String JLX_extra) {
+        this.JLX_extra = JLX_extra;
+    }
+
+    public Boolean getSFTXWC() {
+        return this.SFTXWC;
+    }
+
+    public void setSFTXWC(Boolean SFTXWC) {
+        this.SFTXWC = SFTXWC;
+    }
+
+    public Boolean getSFPZWC() {
+        return this.SFPZWC;
+    }
+
     protected JCJPointYS(Parcel in) {
         this.ID = (Long) in.readValue(Long.class.getClassLoader());
         this.JCJBH = in.readString();
@@ -247,27 +269,17 @@ public class JCJPointYS implements Parcelable {
         this.JLX_extra = in.readString();
         this.SFTXWC = (Boolean) in.readValue(Boolean.class.getClassLoader());
         this.SFPZWC = (Boolean) in.readValue(Boolean.class.getClassLoader());
-    }
-
-    public void setJLX_extra(String JLX_extra) {
-        this.JLX_extra = JLX_extra;
-    }
-
-    public Boolean getSFTXWC() {
-        return this.SFTXWC;
-    }
-
-    public void setSFTXWC(Boolean SFTXWC) {
-        this.SFTXWC = SFTXWC;
-    }
-
-    public Boolean getSFPZWC() {
-        return this.SFPZWC;
+        this.DCR = in.readString();
+        this.DCSJ = (Long) in.readValue(Long.class.getClassLoader());
     }
 
     @Override
     public int describeContents() {
         return 0;
+    }
+
+    public void setSFPZWC(Boolean SFPZWC) {
+        this.SFPZWC = SFPZWC;
     }
 
     @Override
@@ -291,10 +303,24 @@ public class JCJPointYS implements Parcelable {
         dest.writeString(this.JLX_extra);
         dest.writeValue(this.SFTXWC);
         dest.writeValue(this.SFPZWC);
+        dest.writeString(this.DCR);
+        dest.writeValue(this.DCSJ);
     }
 
-    public void setSFPZWC(Boolean SFPZWC) {
-        this.SFPZWC = SFPZWC;
+    public String getDCR() {
+        return this.DCR;
+    }
+
+    public void setDCR(String DCR) {
+        this.DCR = DCR;
+    }
+
+    public Long getDCSJ() {
+        return this.DCSJ;
+    }
+
+    public void setDCSJ(Long DCSJ) {
+        this.DCSJ = DCSJ;
     }
 
     public static final Creator<JCJPointYS> CREATOR = new Creator<JCJPointYS>() {

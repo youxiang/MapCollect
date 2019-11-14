@@ -50,6 +50,10 @@ public class JCJLineYS implements Parcelable {
     public float ZDXZB;
     // 终点Y坐标
     public float ZDYZB;
+    // 调查人
+    public String DCR;
+    // 调查时间
+    public Long DCSJ;
 
     public JCJLineYS() {
     }
@@ -70,36 +74,14 @@ public class JCJLineYS implements Parcelable {
         this.LJBH = LJBH;
     }
 
-    protected JCJLineYS(Parcel in) {
-        this.ID = (Long) in.readValue(Long.class.getClassLoader());
-        this.JCJBH = in.readString();
-        this.LJBH = in.readString();
-        this.QDMS = in.readFloat();
-        this.ZDMS = in.readFloat();
-        this.GJ = in.readString();
-        this.CZ = in.readString();
-        this.SFXG = in.readString();
-        this.SFDTYZ = in.readString();
-        this.SFHJ = in.readString();
-        this.HJLX = in.readString();
-        this.HJLX_extra = in.readString();
-        this.LX = in.readString();
-        this.BZ = in.readString();
-        this.QDXZB = in.readFloat();
-        this.QDYZB = in.readFloat();
-        this.ZDXZB = in.readFloat();
-        this.ZDYZB = in.readFloat();
-    }
-
     public void setQDMS(float QDMS) {
         this.QDMS = QDMS;
     }
 
-    @Generated(hash = 1288413871)
-    public JCJLineYS(Long ID, String JCJBH, String LJBH, float QDMS, float ZDMS, String GJ,
-                     String CZ, String SFXG, String SFDTYZ, String SFHJ, String HJLX,
-                     String HJLX_extra, String LX, String BZ, float QDXZB, float QDYZB, float ZDXZB,
-                     float ZDYZB) {
+    @Generated(hash = 790838737)
+    public JCJLineYS(Long ID, String JCJBH, String LJBH, float QDMS, float ZDMS, String GJ, String CZ,
+                     String SFXG, String SFDTYZ, String SFHJ, String HJLX, String HJLX_extra, String LX,
+                     String BZ, float QDXZB, float QDYZB, float ZDXZB, float ZDYZB, String DCR, Long DCSJ) {
         this.ID = ID;
         this.JCJBH = JCJBH;
         this.LJBH = LJBH;
@@ -118,6 +100,8 @@ public class JCJLineYS implements Parcelable {
         this.QDYZB = QDYZB;
         this.ZDXZB = ZDXZB;
         this.ZDYZB = ZDYZB;
+        this.DCR = DCR;
+        this.DCSJ = DCSJ;
     }
 
     public float getQDMS() {
@@ -258,13 +242,44 @@ public class JCJLineYS implements Parcelable {
         return this.ID;
     }
 
+    protected JCJLineYS(Parcel in) {
+        this.ID = (Long) in.readValue(Long.class.getClassLoader());
+        this.JCJBH = in.readString();
+        this.LJBH = in.readString();
+        this.QDMS = in.readFloat();
+        this.ZDMS = in.readFloat();
+        this.GJ = in.readString();
+        this.CZ = in.readString();
+        this.SFXG = in.readString();
+        this.SFDTYZ = in.readString();
+        this.SFHJ = in.readString();
+        this.HJLX = in.readString();
+        this.HJLX_extra = in.readString();
+        this.LX = in.readString();
+        this.BZ = in.readString();
+        this.QDXZB = in.readFloat();
+        this.QDYZB = in.readFloat();
+        this.ZDXZB = in.readFloat();
+        this.ZDYZB = in.readFloat();
+        this.DCR = in.readString();
+        this.DCSJ = (Long) in.readValue(Long.class.getClassLoader());
+    }
+
+    public void setID(Long ID) {
+        this.ID = ID;
+    }
+
+    public String getHJLX_extra() {
+        return this.HJLX_extra;
+    }
+
     @Override
     public int describeContents() {
         return 0;
     }
 
-    public void setID(Long ID) {
-        this.ID = ID;
+    public void setHJLX_extra(String HJLX_extra) {
+        this.HJLX_extra = HJLX_extra;
     }
 
     @Override
@@ -287,14 +302,24 @@ public class JCJLineYS implements Parcelable {
         dest.writeFloat(this.QDYZB);
         dest.writeFloat(this.ZDXZB);
         dest.writeFloat(this.ZDYZB);
+        dest.writeString(this.DCR);
+        dest.writeValue(this.DCSJ);
     }
 
-    public String getHJLX_extra() {
-        return this.HJLX_extra;
+    public String getDCR() {
+        return this.DCR;
     }
 
-    public void setHJLX_extra(String HJLX_extra) {
-        this.HJLX_extra = HJLX_extra;
+    public void setDCR(String DCR) {
+        this.DCR = DCR;
+    }
+
+    public Long getDCSJ() {
+        return this.DCSJ;
+    }
+
+    public void setDCSJ(Long DCSJ) {
+        this.DCSJ = DCSJ;
     }
 
     public static final Creator<JCJLineYS> CREATOR = new Creator<JCJLineYS>() {

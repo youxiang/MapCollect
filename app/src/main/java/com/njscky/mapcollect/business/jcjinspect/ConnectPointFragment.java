@@ -11,15 +11,15 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-
 import com.njscky.mapcollect.R;
+import com.njscky.mapcollect.business.account.UserManager;
 import com.njscky.mapcollect.db.entitiy.JCJLineYS;
 import com.njscky.mapcollect.db.entitiy.JCJPointYS;
 import com.njscky.mapcollect.util.AppUtils;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
@@ -182,6 +182,8 @@ public class ConnectPointFragment extends Fragment {
         lineYS.SFDTYZ = (String) spSFDTYZ.getSelectedItem();
         lineYS.SFHJ = (String) spSFHJ.getSelectedItem();
         lineYS.HJLX = (String) spHJLX.getSelectedItem();
+        lineYS.DCR = UserManager.getInstance(getContext()).getUserId();
+        lineYS.DCSJ = System.currentTimeMillis();
         boolean sfxg = false;
         if (QDMS != lineYS.QDMS || ZDMS != lineYS.ZDMS || !TextUtils.equals(GJ, lineYS.GJ) || !TextUtils.equals(CZ, lineYS.CZ)) {
             sfxg = true;

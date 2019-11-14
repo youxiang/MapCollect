@@ -14,18 +14,12 @@ import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentPagerAdapter;
-import androidx.viewpager.widget.ViewPager;
-
 import com.esri.core.map.Graphic;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.tabs.TabLayout;
 import com.njscky.mapcollect.MapCollectApp;
 import com.njscky.mapcollect.R;
+import com.njscky.mapcollect.business.account.UserManager;
 import com.njscky.mapcollect.business.layer.LayerManager;
 import com.njscky.mapcollect.business.photo.AddPhotoActivity;
 import com.njscky.mapcollect.business.photo.album.AlbumDirListActivity;
@@ -40,6 +34,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.viewpager.widget.ViewPager;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -479,6 +479,8 @@ public class JcjInspectFragment extends Fragment {
         if (TextUtils.equals(pointYS.JLX, "穿井")) {
             pointYS.JLX_extra = etJLX.getText().toString();
         }
+        pointYS.DCR = UserManager.getInstance(getContext()).getUserId();
+        pointYS.DCSJ = System.currentTimeMillis();
 
         for (int i = 0; i < lineYSList.size(); i++) {
             ConnectPointFragment fragment = fragments.get(i);

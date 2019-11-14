@@ -25,7 +25,6 @@ public class PhotoJCJ implements Parcelable {
     public String ZPLJ;
     // 备注
     public String BZ;
-
     public static final Creator<PhotoJCJ> CREATOR = new Creator<PhotoJCJ>() {
         @Override
         public PhotoJCJ createFromParcel(Parcel source) {
@@ -37,19 +36,14 @@ public class PhotoJCJ implements Parcelable {
             return new PhotoJCJ[size];
         }
     };
+    // 地址
+    public String ZPDZ;
 
     public PhotoJCJ() {
     }
 
-    @Generated(hash = 1992977732)
-    public PhotoJCJ(Long ID, String JCJBH, String ZPBH, String ZPLX, String ZPLJ, String BZ) {
-        this.ID = ID;
-        this.JCJBH = JCJBH;
-        this.ZPBH = ZPBH;
-        this.ZPLX = ZPLX;
-        this.ZPLJ = ZPLJ;
-        this.BZ = BZ;
-    }
+    // 时间
+    public Long ZPSJ;
 
     public String getJCJBH() {
         return this.JCJBH;
@@ -102,6 +96,24 @@ public class PhotoJCJ implements Parcelable {
     @Transient
     public boolean isSelected;
 
+    @Generated(hash = 1837184641)
+    public PhotoJCJ(Long ID, String JCJBH, String ZPBH, String ZPLX, String ZPLJ, String BZ,
+                    String ZPDZ, Long ZPSJ) {
+        this.ID = ID;
+        this.JCJBH = JCJBH;
+        this.ZPBH = ZPBH;
+        this.ZPLX = ZPLX;
+        this.ZPLJ = ZPLJ;
+        this.BZ = BZ;
+        this.ZPDZ = ZPDZ;
+        this.ZPSJ = ZPSJ;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
     protected PhotoJCJ(Parcel in) {
         this.ID = (Long) in.readValue(Long.class.getClassLoader());
         this.JCJBH = in.readString();
@@ -109,12 +121,18 @@ public class PhotoJCJ implements Parcelable {
         this.ZPLX = in.readString();
         this.ZPLJ = in.readString();
         this.BZ = in.readString();
+        this.ZPDZ = in.readString();
+        this.ZPSJ = (Long) in.readValue(Long.class.getClassLoader());
         this.isSelected = in.readByte() != 0;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
+    public String getName() {
+        if (ZPLJ == null) {
+            return "";
+        }
+        String path = ZPLJ;
+        int index = path.lastIndexOf("/");
+        return path.substring(index + 1);
     }
 
     @Override
@@ -125,15 +143,24 @@ public class PhotoJCJ implements Parcelable {
         dest.writeString(this.ZPLX);
         dest.writeString(this.ZPLJ);
         dest.writeString(this.BZ);
+        dest.writeString(this.ZPDZ);
+        dest.writeValue(this.ZPSJ);
         dest.writeByte(this.isSelected ? (byte) 1 : (byte) 0);
     }
 
-    public String getName() {
-        if (ZPLJ == null) {
-            return "";
-        }
-        String path = ZPLJ;
-        int index = path.lastIndexOf("/");
-        return path.substring(index + 1);
+    public String getZPDZ() {
+        return this.ZPDZ;
+    }
+
+    public void setZPDZ(String ZPDZ) {
+        this.ZPDZ = ZPDZ;
+    }
+
+    public Long getZPSJ() {
+        return this.ZPSJ;
+    }
+
+    public void setZPSJ(Long ZPSJ) {
+        this.ZPSJ = ZPSJ;
     }
 }
