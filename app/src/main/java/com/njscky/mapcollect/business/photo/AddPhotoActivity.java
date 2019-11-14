@@ -219,7 +219,7 @@ public class AddPhotoActivity extends AppCompatActivity {
     }
 
     private String generateFileName(String JCJBH, PhotoTypeItem photoType) {
-        long serialNumber = SpUtils.getInstance(this).getSerialNumber(photoType.typeShortName);
+        long serialNumber = SpUtils.getInstance(this).getSerialNumber(photoType.typeShortName + JCJBH);
         String name = String.format(Locale.getDefault(), "%s%s%d.jpg", JCJBH, photoType.typeShortName, serialNumber);
         Log.i(TAG, "generateFileName: " + name);
         return name;

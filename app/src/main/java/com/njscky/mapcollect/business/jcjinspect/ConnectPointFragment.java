@@ -121,9 +121,19 @@ public class ConnectPointFragment extends Fragment {
 
         spSFDTYZ.setAdapter(new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, arrSFDTYZ));
         spSFDTYZ.setSelection(getSelectIndex(arrSFDTYZ, line.SFDTYZ));
+        //若原始数据中没有值，是否混接默认为否
+        String strSFDTYZ = (String) spSFDTYZ.getSelectedItem();
+        if (TextUtils.equals(strSFDTYZ.trim(), "")) {
+            spSFDTYZ.setSelection(1);
+        }
 
         spSFHJ.setAdapter(new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, arrSFHJ));
         spSFHJ.setSelection(getSelectIndex(arrSFHJ, line.SFHJ));
+        //若原始数据中没有值，是否混接默认为否
+        String strSFHJ = (String) spSFHJ.getSelectedItem();
+        if (TextUtils.equals(strSFHJ.trim(), "")) {
+            spSFHJ.setSelection(2);
+        }
 
         spHJLX.setAdapter(new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, arrHJLX));
         spHJLX.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {

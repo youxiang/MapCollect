@@ -14,6 +14,13 @@ import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.viewpager.widget.ViewPager;
+
 import com.esri.core.map.Graphic;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.tabs.TabLayout;
@@ -33,12 +40,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentPagerAdapter;
-import androidx.viewpager.widget.ViewPager;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -219,6 +220,7 @@ public class JcjInspectFragment extends Fragment {
 
             int jgczIndex = getSelectIndex(arrJGCZ, pointYS.JGCZ);
             spJGCZ.setSelection(jgczIndex);
+
             etJGCZ.setText(pointYS.JGCZ_extra);
 
             spJGQK.setAdapter(new ArrayAdapter<>
@@ -228,8 +230,14 @@ public class JcjInspectFragment extends Fragment {
                             arrJGQK
                     )
             );
-
             spJGQK.setSelection(getSelectIndex(arrJGQK, pointYS.JGQK));
+
+            //若原始数据中没有值，井盖情况默认为正常
+            String strJGQK = (String) spJGQK.getSelectedItem();
+            if (TextUtils.equals(strJGQK.trim(), "")) {
+                spJGQK.setSelection(1);
+            }
+
 
             spJSCZ.setAdapter(new ArrayAdapter<>
                     (
@@ -255,6 +263,12 @@ public class JcjInspectFragment extends Fragment {
 
             int jsczIndex = getSelectIndex(arrJSCZ, pointYS.JSCZ);
             spJSCZ.setSelection(jsczIndex);
+            //若原始数据中没有值，井室材质默认为砖混
+            String strJSCZ = (String) spJSCZ.getSelectedItem();
+            if (TextUtils.equals(strJSCZ.trim(), "")) {
+                spJSCZ.setSelection(1);
+            }
+
             etJSCZ.setText(pointYS.JSCZ_extra);
 
             spJSQK.setAdapter(new ArrayAdapter<>
@@ -265,6 +279,11 @@ public class JcjInspectFragment extends Fragment {
                     )
             );
             spJSQK.setSelection(getSelectIndex(arrJSQK, pointYS.JSQK));
+            //若原始数据中没有值，井室情况默认为正常
+            String strJSQK = (String) spJSQK.getSelectedItem();
+            if (TextUtils.equals(strJSQK.trim(), "")) {
+                spJSQK.setSelection(1);
+            }
 
             etJSCC.setText(pointYS.JSCC);
 
@@ -277,6 +296,11 @@ public class JcjInspectFragment extends Fragment {
             );
 
             spFSWLX.setSelection(getSelectIndex(arrFSWLX, pointYS.FSWLX));
+            //若原始数据中没有值，附属物类型默认为检查井
+            String strFSWLX = (String) spFSWLX.getSelectedItem();
+            if (TextUtils.equals(strFSWLX.trim(), "")) {
+                spFSWLX.setSelection(2);
+            }
 
             spJLX.setAdapter(new ArrayAdapter<>
                     (
