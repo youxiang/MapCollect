@@ -4,12 +4,15 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Display;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -166,20 +169,42 @@ public class AddPhotoActivity extends AppCompatActivity {
         switch (requestCode) {
             case REQ_TAKE_PHOTO:
                 if (photoFile != null) {
-                    updatePhotoList();
-                    sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(photoFile)));
+                    List<PhotoJCJ> photoList = photoListAdapter.getData();
+                    long time = System.currentTimeMillis();
+                    for (PhotoJCJ photo : photoList) {
+                        photo.ZPSJ = time;
+                    }
+                    Bitmap bitmap = WatermarkUtils.mark(this, photoFile, getScreenSize(), JCJBH, time);
+                    PhotoHelper.save(bitmap, photoFile, () -> {
+                        Log.i(TAG, "run: ");
+                        updatePhotoList();
+                        sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(photoFile)));
+                    });
+
                 }
                 break;
             case REQ_PICK_PHOTO:
                 if (data != null) {
                     String photoPath = AppUtils.getRealPathFromUri(this, data.getData());
                     if (!TextUtils.isEmpty(photoPath)) {
+
+                        List<PhotoJCJ> photoList = photoListAdapter.getData();
+                        long time = System.currentTimeMillis();
+                        for (PhotoJCJ photo : photoList) {
+                            photo.ZPSJ = time;
+                        }
+                        File originalFile = new File(photoPath);
+                        Bitmap bitmap = WatermarkUtils.mark(this, originalFile, getScreenSize(), JCJBH, time);
+
                         PhotoTypeItem photoType = (PhotoTypeItem) spPhotoType.getSelectedItem();
                         File photoDir = PhotoHelper.getPhotoDir(this, photoType);
                         String fileName = generateFileName(JCJBH, photoType);
                         photoFile = new File(photoDir, fileName);
 
-                        PhotoHelper.copyPhoto(this, photoPath, photoFile, this::updatePhotoList);
+                        PhotoHelper.save(bitmap, photoFile, () -> {
+                            updatePhotoList();
+                            sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(photoFile)));
+                        });
                     }
                 }
 
@@ -286,10 +311,8 @@ public class AddPhotoActivity extends AppCompatActivity {
         List<PhotoJCJ> photoList = photoListAdapter.getData();
 
         String bz = etRemark.getText().toString();
-        long time = System.currentTimeMillis();
         for (PhotoJCJ photo : photoList) {
             photo.BZ = bz;
-            photo.ZPSJ = time;
         }
 
         AppExecutors.DB.execute(() -> {
@@ -328,5 +351,12 @@ public class AddPhotoActivity extends AppCompatActivity {
             dismissBottomPopup();
         }
 
+    }
+
+    private Point getScreenSize() {
+        Display display = getWindowManager().getDefaultDisplay();
+        Point outSize = new Point();
+        display.getSize(outSize);
+        return outSize;
     }
 }
