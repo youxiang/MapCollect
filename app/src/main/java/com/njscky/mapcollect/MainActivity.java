@@ -9,6 +9,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -57,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int STATE_INSPECT = 2;
     private static final int STATE_LAYER = 3;
     private static final int STATE_QUERY = 4;
+    private static final int STATE_EDIT = 5;
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -82,8 +84,16 @@ public class MainActivity extends AppCompatActivity {
     Button btnInspect;
     @BindView(R.id.btnLayer)
     Button btnLayer;
+    @BindView(R.id.btnEdit)
+    Button btnEdit;
     @BindView(R.id.btnQuery)
     Button btnQuery;
+    @BindView(R.id.btn_add_point)
+    ImageButton btnAddPoint;
+    @BindView(R.id.btn_add_line)
+    ImageButton btnAddLine;
+    @BindView(R.id.editLayout)
+    View editLayout;
 
     @BindView(R.id.bottom_menu)
     View bottomMenuLayout;
@@ -367,6 +377,16 @@ public class MainActivity extends AppCompatActivity {
         updateState();
     }
 
+    @OnClick(R.id.btnEdit)
+    void onEdit() {
+        if (state == STATE_EDIT) {
+            state = STATE_INIT;
+        } else {
+            state = STATE_EDIT;
+        }
+        updateState();
+    }
+
     @OnClick(R.id.btnQuery)
     void onQuery() {
         if (state == STATE_QUERY) {
@@ -383,6 +403,16 @@ public class MainActivity extends AppCompatActivity {
         params.setDPI(98);
         params.setLayers(new int[]{2, 3, 5, 6, 8, 9});
         params.setLayerMode(IdentifyParameters.TOP_MOST_LAYER);
+    }
+
+    @OnClick(R.id.btn_add_point)
+    void onAddPoint() {
+        Toast.makeText(this, "add point", Toast.LENGTH_SHORT).show();
+    }
+
+    @OnClick(R.id.btn_add_line)
+    void onAddLine() {
+        Toast.makeText(this, "add line", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -431,39 +461,62 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateState() {
-        switch (state) {
-            case STATE_INSPECT:
-                btnProject.setSelected(false);
-                btnInspect.setSelected(true);
-                btnLayer.setSelected(false);
-                btnQuery.setSelected(false);
-                break;
-            case STATE_QUERY:
-                btnProject.setSelected(false);
-                btnInspect.setSelected(false);
-                btnLayer.setSelected(false);
-                btnQuery.setSelected(true);
-                break;
-            case STATE_LAYER:
-                btnProject.setSelected(false);
-                btnInspect.setSelected(false);
-                btnLayer.setSelected(true);
-                btnQuery.setSelected(false);
-                break;
-            case STATE_PROJECT:
-                btnProject.setSelected(true);
-                btnInspect.setSelected(false);
-                btnLayer.setSelected(false);
-                btnQuery.setSelected(false);
-                break;
-            case STATE_INIT:
-                btnProject.setSelected(false);
-                btnInspect.setSelected(false);
-                btnLayer.setSelected(false);
-                btnQuery.setSelected(false);
-            default:
-                break;
+        btnProject.setSelected(state == STATE_PROJECT);
+        btnEdit.setSelected(state == STATE_EDIT);
+        btnInspect.setSelected(state == STATE_INSPECT);
+        btnLayer.setSelected(state == STATE_LAYER);
+        btnQuery.setSelected(state == STATE_QUERY);
+
+        if (state == STATE_EDIT) {
+            editLayout.setVisibility(View.VISIBLE);
+        } else {
+            editLayout.setVisibility(View.GONE);
         }
+
+
+//        switch (state) {
+//            case STATE_INSPECT:
+//                btnProject.setSelected(false);
+//                btnInspect.setSelected(true);
+//                btnLayer.setSelected(false);
+//                btnQuery.setSelected(false);
+//                break;
+//            case STATE_QUERY:
+//                btnProject.setSelected(false);
+//                btnInspect.setSelected(false);
+//                btnLayer.setSelected(false);
+//                btnQuery.setSelected(true);
+//                btnEdit.setSelected(false);
+//                break;
+//            case STATE_LAYER:
+//                btnProject.setSelected(false);
+//                btnInspect.setSelected(false);
+//                btnLayer.setSelected(true);
+//                btnQuery.setSelected(false);
+//                btnEdit.setSelected(false);
+//                break;
+//            case STATE_PROJECT:
+//                btnProject.setSelected(true);
+//                btnInspect.setSelected(false);
+//                btnLayer.setSelected(false);
+//                btnQuery.setSelected(false);
+//                btnEdit.setSelected(false);
+//                break;
+//            case STATE_EDIT:
+//                btnEdit.setSelected(true);
+//                btnProject.setSelected(false);
+//                btnInspect.setSelected(false);
+//                btnLayer.setSelected(false);
+//                btnQuery.setSelected(false);
+//            case STATE_INIT:
+//                btnProject.setSelected(false);
+//                btnInspect.setSelected(false);
+//                btnLayer.setSelected(false);
+//                btnQuery.setSelected(false);
+//                btnEdit.setSelected(false);
+//            default:
+//                break;
+//        }
 
     }
 
@@ -489,6 +542,7 @@ public class MainActivity extends AppCompatActivity {
         IdentifyTask mIdentifyTask;
         private GraphicsLayer mGraphicsLayer;
         Point identifyPoint;
+
         public MyIdentifyTask(GraphicsLayer graphicsLayer) {
             this.mGraphicsLayer = graphicsLayer;
         }

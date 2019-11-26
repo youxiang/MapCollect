@@ -28,11 +28,10 @@
         android:text="@string/graph_layer" />
 
     <Button
-        android:id="@+id/btnGDTJ"
+        android:id="@+id/btnEdit"
         style="@style/BottomMenuButton"
         android:drawableLeft="@drawable/tj"
-        android:text="清前"
-        android:visibility="gone" />
+        android:text="编辑" />
 
     <Button
         android:id="@+id/btnQuery"
