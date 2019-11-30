@@ -396,9 +396,7 @@ public class LayerManager {
 
     }
 
-    public Layer getYSPointLayer() {
-        return ysjcjPointLayer;
-    }
+    private int unsavedPointGraphicId = -1;
 
     public void unHighlightPointGraphic() {
         if (highlightedPointGraphic != null) {
@@ -552,6 +550,10 @@ public class LayerManager {
         highlightedLineGraphic = null;
     }
 
+    public GraphicsLayer getYSPointLayer() {
+        return ysjcjPointLayer;
+    }
+
     public void updatePoint(long graphicId, JCJPointYS pointYS, boolean cancelHightlightPoint) {
         Log.i(TAG, "updatePoint: " + graphicId + ", " + pointYS.JCJBH);
         Map<String, Object> attributes = new HashMap<String, Object>();
@@ -582,6 +584,7 @@ public class LayerManager {
         if (oldSymbol instanceof CompositeSymbol) {
             for (Symbol oldItem : ((CompositeSymbol) oldSymbol).getSymbols()) {
                 if (oldItem instanceof TextSymbol) {
+                    ((TextSymbol) oldItem).setText(pointYS.JCJBH);
                     ((TextSymbol) oldItem).setColor(parameter.annotationLayerSymbolColor);
                     compositeSymbol.add(oldItem);
                 }
@@ -591,6 +594,22 @@ public class LayerManager {
         if (cancelHightlightPoint) {
             highlightedPointGraphic = null;
         }
+    }
+
+    public int addUnsavedPoint(JCJPointYS pointYS) {
+        GraphicLayerParameter parameter = config.pointParameter();
+        SimpleMarkerSymbol markerSymbol = new SimpleMarkerSymbol(parameter.symbolColor, parameter.symbolSize, SimpleMarkerSymbol.STYLE.CIRCLE);
+
+        Point point = new Point();
+        point.setXY(pointYS.YZB, pointYS.XZB);
+        return unsavedPointGraphicId = ysjcjPointLayer.addGraphic(getPointGraphic(pointYS, point, markerSymbol));
+    }
+
+    public void removeUnSavedPoint() {
+        if (unsavedPointGraphicId != -1) {
+            ysjcjPointLayer.removeGraphic(unsavedPointGraphicId);
+        }
+        unsavedPointGraphicId = -1;
     }
 
     public interface LayerListener {

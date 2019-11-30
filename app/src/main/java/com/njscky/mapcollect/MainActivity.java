@@ -26,6 +26,7 @@ import com.esri.core.tasks.identify.IdentifyResult;
 import com.esri.core.tasks.identify.IdentifyTask;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.snackbar.Snackbar;
+import com.njscky.mapcollect.business.edit.AddPointFragment;
 import com.njscky.mapcollect.business.jcjinspect.GraphicListAdpater;
 import com.njscky.mapcollect.business.jcjinspect.JcjInspectFragment;
 import com.njscky.mapcollect.business.layer.LayerManager;
@@ -59,6 +60,10 @@ public class MainActivity extends AppCompatActivity {
     private static final int STATE_LAYER = 3;
     private static final int STATE_QUERY = 4;
     private static final int STATE_EDIT = 5;
+
+    private static final int EDIT_TYPE_UNKNOWN = 0;
+    private static final int EDIT_TYPE_ADD_POINT = 1;
+    private static final int EDIT_TYPE_ADD_LINE = 2;
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -99,6 +104,8 @@ public class MainActivity extends AppCompatActivity {
     View bottomMenuLayout;
 
     private int state;
+
+    private int editType;
 
     private Snackbar snackbar;
 
@@ -148,6 +155,9 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case STATE_QUERY:
                         singleTapQuery(x, y);
+                        break;
+                    case STATE_EDIT:
+                        singleTapEdit(x, y);
                         break;
                     case STATE_INIT:
                     default:
@@ -227,6 +237,45 @@ public class MainActivity extends AppCompatActivity {
         tempGraphicsLayer.setName("tempGraphicsLayer");
         mMapView.addLayer(tempGraphicsLayer);
 
+    }
+
+    private void singleTapEdit(float x, float y) {
+        switch (editType) {
+            case EDIT_TYPE_ADD_POINT:
+                if (DbManager.getInstance(this).getDaoSession() == null) {
+                    Toast.makeText(this, "先打开工程", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                handleAddPoint(x, y);
+                break;
+            case EDIT_TYPE_ADD_LINE:
+                break;
+            case EDIT_TYPE_UNKNOWN:
+            default:
+                Toast.makeText(this, "请先选择编辑功能", Toast.LENGTH_SHORT).show();
+                break;
+        }
+    }
+
+    private void handleAddPoint(float x, float y) {
+
+        layerManager.removeUnSavedPoint();
+        Point pt = mMapView.toMapPoint(x, y);
+
+        AddPointFragment fragment = AddPointFragment.newInstance(pt);
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragment_container, fragment, AddPointFragment.class.getSimpleName())
+                .commit();
+
+        fragment.setBehaviorInstance(bottomSheetBehavior);
+
+        if (bottomSheetBehavior != null) {
+            int bottomSheetState = bottomSheetBehavior.getState();
+            if (bottomSheetState == STATE_HIDDEN) {
+                bottomSheetBehavior.setHideable(false);
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            }
+        }
     }
 
     private void singleTapQuery(float x, float y) {
@@ -408,11 +457,28 @@ public class MainActivity extends AppCompatActivity {
     @OnClick(R.id.btn_add_point)
     void onAddPoint() {
         Toast.makeText(this, "add point", Toast.LENGTH_SHORT).show();
+        if (editType == EDIT_TYPE_ADD_POINT) {
+            editType = EDIT_TYPE_UNKNOWN;
+        } else {
+            editType = EDIT_TYPE_ADD_POINT;
+        }
+        updateEditType();
     }
 
     @OnClick(R.id.btn_add_line)
     void onAddLine() {
         Toast.makeText(this, "add line", Toast.LENGTH_SHORT).show();
+        if (editType == EDIT_TYPE_ADD_LINE) {
+            editType = EDIT_TYPE_UNKNOWN;
+        } else {
+            editType = EDIT_TYPE_ADD_LINE;
+        }
+        updateEditType();
+    }
+
+    private void updateEditType() {
+        btnAddPoint.setSelected(editType == EDIT_TYPE_ADD_POINT);
+        btnAddLine.setSelected(editType == EDIT_TYPE_ADD_LINE);
     }
 
     @Override
@@ -472,52 +538,6 @@ public class MainActivity extends AppCompatActivity {
         } else {
             editLayout.setVisibility(View.GONE);
         }
-
-
-//        switch (state) {
-//            case STATE_INSPECT:
-//                btnProject.setSelected(false);
-//                btnInspect.setSelected(true);
-//                btnLayer.setSelected(false);
-//                btnQuery.setSelected(false);
-//                break;
-//            case STATE_QUERY:
-//                btnProject.setSelected(false);
-//                btnInspect.setSelected(false);
-//                btnLayer.setSelected(false);
-//                btnQuery.setSelected(true);
-//                btnEdit.setSelected(false);
-//                break;
-//            case STATE_LAYER:
-//                btnProject.setSelected(false);
-//                btnInspect.setSelected(false);
-//                btnLayer.setSelected(true);
-//                btnQuery.setSelected(false);
-//                btnEdit.setSelected(false);
-//                break;
-//            case STATE_PROJECT:
-//                btnProject.setSelected(true);
-//                btnInspect.setSelected(false);
-//                btnLayer.setSelected(false);
-//                btnQuery.setSelected(false);
-//                btnEdit.setSelected(false);
-//                break;
-//            case STATE_EDIT:
-//                btnEdit.setSelected(true);
-//                btnProject.setSelected(false);
-//                btnInspect.setSelected(false);
-//                btnLayer.setSelected(false);
-//                btnQuery.setSelected(false);
-//            case STATE_INIT:
-//                btnProject.setSelected(false);
-//                btnInspect.setSelected(false);
-//                btnLayer.setSelected(false);
-//                btnQuery.setSelected(false);
-//                btnEdit.setSelected(false);
-//            default:
-//                break;
-//        }
-
     }
 
 
