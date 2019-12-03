@@ -3,10 +3,14 @@ package com.njscky.mapcollect.db.entitiy;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.Gson;
+
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.Property;
+
+import androidx.annotation.NonNull;
 
 /**
  * 雨水检查井连线
@@ -333,4 +337,10 @@ public class JCJLineYS implements Parcelable {
             return new JCJLineYS[size];
         }
     };
+
+    @NonNull
+    @Override
+    public String toString() {
+        return new Gson().toJson(this);
+    }
 }

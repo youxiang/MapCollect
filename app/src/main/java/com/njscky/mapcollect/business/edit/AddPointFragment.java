@@ -147,6 +147,7 @@ public class AddPointFragment extends Fragment {
             layoutManager.removeUnSavedPoint();
             hideAddPointLayout();
         });
+        toolbar.setTitle(R.string.title_add_point);
         pt = (Point) getArguments().getSerializable("pt");
         pointYS = new JCJPointYS();
         pointYS.XZB = (float) pt.getY();

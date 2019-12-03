@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        app:navigationIcon="@drawable/ic_chevron_left"
+        app:title="@string/title_add_line"
+        app:titleTextColor="@color/white" />
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="10dp">
+
+            <LinearLayout style="@style/AppTheme.Property">
+
+                <TextView
+                    android:layout_width="@dimen/prop_name_width"
+                    android:layout_height="wrap_content"
+                    android:text="@string/jcjbh" />
+
+                <EditText
+                    android:id="@+id/et_jcjbh"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:visibility="visible" />
+            </LinearLayout>
+
+            <LinearLayout style="@style/AppTheme.Property">
+
+                <TextView
+                    android:layout_width="@dimen/prop_name_width"
+                    android:layout_height="wrap_content"
+                    android:text="@string/ljdh" />
+
+                <EditText
+                    android:id="@+id/et_ljdh"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:visibility="visible" />
+            </LinearLayout>
+
+            <LinearLayout style="@style/AppTheme.Property">
+
+                <TextView
+                    android:layout_width="@dimen/prop_name_width"
+                    android:layout_height="wrap_content"
+                    android:text="@string/ms" />
+
+
+                <EditText
+                    android:id="@+id/et_ms"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:inputType="numberDecimal"
+                    android:visibility="visible" />
+            </LinearLayout>
+
+            <LinearLayout style="@style/AppTheme.Property">
+
+                <TextView
+                    android:layout_width="@dimen/prop_name_width"
+                    android:layout_height="wrap_content"
+                    android:text="@string/gj" />
+
+                <EditText
+                    android:id="@+id/et_gj"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:visibility="visible" />
+            </LinearLayout>
+
+            <LinearLayout style="@style/AppTheme.Property">
+
+                <TextView
+                    android:layout_width="@dimen/prop_name_width"
+                    android:layout_height="wrap_content"
+                    android:text="@string/gc" />
+
+                <Spinner
+                    android:id="@+id/sp_gc"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:visibility="visible" />
+            </LinearLayout>
+
+            <LinearLayout style="@style/AppTheme.Property">
+
+                <TextView
+                    android:layout_width="@dimen/prop_name_width"
+                    android:layout_height="wrap_content"
+                    android:text="@string/sfdtyz" />
+
+                <Spinner
+                    android:id="@+id/sp_sfdtyz"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:visibility="visible" />
+            </LinearLayout>
+
+            <LinearLayout style="@style/AppTheme.Property">
+
+                <TextView
+                    android:layout_width="@dimen/prop_name_width"
+                    android:layout_height="wrap_content"
+                    android:text="@string/sfhj" />
+
+                <Spinner
+                    android:id="@+id/sp_sfhj"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+            </LinearLayout>
+
+
+            <LinearLayout style="@style/AppTheme.Property">
+
+                <TextView
+                    android:layout_width="@dimen/prop_name_width"
+                    android:layout_height="wrap_content"
+                    android:text="@string/hjlx" />
+
+                <Spinner
+                    android:id="@+id/sp_hjlx"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+                <EditText
+                    android:id="@+id/et_hjlx"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:visibility="visible" />
+            </LinearLayout>
+
+            <LinearLayout style="@style/AppTheme.Property">
+
+                <TextView
+                    android:layout_width="@dimen/prop_name_width"
+                    android:layout_height="wrap_content"
+                    android:text="@string/bz" />
+
+                <EditText
+                    android:id="@+id/et_bz"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:visibility="visible" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+    <LinearLayout
+        android:id="@+id/ll_check"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btn_cancel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/cancel" />
+
+        <Button
+            android:id="@+id/btn_save"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/save" />
+
+    </LinearLayout>
+
+</LinearLayout>

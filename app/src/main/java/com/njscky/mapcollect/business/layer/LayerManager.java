@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.text.TextUtils;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.esri.android.map.GraphicsLayer;
 import com.esri.android.map.Layer;
@@ -610,6 +611,26 @@ public class LayerManager {
             ysjcjPointLayer.removeGraphic(unsavedPointGraphicId);
         }
         unsavedPointGraphicId = -1;
+    }
+
+    private List<Graphic> graphicsForAddLine = new ArrayList<>();
+
+    public List<Graphic> getLinePoints() {
+        return graphicsForAddLine;
+    }
+
+    public void addLinePoint(Graphic graphic) {
+        graphicsForAddLine.add(graphic);
+        int size = graphicsForAddLine.size();
+        if (size == 1) {
+            Toast.makeText(context, "请再次选择一个终点", Toast.LENGTH_SHORT).show();
+        } else if (size == 2) {
+
+        }
+    }
+
+    public void removeUnSavedLine() {
+        graphicsForAddLine.clear();
     }
 
     public interface LayerListener {

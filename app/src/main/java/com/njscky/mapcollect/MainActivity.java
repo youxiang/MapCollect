@@ -26,6 +26,7 @@ import com.esri.core.tasks.identify.IdentifyResult;
 import com.esri.core.tasks.identify.IdentifyTask;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.snackbar.Snackbar;
+import com.njscky.mapcollect.business.edit.AddLineFragment;
 import com.njscky.mapcollect.business.edit.AddPointFragment;
 import com.njscky.mapcollect.business.jcjinspect.GraphicListAdpater;
 import com.njscky.mapcollect.business.jcjinspect.JcjInspectFragment;
@@ -142,6 +143,13 @@ public class MainActivity extends AppCompatActivity {
         } else {
             bottomSheetBehavior.setHideable(true);
             bottomSheetBehavior.setState(STATE_HIDDEN);
+            if (state == STATE_EDIT) {
+                if (editType == EDIT_TYPE_ADD_LINE) {
+                    layerManager.removeUnSavedLine();
+                } else if (editType == EDIT_TYPE_ADD_POINT) {
+                    layerManager.removeUnSavedPoint();
+                }
+            }
         }
     }
 
@@ -249,11 +257,80 @@ public class MainActivity extends AppCompatActivity {
                 handleAddPoint(x, y);
                 break;
             case EDIT_TYPE_ADD_LINE:
+                if (DbManager.getInstance(this).getDaoSession() == null) {
+                    Toast.makeText(this, "先打开工程", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                handleAddLine(x, y);
                 break;
             case EDIT_TYPE_UNKNOWN:
             default:
                 Toast.makeText(this, "请先选择编辑功能", Toast.LENGTH_SHORT).show();
                 break;
+        }
+    }
+
+    private void handleAddLine(float x, float y) {
+        GraphicsLayer layer = layerManager.getYSPointLayer();
+        int[] graphicIds = layer.getGraphicIDs(x, y, 15);
+        if (graphicIds == null || graphicIds.length == 0) {
+            return;
+        }
+        List<Graphic> graphics = new ArrayList<>(graphicIds.length);
+        for (int graphicId : graphicIds) {
+            Graphic graphic = layer.getGraphic(graphicId);
+            graphics.add(graphic);
+        }
+
+        if (graphics.size() <= 1) {
+            handleAddLineWithGraphic(graphics.get(0));
+        } else {
+            choosePointsDialog = new AlertDialog.Builder(this)
+                    .setTitle(R.string.choose_start_or_end_point)
+                    .setAdapter(
+                            new GraphicListAdpater(graphics),
+                            (dialog, which) -> {
+                                handleAddLineWithGraphic(graphics.get(0));
+                            }
+                    )
+                    .create();
+
+            choosePointsDialog.show();
+        }
+
+    }
+
+    private void handleAddLineWithGraphic(Graphic graphic) {
+        List<Graphic> pointGraphicIds = layerManager.getLinePoints();
+        int pointCount = pointGraphicIds.size();
+        if (pointCount <= 0) {
+            addStartPoint(graphic);
+        } else if (pointCount <= 1) {
+            addEndPoint(graphic);
+        }
+    }
+
+    private void addStartPoint(Graphic graphic) {
+        layerManager.addLinePoint(graphic);
+        Toast.makeText(this, "请选择终点", Toast.LENGTH_SHORT).show();
+    }
+
+    private void addEndPoint(Graphic graphic) {
+        layerManager.addLinePoint(graphic);
+        List<Graphic> linePoints = layerManager.getLinePoints();
+        AddLineFragment fragment = AddLineFragment.newInstance(linePoints.get(0), linePoints.get(1));
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragment_container, fragment, JcjInspectFragment.class.getSimpleName())
+                .commit();
+
+        fragment.setBehaviorInstance(bottomSheetBehavior);
+
+        if (bottomSheetBehavior != null) {
+            int bottomSheetState = bottomSheetBehavior.getState();
+            if (bottomSheetState == STATE_HIDDEN) {
+                bottomSheetBehavior.setHideable(false);
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            }
         }
     }
 

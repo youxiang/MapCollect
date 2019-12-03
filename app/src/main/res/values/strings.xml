@@ -51,6 +51,9 @@
     <string name="remember_password">记住密码</string>
     <string name="auto_login">自动登录</string>
     <string name="title_login">用户登录</string>
+    <string name="choose_start_or_end_point">请选择检查点</string>
+    <string name="title_add_line">编辑管线</string>
+    <string name="title_add_point">添加管点</string>
     <string-array name="photo_type_arr">
         <item>清疏前#QQ</item>
         <item>清疏后#QH</item>
