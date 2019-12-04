@@ -78,6 +78,8 @@ public class AddPointFragment extends Fragment {
     EditText etJLX;
     @BindView(R.id.et_jcjbz)
     EditText etJCJBZ;
+    @BindView(R.id.ll_confirm)
+    View llConfirm;
 
     @BindView(R.id.tabLayout)
     TabLayout tabLayout;
@@ -136,8 +138,7 @@ public class AddPointFragment extends Fragment {
         ibPhotoLibrary.setVisibility(View.GONE);
         tabLayout.setVisibility(View.GONE);
         viewPager.setVisibility(View.GONE);
-        cbSFTXWC.setVisibility(View.GONE);
-        cbSFPZWC.setVisibility(View.GONE);
+        llConfirm.setVisibility(View.GONE);
     }
 
     @Override
@@ -169,7 +170,7 @@ public class AddPointFragment extends Fragment {
     }
 
     private void showPointInfo() {
-        layoutManager.addUnsavedPoint(pointYS);
+        graphicId = layoutManager.addUnsavedPoint(pointYS);
     }
 
     private void updatePointInfo() {
@@ -336,10 +337,16 @@ public class AddPointFragment extends Fragment {
 
     @OnClick(R.id.btn_save)
     void onSave() {
+        String jcjbh = etJCJBH.getText().toString().trim();
+        if (TextUtils.isEmpty(jcjbh)) {
+            Toast.makeText(getContext(), "请填写检查井编号", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         String JGCZ = pointYS.JGCZ;
         String JSCZ = pointYS.JSCZ;
 
-        pointYS.JCJBH = etJCJBH.getText().toString();
+        pointYS.JCJBH = jcjbh;
         pointYS.JGCZ = (String) spJGCZ.getSelectedItem();
         if (TextUtils.equals(pointYS.JGCZ, "其他")) {
             pointYS.JGCZ_extra = etJGCZ.getText().toString();

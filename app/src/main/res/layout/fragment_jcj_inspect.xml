@@ -43,6 +43,7 @@
     </androidx.core.widget.NestedScrollView>
 
     <LinearLayout
+        android:id="@+id/ll_confirm"
         style="@style/AppTheme.Property"
         android:gravity="end|center_vertical">
 
