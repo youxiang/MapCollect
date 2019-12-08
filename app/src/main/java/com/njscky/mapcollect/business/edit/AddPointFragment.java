@@ -340,6 +340,13 @@ public class AddPointFragment extends Fragment {
         String jcjbh = etJCJBH.getText().toString().trim();
         if (TextUtils.isEmpty(jcjbh)) {
             Toast.makeText(getContext(), "请填写检查井编号", Toast.LENGTH_SHORT).show();
+            etJCJBH.setError("检查井编号为空");
+            return;
+        }
+        long count = pointYSDao.queryBuilder().where(JCJPointYSDao.Properties.JCJBH.eq(jcjbh)).count();
+        if (count > 0) {
+            Toast.makeText(getContext(), "检查井号已存在", Toast.LENGTH_SHORT).show();
+            etJCJBH.setError("检查井号已存在");
             return;
         }
 

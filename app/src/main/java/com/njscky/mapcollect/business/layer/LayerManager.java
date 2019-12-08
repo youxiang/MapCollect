@@ -216,7 +216,7 @@ public class LayerManager {
         AppExecutors.DB.execute(() -> {
 
             loadPointData();
-            //loadLineData();
+            loadLineData();
 
             if (listener != null) {
                 AppExecutors.MAIN.execute(listener::onFinish);
@@ -259,6 +259,8 @@ public class LayerManager {
 
                     Map<String, Object> attributes = new HashMap<String, Object>();
                     attributes.put("jcjLineYS", jcjLineYS);
+                    attributes.put("JCJBH", jcjLineYS.JCJBH);
+                    attributes.put("LJBH", jcjLineYS.LJBH);
 
 
                     Graphic polylineGraphic = new Graphic(polyline, lineSymbol, attributes);
@@ -631,6 +633,10 @@ public class LayerManager {
 
     public void removeUnSavedLine() {
         graphicsForAddLine.clear();
+    }
+
+    public GraphicsLayer getYSLineLayer() {
+        return ysjcjLineLayer;
     }
 
     public interface LayerListener {

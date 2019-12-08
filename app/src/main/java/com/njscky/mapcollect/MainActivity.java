@@ -2,6 +2,7 @@ package com.njscky.mapcollect;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -35,6 +36,11 @@ import com.njscky.mapcollect.business.project.ProjectActivity;
 import com.njscky.mapcollect.business.query.Callout_Adapter;
 import com.njscky.mapcollect.business.query.CalloutitemClass;
 import com.njscky.mapcollect.db.DbManager;
+import com.njscky.mapcollect.db.entitiy.JCJLineYS;
+import com.njscky.mapcollect.db.entitiy.JCJLineYSDao;
+import com.njscky.mapcollect.db.entitiy.JCJPointYS;
+import com.njscky.mapcollect.db.entitiy.JCJPointYSDao;
+import com.njscky.mapcollect.util.AppExecutors;
 import com.njscky.mapcollect.util.PermissionUtils;
 
 import java.util.ArrayList;
@@ -65,6 +71,8 @@ public class MainActivity extends AppCompatActivity {
     private static final int EDIT_TYPE_UNKNOWN = 0;
     private static final int EDIT_TYPE_ADD_POINT = 1;
     private static final int EDIT_TYPE_ADD_LINE = 2;
+    private static final int EDIT_TYPE_DELETE_POINT = 3;
+    private static final int EDIT_TYPE_DELETE_LINE = 4;
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -98,6 +106,10 @@ public class MainActivity extends AppCompatActivity {
     ImageButton btnAddPoint;
     @BindView(R.id.btn_add_line)
     ImageButton btnAddLine;
+    @BindView(R.id.btn_delete_point)
+    ImageButton btnDeletePoint;
+    @BindView(R.id.btn_delete_line)
+    ImageButton btnDeleteLine;
     @BindView(R.id.editLayout)
     View editLayout;
 
@@ -263,11 +275,156 @@ public class MainActivity extends AppCompatActivity {
                 }
                 handleAddLine(x, y);
                 break;
+            case EDIT_TYPE_DELETE_POINT:
+                if (DbManager.getInstance(this).getDaoSession() == null) {
+                    Toast.makeText(this, "先打开工程", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                handleDeletePoint(x, y);
+                break;
+            case EDIT_TYPE_DELETE_LINE:
+                if (DbManager.getInstance(this).getDaoSession() == null) {
+                    Toast.makeText(this, "先打开工程", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                handleDeleteLine(x, y);
+                break;
             case EDIT_TYPE_UNKNOWN:
             default:
                 Toast.makeText(this, "请先选择编辑功能", Toast.LENGTH_SHORT).show();
                 break;
         }
+    }
+
+    private void handleDeletePoint(float x, float y) {
+        GraphicsLayer layer = layerManager.getYSPointLayer();
+        int[] graphicIds = layer.getGraphicIDs(x, y, 15);
+        if (graphicIds == null || graphicIds.length == 0) {
+            return;
+        }
+        List<Graphic> graphics = new ArrayList<>(graphicIds.length);
+        for (int graphicId : graphicIds) {
+            Graphic graphic = layer.getGraphic(graphicId);
+            graphics.add(graphic);
+        }
+
+        if (graphics.size() <= 1) {
+            handleDeletePointWithGraphic(graphics.get(0));
+        } else {
+            choosePointsDialog = new AlertDialog.Builder(this)
+                    .setTitle(R.string.choose_delete_point)
+                    .setAdapter(
+                            new GraphicListAdpater(graphics),
+                            (dialog, which) -> {
+                                handleDeletePointWithGraphic(graphics.get(which));
+                            }
+                    )
+                    .create();
+
+            choosePointsDialog.show();
+        }
+
+    }
+
+    private void handleDeletePointWithGraphic(Graphic graphic) {
+        Map<String, Object> attributes = graphic.getAttributes();
+        String JCJBH = null;
+        if (attributes != null) {
+            JCJBH = (String) attributes.get("JCJBH");
+        }
+        Dialog dialog = new AlertDialog.Builder(this)
+                .setTitle(R.string.delete)
+                .setPositiveButton(R.string.confirm, (dialog1, which) -> {
+                    deletePoint(graphic);
+                })
+                .setMessage("删除检查井点：" + JCJBH)
+                .setNegativeButton(R.string.cancel, (dialog12, which) -> {
+
+                })
+                .create();
+
+        dialog.show();
+    }
+
+    private void deletePoint(Graphic graphic) {
+        Map<String, Object> attributes = graphic.getAttributes();
+        String JCJBH = null;
+        if (attributes != null) {
+            JCJBH = (String) attributes.get("JCJBH");
+        }
+
+        String finalJCJBH = JCJBH;
+        AppExecutors.DB.execute(() -> {
+            JCJPointYSDao dao = DbManager.getInstance(this).getDaoSession().getJCJPointYSDao();
+            JCJPointYS pointYS = dao.queryBuilder().where(JCJPointYSDao.Properties.JCJBH.eq(finalJCJBH)).list().get(0);
+            dao.delete(pointYS);
+            layerManager.getYSPointLayer().removeGraphic((int) graphic.getId());
+        });
+    }
+
+    private void handleDeleteLine(float x, float y) {
+        GraphicsLayer layer = layerManager.getYSLineLayer();
+        int[] graphicIds = layer.getGraphicIDs(x, y, 15);
+        if (graphicIds == null || graphicIds.length == 0) {
+            return;
+        }
+        List<Graphic> graphics = new ArrayList<>(graphicIds.length);
+        for (int graphicId : graphicIds) {
+            Graphic graphic = layer.getGraphic(graphicId);
+            graphics.add(graphic);
+        }
+
+        if (graphics.size() <= 1) {
+            handleDeleteLineWithGraphic(graphics.get(0));
+        } else {
+            choosePointsDialog = new AlertDialog.Builder(this)
+                    .setTitle(R.string.choose_delete_point)
+                    .setAdapter(
+                            new GraphicListAdpater(graphics),
+                            (dialog, which) -> {
+                                handleDeleteLineWithGraphic(graphics.get(which));
+                            }
+                    )
+                    .create();
+
+            choosePointsDialog.show();
+        }
+    }
+
+    private void handleDeleteLineWithGraphic(Graphic graphic) {
+        Map<String, Object> attributes = graphic.getAttributes();
+        String JCJBH = null;
+        if (attributes != null) {
+            JCJBH = (String) attributes.get("JCJBH");
+        }
+        Dialog dialog = new AlertDialog.Builder(this)
+                .setTitle(R.string.delete)
+                .setMessage("删除检查井线：" + JCJBH)
+                .setPositiveButton(R.string.confirm, (dialog1, which) -> {
+                    deleteLine(graphic);
+                })
+                .setNegativeButton(R.string.cancel, (dialog12, which) -> {
+
+                })
+                .create();
+
+        dialog.show();
+    }
+
+    private void deleteLine(Graphic graphic) {
+        Map<String, Object> attributes = graphic.getAttributes();
+        String JCJBH = null;
+        if (attributes != null) {
+            JCJBH = (String) attributes.get("JCJBH");
+        }
+
+        String finalJCJBH = JCJBH;
+        AppExecutors.DB.execute(() -> {
+            JCJLineYSDao dao = DbManager.getInstance(this).getDaoSession().getJCJLineYSDao();
+            JCJLineYS lineYS = dao.queryBuilder().where(JCJLineYSDao.Properties.JCJBH.eq(finalJCJBH)).list().get(0);
+            dao.delete(lineYS);
+            layerManager.getYSLineLayer().removeGraphic((int) graphic.getId());
+        });
     }
 
     private void handleAddLine(float x, float y) {
@@ -290,7 +447,7 @@ public class MainActivity extends AppCompatActivity {
                     .setAdapter(
                             new GraphicListAdpater(graphics),
                             (dialog, which) -> {
-                                handleAddLineWithGraphic(graphics.get(0));
+                                handleAddLineWithGraphic(graphics.get(which));
                             }
                     )
                     .create();
@@ -553,9 +710,31 @@ public class MainActivity extends AppCompatActivity {
         updateEditType();
     }
 
+    @OnClick(R.id.btn_delete_point)
+    void onDeletePoint() {
+        if (editType == EDIT_TYPE_DELETE_POINT) {
+            editType = EDIT_TYPE_UNKNOWN;
+        } else {
+            editType = EDIT_TYPE_DELETE_POINT;
+        }
+        updateEditType();
+    }
+
+    @OnClick(R.id.btn_delete_line)
+    void onDeleteLine() {
+        if (editType == EDIT_TYPE_DELETE_LINE) {
+            editType = EDIT_TYPE_UNKNOWN;
+        } else {
+            editType = EDIT_TYPE_DELETE_LINE;
+        }
+        updateEditType();
+    }
+
     private void updateEditType() {
         btnAddPoint.setSelected(editType == EDIT_TYPE_ADD_POINT);
         btnAddLine.setSelected(editType == EDIT_TYPE_ADD_LINE);
+        btnDeletePoint.setSelected(editType == EDIT_TYPE_DELETE_POINT);
+        btnDeleteLine.setSelected(editType == EDIT_TYPE_DELETE_LINE);
     }
 
     @Override
@@ -611,8 +790,10 @@ public class MainActivity extends AppCompatActivity {
         btnQuery.setSelected(state == STATE_QUERY);
 
         if (state == STATE_EDIT) {
+            layerManager.getYSLineLayer().setVisible(true);
             editLayout.setVisibility(View.VISIBLE);
         } else {
+            layerManager.getYSLineLayer().setVisible(false);
             editLayout.setVisibility(View.GONE);
         }
     }
