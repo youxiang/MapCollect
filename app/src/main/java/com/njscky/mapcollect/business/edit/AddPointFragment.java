@@ -394,6 +394,7 @@ public class AddPointFragment extends Fragment {
                     Toast.makeText(getContext(), finalSuccess ? "保存成功" : "保存失败", Toast.LENGTH_SHORT).show();
                     if (finalSuccess) {
                         updatePointInfo();
+                        layoutManager.resetUnSavedPoints();
                         hideAddPointLayout();
                     }
                 });

@@ -615,6 +615,10 @@ public class LayerManager {
         unsavedPointGraphicId = -1;
     }
 
+    public void resetUnSavedPoints() {
+        unsavedPointGraphicId = -1;
+    }
+
     private List<Graphic> graphicsForAddLine = new ArrayList<>();
 
     public List<Graphic> getLinePoints() {
