@@ -82,7 +82,7 @@ public class AddLineFragment extends Fragment {
     private JCJPointYSDao pointDao;
     private JCJLineYSDao lineDao;
     private BottomSheetBehavior behavior;
-    private LayerManager layoutManager;
+    private LayerManager layerManager;
 
     public static AddLineFragment newInstance(Graphic startPoint, Graphic endPoint) {
 
@@ -133,7 +133,7 @@ public class AddLineFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        layoutManager = MapCollectApp.getApp().getLayerManager();
+        layerManager = MapCollectApp.getApp().getLayerManager();
         pointDao = DbManager.getInstance(getContext()).getDaoSession().getJCJPointYSDao();
         lineDao = DbManager.getInstance(getContext()).getDaoSession().getJCJLineYSDao();
 
@@ -172,7 +172,7 @@ public class AddLineFragment extends Fragment {
             }
             List<JCJLineYS> lineList = new ArrayList<>();
             lineList.add(line);
-            layoutManager.drawLines(lineList);
+            layerManager.drawLines(lineList, true);
             Log.i(TAG, "loadData: line " + line);
             AppExecutors.MAIN.execute(() -> {
                 updateUI();
@@ -300,6 +300,7 @@ public class AddLineFragment extends Fragment {
             }
 
             AppExecutors.MAIN.execute(() -> {
+                layerManager.saveLines(line);
                 hideAddLineLayout();
             });
         });
@@ -307,7 +308,7 @@ public class AddLineFragment extends Fragment {
     }
 
     private void hideAddLineLayout() {
-        layoutManager.removeUnSavedLine();
+        layerManager.removeUnSavedLine();
         if (behavior != null) {
             behavior.setHideable(true);
             behavior.setState(BottomSheetBehavior.STATE_HIDDEN);

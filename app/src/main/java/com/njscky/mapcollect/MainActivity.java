@@ -793,7 +793,11 @@ public class MainActivity extends AppCompatActivity {
             layerManager.getYSLineLayer().setVisible(true);
             editLayout.setVisibility(View.VISIBLE);
         } else {
-            layerManager.getYSLineLayer().setVisible(false);
+            if (state == STATE_INSPECT) {
+                layerManager.getYSLineLayer().setVisible(true);
+            } else {
+                layerManager.getYSLineLayer().setVisible(false);
+            }
             editLayout.setVisibility(View.GONE);
         }
     }

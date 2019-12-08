@@ -336,7 +336,7 @@ public class JcjInspectFragment extends Fragment {
                 fragments.clear();
             }
 
-            layerManager.drawLines(lineYSList);
+            layerManager.drawLines(lineYSList, false);
             int pipeLineCount = lineYSList.size();
             for (int i = 0; i < pipeLineCount; i++) {
                 if (i == 0) {

@@ -241,8 +241,6 @@ public class LayerManager {
                 break;
             }
 
-            ArrayList<Graphic> graphics = new ArrayList<>();
-            ArrayList<Graphic> graphics2 = new ArrayList<>();
             for (JCJLineYS jcjLineYS : jcjLineYSList) {
                 // FIXME swap XZB and YZB
                 Point startPoint = new Point(jcjLineYS.QDYZB, jcjLineYS.QDXZB);
@@ -262,20 +260,17 @@ public class LayerManager {
                     attributes.put("JCJBH", jcjLineYS.JCJBH);
                     attributes.put("LJBH", jcjLineYS.LJBH);
 
-
-                    Graphic polylineGraphic = new Graphic(polyline, lineSymbol, attributes);
-                    ysjcjLineLayer.addGraphic(polylineGraphic);
-
+                    CompositeSymbol compositeSymbol = new CompositeSymbol();
+                    compositeSymbol.add(lineSymbol);
                     TextSymbol textSymbol = createTextSymbolInLineCenter(jcjLineYS.GJ + " " + jcjLineYS.CZ, parameter.annotationLayerSymbolColor, parameter.annotationLayerSymbolSize, startPoint, endPoint);
-                    Graphic textSymbolGraphic = new Graphic(new Point((startPoint.getX() + endPoint.getX()) / 2, (startPoint.getY() + endPoint.getY()) / 2), textSymbol);
-                    ysjcjLineAnnotationLayer.addGraphic(textSymbolGraphic);
+                    compositeSymbol.add(textSymbol);
 
+                    Graphic polylineGraphic = new Graphic(polyline, compositeSymbol, attributes);
+                    ysjcjLineLayer.addGraphic(polylineGraphic);
                 }
 
             }
 
-            ysjcjLineLayer.addGraphics(graphics.toArray(new Graphic[graphics.size()]));
-            ysjcjLineAnnotationLayer.addGraphics(graphics2.toArray(new Graphic[graphics2.size()]));
         }
 
     }
@@ -477,7 +472,9 @@ public class LayerManager {
         return ysjcjPointLayer.getGraphic((int) graphicId);
     }
 
-    public void drawLines(List<JCJLineYS> lineYSList) {
+    private List<Integer> lineGraphicIds = new ArrayList<>();
+
+    public void drawLines(List<JCJLineYS> lineYSList, boolean drawText) {
         GraphicLayerParameter parameter = config.lineParameter();
         parameter.symbolColor = Color.rgb(255, 0, 0);
         SimpleLineSymbol lineSymbol = new SimpleLineSymbol(parameter.symbolColor, parameter.symbolSize, SimpleLineSymbol.STYLE.SOLID);
@@ -499,13 +496,17 @@ public class LayerManager {
                 attributes.put("LJBH", jcjLineYS.LJBH);
                 attributes.put("jcjLineYS", jcjLineYS);
 
-                // TextSymbol textSymbol = createTextSymbolInLineCenter(jcjLineYS.GJ + " " + jcjLineYS.CZ, parameter.symbolColor, parameter.annotationLayerSymbolSize, startPoint, endPoint);
                 CompositeSymbol compositeSymbol = new CompositeSymbol();
                 compositeSymbol.add(lineSymbol);
-                // compositeSymbol.add(textSymbol);
+                if (drawText) {
+                    TextSymbol textSymbol = createTextSymbolInLineCenter(jcjLineYS.GJ + " " + jcjLineYS.CZ, parameter.symbolColor, parameter.annotationLayerSymbolSize, startPoint, endPoint);
+                    compositeSymbol.add(textSymbol);
+                }
+
 
                 Graphic polylineGraphic = new Graphic(polyline, compositeSymbol, attributes);
-                ysjcjLineLayer.addGraphic(polylineGraphic);
+                int graphicId = ysjcjLineLayer.addGraphic(polylineGraphic);
+                lineGraphicIds.add(graphicId);
             }
 
         }
@@ -514,7 +515,7 @@ public class LayerManager {
     public void highLightLine(JCJLineYS jcjLineYS) {
         unHighLightLines();
         Log.i(TAG, "highLightLine: " + jcjLineYS.LJBH);
-        for (int graphicId : ysjcjLineLayer.getGraphicIDs()) {
+        for (int graphicId : lineGraphicIds) {
             Graphic graphic = ysjcjLineLayer.getGraphic(graphicId);
             if (isGraphicMatched(graphic, jcjLineYS)) {
                 ysjcjLineLayer.updateGraphic(graphicId, getHighlightGraphic(graphic));
@@ -549,8 +550,36 @@ public class LayerManager {
 
     public void clearLines() {
         Log.i(TAG, "clearLines: ");
-        ysjcjLineLayer.removeAll();
+        for (Integer graphicId : lineGraphicIds) {
+            ysjcjLineLayer.removeGraphic(graphicId);
+        }
+        lineGraphicIds.clear();
         highlightedLineGraphic = null;
+    }
+
+    public void saveLines(JCJLineYS line) {
+        GraphicLayerParameter parameter = config.lineParameter();
+        for (int id : lineGraphicIds) {
+            Graphic graphic = ysjcjLineLayer.getGraphic(id);
+            Symbol symbol = graphic.getSymbol();
+
+            if (symbol instanceof CompositeSymbol) {
+                CompositeSymbol compositeSymbol = (CompositeSymbol) symbol;
+                for (Symbol childSymbol : compositeSymbol.getSymbols()) {
+                    if (childSymbol instanceof SimpleLineSymbol) {
+                        ((SimpleLineSymbol) childSymbol).setColor(parameter.symbolColor);
+                    } else if (childSymbol instanceof TextSymbol) {
+                        ((TextSymbol) childSymbol).setColor(parameter.annotationLayerSymbolColor);
+                        ((TextSymbol) childSymbol).setText(line.GJ + " " + line.CZ);
+                    }
+                }
+            }
+
+            Graphic rst = new Graphic(graphic.getGeometry(), symbol, graphic.getAttributes());
+            ysjcjLineLayer.updateGraphic(id, rst);
+        }
+
+        lineGraphicIds.clear();
     }
 
     public GraphicsLayer getYSPointLayer() {
